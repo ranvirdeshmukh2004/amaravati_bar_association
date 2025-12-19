@@ -1,0 +1,52 @@
+{
+  "elements": {
+    "SubscriptionConfigDao": {
+      "id": {
+        "library_uri": "package:amaravati_bar_association/features/database/daos/subscription_config_dao.dart",
+        "name": "SubscriptionConfigDao"
+      },
+      "declaration": {
+        "source_uri": "package:amaravati_bar_association/features/database/daos/subscription_config_dao.dart",
+        "offset": 210,
+        "name": "SubscriptionConfigDao"
+      },
+      "references": [
+        {
+          "library_uri": "package:amaravati_bar_association/features/database/tables/subscription_config.dart",
+          "name": "subscription_config"
+        }
+      ],
+      "type": "dao",
+      "tables": [
+        {
+          "library_uri": "package:amaravati_bar_association/features/database/tables/subscription_config.dart",
+          "name": "subscription_config"
+        }
+      ],
+      "views": [],
+      "includes": [],
+      "queries": [],
+      "dart_type": {
+        "elements": [
+          {
+            "lexeme": "SubscriptionConfigDao",
+            "import_uri": "package:amaravati_bar_association/features/database/daos/subscription_config_dao.dart"
+          }
+        ]
+      },
+      "database": {
+        "elements": [
+          {
+            "lexeme": "AppDatabase",
+            "import_uri": "package:amaravati_bar_association/features/database/app_database.dart"
+          }
+        ]
+      }
+    }
+  },
+  "imports": [
+    "package:drift/drift.dart",
+    "package:amaravati_bar_association/features/database/app_database.dart",
+    "package:amaravati_bar_association/features/database/tables/subscription_config.dart"
+  ]
+}

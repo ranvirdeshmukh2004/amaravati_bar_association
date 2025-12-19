@@ -1,0 +1,46 @@
+{
+	"sources" : 
+	[
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/sqlite3-populate"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/f7ffa6bfaaef62346d7ed5a938e7ecf3/sqlite3-populate.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/8c85e31f3e9c11d569fb624acbdb51bd/sqlite3-populate-complete.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/54e7235109582cfc8b1154b748f80376/sqlite3-populate-build.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/54e7235109582cfc8b1154b748f80376/sqlite3-populate-configure.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/54e7235109582cfc8b1154b748f80376/sqlite3-populate-download.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/54e7235109582cfc8b1154b748f80376/sqlite3-populate-install.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/54e7235109582cfc8b1154b748f80376/sqlite3-populate-mkdir.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/54e7235109582cfc8b1154b748f80376/sqlite3-populate-patch.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/54e7235109582cfc8b1154b748f80376/sqlite3-populate-test.rule"
+		},
+		{
+			"file" : "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/54e7235109582cfc8b1154b748f80376/sqlite3-populate-update.rule"
+		}
+	],
+	"target" : 
+	{
+		"labels" : 
+		[
+			"sqlite3-populate"
+		],
+		"name" : "sqlite3-populate"
+	}
+}

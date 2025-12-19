@@ -1,0 +1,14 @@
+# Target labels
+ pdfium-download
+# Source files and their labels
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/pdfium-download
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/90a8357a2836393b2d43b1f52c3aa60a/pdfium-download.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/5bc68f683b3d3a07ebce210777e3dfb9/pdfium-download-complete.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/87fa2457854f329aa73e9dafbd8bd8da/pdfium-download-build.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/87fa2457854f329aa73e9dafbd8bd8da/pdfium-download-configure.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/87fa2457854f329aa73e9dafbd8bd8da/pdfium-download-download.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/87fa2457854f329aa73e9dafbd8bd8da/pdfium-download-install.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/87fa2457854f329aa73e9dafbd8bd8da/pdfium-download-mkdir.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/87fa2457854f329aa73e9dafbd8bd8da/pdfium-download-patch.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/87fa2457854f329aa73e9dafbd8bd8da/pdfium-download-test.rule
+C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/CMakeFiles/87fa2457854f329aa73e9dafbd8bd8da/pdfium-download-update.rule

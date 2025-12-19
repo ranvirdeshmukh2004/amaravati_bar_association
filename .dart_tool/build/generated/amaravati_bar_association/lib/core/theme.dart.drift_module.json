@@ -1,0 +1,8 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter/material.dart",
+    "package:google_fonts/google_fonts.dart",
+    "package:amaravati_bar_association/core/constants.dart"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "elements": {
+    "SubscriptionsDao": {
+      "id": {
+        "library_uri": "package:amaravati_bar_association/features/database/daos/subscriptions_dao.dart",
+        "name": "SubscriptionsDao"
+      },
+      "declaration": {
+        "source_uri": "package:amaravati_bar_association/features/database/daos/subscriptions_dao.dart",
+        "offset": 179,
+        "name": "SubscriptionsDao"
+      },
+      "references": [
+        {
+          "library_uri": "package:amaravati_bar_association/features/database/tables.dart",
+          "name": "subscriptions"
+        }
+      ],
+      "type": "dao",
+      "tables": [
+        {
+          "library_uri": "package:amaravati_bar_association/features/database/tables.dart",
+          "name": "subscriptions"
+        }
+      ],
+      "views": [],
+      "includes": [],
+      "queries": [],
+      "dart_type": {
+        "elements": [
+          {
+            "lexeme": "SubscriptionsDao",
+            "import_uri": "package:amaravati_bar_association/features/database/daos/subscriptions_dao.dart"
+          }
+        ]
+      },
+      "database": {
+        "elements": [
+          {
+            "lexeme": "AppDatabase",
+            "import_uri": "package:amaravati_bar_association/features/database/app_database.dart"
+          }
+        ]
+      }
+    }
+  },
+  "imports": [
+    "package:drift/drift.dart",
+    "package:amaravati_bar_association/features/database/tables.dart",
+    "package:amaravati_bar_association/features/database/app_database.dart"
+  ]
+}

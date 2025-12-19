@@ -1,0 +1,1 @@
+{"valid_import":true,"imports":[{"uri":"package:drift/drift.dart","transitive":false}],"elements":[{"kind":"table","name":"subscriptions","dart_name":"Subscriptions"},{"kind":"table","name":"admin_settings","dart_name":"AdminSettings"},{"kind":"table","name":"members","dart_name":"Members"}]}

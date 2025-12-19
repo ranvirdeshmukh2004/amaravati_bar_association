@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\f7ffa6bfaaef62346d7ed5a938e7ecf3\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{331A2A18-0DED-37D4-B7BC-F1C437B0E633}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

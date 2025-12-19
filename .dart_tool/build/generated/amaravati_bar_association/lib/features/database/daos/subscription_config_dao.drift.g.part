@@ -1,0 +1,5 @@
+// ignore_for_file: type=lint
+mixin _$SubscriptionConfigDaoMixin on DatabaseAccessor<AppDatabase> {
+  $SubscriptionConfigTable get subscriptionConfig =>
+      attachedDatabase.subscriptionConfig;
+}

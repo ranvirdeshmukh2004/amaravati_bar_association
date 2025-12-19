@@ -1,0 +1,11 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter/material.dart",
+    "package:flutter_riverpod/flutter_riverpod.dart",
+    "package:amaravati_bar_association/core/constants.dart",
+    "package:amaravati_bar_association/core/utils.dart",
+    "package:amaravati_bar_association/features/dashboard/dashboard_providers.dart",
+    "package:amaravati_bar_association/features/dashboard/widgets/subscription_chart.dart"
+  ]
+}

@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\CMakeFiles\75aaa64b785d1e08ee31bd92e1905295\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{5165E4A3-7F36-3AE8-A008-281180446394}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

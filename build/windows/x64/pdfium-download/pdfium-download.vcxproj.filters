@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\87fa2457854f329aa73e9dafbd8bd8da\pdfium-download-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\87fa2457854f329aa73e9dafbd8bd8da\pdfium-download-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\87fa2457854f329aa73e9dafbd8bd8da\pdfium-download-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\87fa2457854f329aa73e9dafbd8bd8da\pdfium-download-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\87fa2457854f329aa73e9dafbd8bd8da\pdfium-download-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\87fa2457854f329aa73e9dafbd8bd8da\pdfium-download-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\87fa2457854f329aa73e9dafbd8bd8da\pdfium-download-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\87fa2457854f329aa73e9dafbd8bd8da\pdfium-download-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\5bc68f683b3d3a07ebce210777e3dfb9\pdfium-download-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\90a8357a2836393b2d43b1f52c3aa60a\pdfium-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\lbdam\amaravati_bar_association\build\windows\x64\pdfium-download\CMakeFiles\pdfium-download" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{9C37CFF9-5425-356B-9330-C08763224084}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
