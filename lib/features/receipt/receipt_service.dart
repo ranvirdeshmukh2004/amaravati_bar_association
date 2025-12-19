@@ -176,8 +176,74 @@ class ReceiptService {
   }
 
   String _convertNumberToWords(int number) {
-    // Basic implementation placeholder - ideally use a library like 'number_to_words' if added or write a mapper.
-    // For now returning simple text to avoiding complex logic bug.
-    return "Rupees ..."; // TODO: Implement number to words
+    if (number == 0) return "Zero";
+
+    final units = [
+      "",
+      "One",
+      "Two",
+      "Three",
+      "Four",
+      "Five",
+      "Six",
+      "Seven",
+      "Eight",
+      "Nine",
+      "Ten",
+      "Eleven",
+      "Twelve",
+      "Thirteen",
+      "Fourteen",
+      "Fifteen",
+      "Sixteen",
+      "Seventeen",
+      "Eighteen",
+      "Nineteen",
+    ];
+
+    final tens = [
+      "",
+      "",
+      "Twenty",
+      "Thirty",
+      "Forty",
+      "Fifty",
+      "Sixty",
+      "Seventy",
+      "Eighty",
+      "Ninety",
+    ];
+
+    String words = "";
+
+    if (number >= 100000) {
+      words += "${_convertNumberToWords(number ~/ 100000)} Lakh ";
+      number %= 100000;
+    }
+
+    if (number >= 1000) {
+      words += "${_convertNumberToWords(number ~/ 1000)} Thousand ";
+      number %= 1000;
+    }
+
+    if (number >= 100) {
+      words += "${_convertNumberToWords(number ~/ 100)} Hundred ";
+      number %= 100;
+    }
+
+    if (number > 0) {
+      if (words != "") words += "and ";
+
+      if (number < 20) {
+        words += units[number];
+      } else {
+        words += "${tens[number ~/ 10]} ";
+        if (number % 10 > 0) {
+          words += units[number % 10];
+        }
+      }
+    }
+
+    return words.trim();
   }
 }
