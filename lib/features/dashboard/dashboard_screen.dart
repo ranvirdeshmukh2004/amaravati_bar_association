@@ -266,7 +266,7 @@ class _DashboardLayout extends StatelessWidget {
             ...data.topDefaulters.map(
               (s) => ListTile(
                 contentPadding: EdgeInsets.zero,
-                title: Text(s.member.surname + " " + s.member.firstName),
+                title: Text("${s.member.surname} ${s.member.firstName}"),
                 subtitle: Text('Due: ${AppUtils.formatCurrency(s.balance)}'),
                 trailing: const Icon(Icons.arrow_forward_ios, size: 12),
               ),

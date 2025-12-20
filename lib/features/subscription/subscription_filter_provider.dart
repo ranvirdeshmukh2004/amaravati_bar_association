@@ -99,14 +99,17 @@ final filteredSubscriptionStatusProvider = Provider<List<SubscriptionStatus>>((
         if (filter.selectedStatuses.isNotEmpty) {
           bool statusMatch = false;
           if (filter.selectedStatuses.contains('Fully Paid') &&
-              status.balance <= 0)
+              status.balance <= 0) {
             statusMatch = true;
-          if (filter.selectedStatuses.contains('Due') && status.balance > 0)
+          }
+          if (filter.selectedStatuses.contains('Due') && status.balance > 0) {
             statusMatch = true;
+          }
           if (filter.selectedStatuses.contains('Overdue') &&
               status.totalMonths >= 6 &&
-              status.balance > 0)
+              status.balance > 0) {
             statusMatch = true; // Example 'Overdue' logic
+          }
 
           if (!statusMatch) return false;
         }

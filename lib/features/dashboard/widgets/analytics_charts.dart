@@ -39,11 +39,12 @@ class MonthlyTrendChart extends StatelessWidget {
               getTitlesWidget: (value, meta) {
                 if (value == 0) return const Text('0');
                 // Shorten large numbers: 1000 -> 1k
-                if (value >= 1000)
+                if (value >= 1000) {
                   return Text(
                     '${(value / 1000).toStringAsFixed(1)}k',
                     style: const TextStyle(fontSize: 10),
                   );
+                }
                 return Text(
                   value.toInt().toString(),
                   style: const TextStyle(fontSize: 10),

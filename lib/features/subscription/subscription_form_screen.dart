@@ -346,7 +346,7 @@ class _SubscriptionFormScreenState
                           const SizedBox(width: 16),
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: _paymentMode,
+                              initialValue: _paymentMode,
                               decoration: const InputDecoration(
                                 labelText: 'Payment Mode',
                                 border: OutlineInputBorder(),

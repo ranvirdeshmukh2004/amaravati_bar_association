@@ -45,8 +45,8 @@ class RecordsScreen extends ConsumerWidget {
               leading: const Icon(Icons.search),
               onChanged: (value) =>
                   ref.read(searchQueryProvider.notifier).state = value,
-              elevation: MaterialStateProperty.all(0),
-              backgroundColor: MaterialStateProperty.all(
+              elevation: WidgetStateProperty.all(0),
+              backgroundColor: WidgetStateProperty.all(
                 Theme.of(context).cardColor,
               ),
             ),

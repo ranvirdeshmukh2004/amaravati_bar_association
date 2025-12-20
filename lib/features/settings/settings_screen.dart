@@ -280,8 +280,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                             keyboardType: TextInputType.number,
                             validator: (v) {
                               if (v == null || v.isEmpty) return 'Required';
-                              if (double.tryParse(v) == null)
+                              if (double.tryParse(v) == null) {
                                 return 'Invalid Number';
+                              }
                               return null;
                             },
                           ),

@@ -7,7 +7,7 @@ part 'subscription_config_dao.g.dart';
 @DriftAccessor(tables: [SubscriptionConfig])
 class SubscriptionConfigDao extends DatabaseAccessor<AppDatabase>
     with _$SubscriptionConfigDaoMixin {
-  SubscriptionConfigDao(AppDatabase db) : super(db);
+  SubscriptionConfigDao(super.db);
 
   Future<SubscriptionConfigData?> getConfig() async {
     return await select(subscriptionConfig).getSingleOrNull();

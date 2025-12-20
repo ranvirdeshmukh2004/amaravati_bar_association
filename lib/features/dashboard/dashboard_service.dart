@@ -129,17 +129,17 @@ class DashboardService {
         // Sort combined (need safe dynamic check)
         combinedActivity.sort((a, b) {
           DateTime dateA;
-          if (a is Subscription)
+          if (a is Subscription) {
             dateA = a.subscriptionDate;
-          else if (a is Member)
+          } else if (a is Member)
             dateA = a.createdAt;
           else
             dateA = DateTime(0);
 
           DateTime dateB;
-          if (b is Subscription)
+          if (b is Subscription) {
             dateB = b.subscriptionDate;
-          else if (b is Member)
+          } else if (b is Member)
             dateB = b.createdAt;
           else
             dateB = DateTime(0);

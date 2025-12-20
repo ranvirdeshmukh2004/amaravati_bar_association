@@ -355,7 +355,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                           const SizedBox(width: 16),
                           Expanded(
                             child: DropdownButtonFormField<String>(
-                              value: _bloodGroup,
+                              initialValue: _bloodGroup,
                               decoration: const InputDecoration(
                                 labelText: 'Blood Group',
                                 border: OutlineInputBorder(),
@@ -510,8 +510,9 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                               keyboardType: TextInputType.emailAddress,
                               validator: (v) {
                                 if (v != null && v.isNotEmpty) {
-                                  if (!v.contains('@') || !v.contains('.'))
+                                  if (!v.contains('@') || !v.contains('.')) {
                                     return 'Invalid Email';
+                                  }
                                 }
                                 return null;
                               },

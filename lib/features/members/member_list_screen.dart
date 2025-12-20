@@ -83,7 +83,7 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                             labelText: 'Filter By',
                             border: OutlineInputBorder(),
                           ),
-                          value: ref.watch(memberFilterTypeProvider),
+                          initialValue: ref.watch(memberFilterTypeProvider),
                           items: const [
                             DropdownMenuItem(value: null, child: Text('None')),
                             DropdownMenuItem(
@@ -125,7 +125,7 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                                   labelText: 'Select Blood Group',
                                   border: OutlineInputBorder(),
                                 ),
-                                value: ref.watch(
+                                initialValue: ref.watch(
                                   memberBloodGroupFilterProvider,
                                 ),
                                 items:
@@ -162,7 +162,9 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                                   labelText: 'Select Year',
                                   border: OutlineInputBorder(),
                                 ),
-                                value: ref.watch(memberYearFilterProvider),
+                                initialValue: ref.watch(
+                                  memberYearFilterProvider,
+                                ),
                                 items: List.generate(50, (index) {
                                   final year = DateTime.now().year - index;
                                   return DropdownMenuItem(
