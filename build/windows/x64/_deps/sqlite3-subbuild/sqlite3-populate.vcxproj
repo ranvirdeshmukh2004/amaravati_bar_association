@@ -10,7 +10,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{E93BEC4D-025D-3B7D-994A-C1658D5EE379}</ProjectGuid>
+    <ProjectGuid>{D10768CB-4C69-3E30-8C11-CF35D78579EE}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
@@ -46,13 +46,13 @@
     </Midl>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\54e7235109582cfc8b1154b748f80376\sqlite3-populate-mkdir.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\bf784d1f6e51d7901e806a8bdc718e3b\sqlite3-populate-mkdir.rule">
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Creating directories for 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -Dcfgdir=/Debug -P C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/tmp/sqlite3-populate-mkdirs.cmake
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -Dcfgdir=/Debug -P C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/tmp/sqlite3-populate-mkdirs.cmake
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-mkdir
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-mkdir
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -61,25 +61,25 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-mkdir</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-mkdir</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\54e7235109582cfc8b1154b748f80376\sqlite3-populate-download.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\bf784d1f6e51d7901e806a8bdc718e3b\sqlite3-populate-download.rule">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Performing download step (download, verify and extract) for 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-cd C:\lbdam\amaravati_bar_association\build\windows\x64\_deps
+cd C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/download-sqlite3-populate.cmake
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/download-sqlite3-populate.cmake
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/verify-sqlite3-populate.cmake
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/verify-sqlite3-populate.cmake
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/extract-sqlite3-populate.cmake
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/extract-sqlite3-populate.cmake
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-download
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-download
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -87,18 +87,18 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\download-sqlite3-populate.cmake;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\sqlite3-populate-urlinfo.txt;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-mkdir;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-download</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\download-sqlite3-populate.cmake;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\sqlite3-populate-urlinfo.txt;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-mkdir;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-download</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\54e7235109582cfc8b1154b748f80376\sqlite3-populate-update.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\bf784d1f6e51d7901e806a8bdc718e3b\sqlite3-populate-update.rule">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">No update step for 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
 "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo_append
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-update
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-update
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -106,18 +106,18 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\sqlite3-populate-update-info.txt;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-download;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-update</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\sqlite3-populate-update-info.txt;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-download;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-update</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\54e7235109582cfc8b1154b748f80376\sqlite3-populate-patch.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\bf784d1f6e51d7901e806a8bdc718e3b\sqlite3-populate-patch.rule">
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">No patch step for 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
 "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo_append
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-patch
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-patch
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -125,23 +125,23 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\sqlite3-populate-patch-info.txt;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-update;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-patch</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\sqlite3-populate-patch-info.txt;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-update;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-patch</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\54e7235109582cfc8b1154b748f80376\sqlite3-populate-configure.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\bf784d1f6e51d7901e806a8bdc718e3b\sqlite3-populate-configure.rule">
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">No configure step for 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-cd C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-build
+cd C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-build
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
 "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo_append
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-configure
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-configure
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -149,23 +149,23 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\tmp\sqlite3-populate-cfgcmd.txt;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-patch;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-configure</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\tmp\sqlite3-populate-cfgcmd.txt;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-patch;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-configure</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\54e7235109582cfc8b1154b748f80376\sqlite3-populate-build.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\bf784d1f6e51d7901e806a8bdc718e3b\sqlite3-populate-build.rule">
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">No build step for 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-cd C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-build
+cd C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-build
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
 "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo_append
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-build
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-build
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -173,23 +173,23 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-configure;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-build</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-configure;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-build</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\54e7235109582cfc8b1154b748f80376\sqlite3-populate-install.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\bf784d1f6e51d7901e806a8bdc718e3b\sqlite3-populate-install.rule">
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">No install step for 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-cd C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-build
+cd C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-build
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
 "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo_append
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-install
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-install
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -197,23 +197,23 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-build;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-install</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-build;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-install</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\54e7235109582cfc8b1154b748f80376\sqlite3-populate-test.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\bf784d1f6e51d7901e806a8bdc718e3b\sqlite3-populate-test.rule">
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">No test step for 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-cd C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-build
+cd C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-build
 if %errorlevel% neq 0 goto :cmEnd
 C:
 if %errorlevel% neq 0 goto :cmEnd
 "C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E echo_append
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-test
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-test
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -221,21 +221,21 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-install;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-test</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-install;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-test</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\8c85e31f3e9c11d569fb624acbdb51bd\sqlite3-populate-complete.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\b2bd2333ce974aa02ad64d11466a5429\sqlite3-populate-complete.rule">
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Completed 'sqlite3-populate'</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E make_directory C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/Debug
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E make_directory C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/Debug
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/Debug/sqlite3-populate-complete
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/Debug/sqlite3-populate-complete
 if %errorlevel% neq 0 goto :cmEnd
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-done
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -E touch C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/Debug/sqlite3-populate-done
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -243,13 +243,13 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-install;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-mkdir;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-download;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-update;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-patch;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-configure;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-build;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-test;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\Debug\sqlite3-populate-complete</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-install;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-mkdir;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-download;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-update;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-patch;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-configure;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-build;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\src\sqlite3-populate-stamp\Debug\sqlite3-populate-test;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\Debug\sqlite3-populate-complete</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\f7ffa6bfaaef62346d7ed5a938e7ecf3\sqlite3-populate.rule">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\4c1ad69e4f6c3772899ea46bcd3a5d00\sqlite3-populate.rule">
       <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
       <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'"></Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
@@ -259,18 +259,18 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\Debug\sqlite3-populate-complete;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\sqlite3-populate</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\Debug\sqlite3-populate-complete;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\sqlite3-populate</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
       <VerifyInputsAndOutputsExist Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</VerifyInputsAndOutputsExist>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeLists.txt">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild -BC:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild --check-stamp-file C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/generate.stamp
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild -BC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild --check-stamp-file C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -278,19 +278,19 @@ endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
 exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
-      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\PatchInfo.txt.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\RepositoryInfo.txt.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\UpdateInfo.txt.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\cfgcmd.txt.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\download.cmake.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\extractfile.cmake.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\mkdirs.cmake.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\3.31.6-msvc6\CMakeSystem.cmake;C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\tmp\sqlite3-populate-mkdirs.cmake;%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\generate.stamp</Outputs>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeGenericSystem.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeInitializeConfigs.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInformation.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\CMakeSystemSpecificInitialize.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\PatchInfo.txt.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\RepositoryInfo.txt.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\UpdateInfo.txt.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\cfgcmd.txt.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\download.cmake.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\extractfile.cmake.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\mkdirs.cmake.in;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\ExternalProject\shared_internal_commands.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows-Initialize.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\Windows.cmake;C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\share\cmake-3.31\Modules\Platform\WindowsPaths.cmake;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\3.31.6-msvc6\CMakeSystem.cmake;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\sqlite3-populate-prefix\tmp\sqlite3-populate-mkdirs.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <None Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\sqlite3-populate">
+    <None Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\CMakeFiles\sqlite3-populate">
     </None>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="C:\lbdam\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\ZERO_CHECK.vcxproj">
-      <Project>{25294FFC-697D-38DD-A0A0-8A4B80336E0E}</Project>
+    <ProjectReference Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\_deps\sqlite3-subbuild\ZERO_CHECK.vcxproj">
+      <Project>{FE0FAFBB-3C69-3226-B2FE-93EEAFBA6F61}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>

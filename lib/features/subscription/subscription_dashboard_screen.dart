@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:data_table_2/data_table_2.dart';
+import '../database/database_provider.dart'; // Correct relative path
+import 'subscription_config_screen.dart'; // Same dir
 import 'subscription_service.dart';
+import 'year_history_screen.dart';
 import 'subscription_filter_provider.dart';
 import 'widgets/advanced_filter_panel.dart';
 import 'export_service.dart';
@@ -31,7 +35,76 @@ class _SubscriptionDashboardScreenState
     final allStatusesAsync = ref.watch(subscriptionStatusProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Subscription Management')),
+      appBar: AppBar(
+        title: const Text('Subscription Management'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: 'View History',
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const YearHistoryScreen()),
+              );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.calendar_today),
+            tooltip: 'Close Financial Year',
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (ctx) => AlertDialog(
+                  title: const Text('Close Financial Year?'),
+                  content: const Text(
+                    'This will archive current data, carry forward credits, and advance the financial year. This cannot be undone.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, false),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(ctx, true),
+                      child: const Text('Confirm'),
+                    ),
+                  ],
+                ),
+              );
+
+              if (confirm == true) {
+                try {
+                  await ref
+                      .read(subscriptionServiceProvider)
+                      .closeFinancialYear();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Financial Year Closed Successfully')),
+                    );
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error: $e')),
+                    );
+                  }
+                }
+              }
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.settings),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SubscriptionConfigScreen(),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
       body: allStatusesAsync.when(
         data: (allStatuses) {
           // Calculate Global Totals
@@ -160,87 +233,77 @@ class _SubscriptionDashboardScreenState
               Expanded(
                 child: Card(
                   margin: const EdgeInsets.all(16),
-                  child: Scrollbar(
-                    controller: _verticalScrollController,
-                    thumbVisibility: true,
-                    trackVisibility: true,
-                    child: SingleChildScrollView(
-                      controller: _verticalScrollController,
-                      scrollDirection: Axis.vertical,
-                      child: SizedBox(
-                        width: double.infinity,
-                        child: DataTable(
-                          columnSpacing: 20, // Tighten spacing
-                          horizontalMargin: 12, // Reduce margin
-                          columns: const [
-                            DataColumn(label: Text('Member')),
-                            DataColumn(label: Text('Reg No')),
-                            DataColumn(label: Text('Months')),
-                            DataColumn(label: Text('Expected')),
-                            DataColumn(label: Text('Paid')),
-                            DataColumn(label: Text('Due')),
-                            DataColumn(label: Text('Status')),
+                  child: DataTable2(
+                      scrollController: _verticalScrollController,
+                      headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                      headingTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                      columnSpacing: 12,
+                      horizontalMargin: 12,
+                      minWidth: 1000,
+                      fixedLeftColumns: 1,
+                      columns: const [
+                        DataColumn2(label: Text('MEMBER'), fixedWidth: 200),
+                        DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
+                        DataColumn2(label: Text('MONTHS'), size: ColumnSize.L),
+                        DataColumn2(label: Text('EXPECTED'), size: ColumnSize.L),
+                        DataColumn2(label: Text('PAID'), size: ColumnSize.L),
+                        DataColumn2(label: Text('DUE'), size: ColumnSize.L),
+                        DataColumn2(label: Text('STATUS'), size: ColumnSize.L),
+                      ],
+                      rows: filteredStatuses.map((s) {
+                        return DataRow(
+                          cells: [
+                            DataCell(
+                              Text(
+                                '${s.member.firstName} ${s.member.surname}',
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            DataCell(Text(s.member.registrationNumber)),
+                            DataCell(Text(s.totalMonths.toString())),
+                            DataCell(
+                              Text(
+                                '₹${s.totalExpected.toStringAsFixed(0)}',
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                '₹${s.totalPaid.toStringAsFixed(0)}',
+                                style: const TextStyle(color: Colors.green),
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                '₹${s.balance.toStringAsFixed(0)}',
+                                style: TextStyle(
+                                  color: s.balance > 0
+                                      ? Colors.red
+                                      : Colors.grey,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: s.statusColor.withOpacity(0.1),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(color: s.statusColor),
+                                ),
+                                child: Text(
+                                  s.statusText,
+                                  style: TextStyle(color: s.statusColor),
+                                ),
+                              ),
+                            ),
                           ],
-                          rows: filteredStatuses.map((s) {
-                            return DataRow(
-                              cells: [
-                                DataCell(
-                                  SizedBox(
-                                    width: 140, // Constrain width
-                                    child: Text(
-                                      '${s.member.firstName} ${s.member.surname}',
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(Text(s.member.registrationNumber)),
-                                DataCell(Text(s.totalMonths.toString())),
-                                DataCell(
-                                  Text(
-                                    '₹${s.totalExpected.toStringAsFixed(0)}',
-                                  ),
-                                ),
-                                DataCell(
-                                  Text(
-                                    '₹${s.totalPaid.toStringAsFixed(0)}',
-                                    style: const TextStyle(color: Colors.green),
-                                  ),
-                                ),
-                                DataCell(
-                                  Text(
-                                    '₹${s.balance.toStringAsFixed(0)}',
-                                    style: TextStyle(
-                                      color: s.balance > 0
-                                          ? Colors.red
-                                          : Colors.grey,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                                DataCell(
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: s.statusColor.withOpacity(0.1),
-                                      borderRadius: BorderRadius.circular(4),
-                                      border: Border.all(color: s.statusColor),
-                                    ),
-                                    child: Text(
-                                      s.statusText,
-                                      style: TextStyle(color: s.statusColor),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      ),
+                        );
+                      }).toList(),
                     ),
-                  ),
                 ),
               ),
             ],

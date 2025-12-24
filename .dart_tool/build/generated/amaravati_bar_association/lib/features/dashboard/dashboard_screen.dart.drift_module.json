@@ -1,11 +1,12 @@
 {
   "elements": {},
   "imports": [
+    "package:amaravati_bar_association/features/dashboard/widgets/analytics_charts.dart",
     "package:flutter/material.dart",
     "package:flutter_riverpod/flutter_riverpod.dart",
-    "package:amaravati_bar_association/core/constants.dart",
+    "package:intl/intl.dart",
     "package:amaravati_bar_association/core/utils.dart",
-    "package:amaravati_bar_association/features/dashboard/dashboard_providers.dart",
-    "package:amaravati_bar_association/features/dashboard/widgets/subscription_chart.dart"
+    "package:amaravati_bar_association/features/dashboard/dashboard_service.dart",
+    "package:amaravati_bar_association/features/dashboard/widgets/kpi_card.dart"
   ]
 }

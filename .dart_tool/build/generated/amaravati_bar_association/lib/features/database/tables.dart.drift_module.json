@@ -703,6 +703,214 @@
       "write_default_constraints": true,
       "custom_constraints": [],
       "attached_indices": []
+    },
+    "yearly_summaries": {
+      "id": {
+        "library_uri": "package:amaravati_bar_association/features/database/tables.dart",
+        "name": "yearly_summaries"
+      },
+      "declaration": {
+        "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+        "offset": 1648,
+        "name": "YearlySummaries"
+      },
+      "references": [],
+      "type": "table",
+      "columns": [
+        {
+          "sqlType": {
+            "builtin": "int"
+          },
+          "nullable": false,
+          "nameInSql": "id",
+          "nameInDart": "id",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 1697,
+            "name": "id"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [
+            {
+              "type": "primary",
+              "is_auto_increment": true
+            }
+          ],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "enrollment_number",
+          "nameInDart": "enrollmentNumber",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 1750,
+            "name": "enrollmentNumber"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "financial_year",
+          "nameInDart": "financialYear",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 1798,
+            "name": "financialYear"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "double"
+          },
+          "nullable": false,
+          "nameInSql": "total_expected",
+          "nameInDart": "totalExpected",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 1864,
+            "name": "totalExpected"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "double"
+          },
+          "nullable": false,
+          "nameInSql": "total_paid",
+          "nameInDart": "totalPaid",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 1909,
+            "name": "totalPaid"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "double"
+          },
+          "nullable": false,
+          "nameInSql": "balance",
+          "nameInDart": "balance",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 1950,
+            "name": "balance"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "status",
+          "nameInDart": "status",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 1989,
+            "name": "status"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": null,
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
+            "builtin": "dateTime"
+          },
+          "nullable": false,
+          "nameInSql": "closed_at",
+          "nameInDart": "closedAt",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 2050,
+            "name": "closedAt"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              {
+                "lexeme": "currentDateAndTime",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              }
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        }
+      ],
+      "existing_data_class": null,
+      "table_constraints": [],
+      "custom_parent_class": null,
+      "interfaces_for_row_class": [],
+      "fixed_entity_info_name": null,
+      "base_dart_name": "YearlySummaries",
+      "row_class_name": "YearlySummary",
+      "companion_class_name": null,
+      "without_rowid": false,
+      "strict": false,
+      "write_default_constraints": true,
+      "custom_constraints": [],
+      "attached_indices": []
     }
   },
   "imports": [

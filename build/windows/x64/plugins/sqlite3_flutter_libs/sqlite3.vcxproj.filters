@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\sqlite3_flutter_libs\windows\sqlite3_flutter.c">
+    <ClCompile Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\sqlite3_flutter_libs\windows\sqlite3_flutter.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\sqlite3_flutter_libs\windows\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\sqlite3_flutter_libs\windows\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{D7875E37-E149-3744-9E71-6DF64E02F1EE}</UniqueIdentifier>
+      <UniqueIdentifier>{A0B80101-00C0-3D92-8F67-5A8631A97367}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

@@ -6,22 +6,22 @@ cmake_minimum_required(VERSION ${CMAKE_VERSION}) # this file comes with cmake
 # If CMAKE_DISABLE_SOURCE_CHANGES is set to true and the source directory is an
 # existing directory in our source tree, calling file(MAKE_DIRECTORY) on it
 # would cause a fatal error, even though it would be a no-op.
-if(NOT EXISTS "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-src")
-  file(MAKE_DIRECTORY "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-src")
+if(NOT EXISTS "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-src")
+  file(MAKE_DIRECTORY "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-src")
 endif()
 file(MAKE_DIRECTORY
-  "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-build"
-  "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix"
-  "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/tmp"
-  "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp"
-  "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src"
-  "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp"
+  "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-build"
+  "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix"
+  "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/tmp"
+  "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp"
+  "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src"
+  "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp"
 )
 
 set(configSubDirs Debug)
 foreach(subDir IN LISTS configSubDirs)
-    file(MAKE_DIRECTORY "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/${subDir}")
+    file(MAKE_DIRECTORY "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp/${subDir}")
 endforeach()
 if(cfgdir)
-  file(MAKE_DIRECTORY "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp${cfgdir}") # cfgdir has leading slash
+  file(MAKE_DIRECTORY "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate-prefix/src/sqlite3-populate-stamp${cfgdir}") # cfgdir has leading slash
 endif()

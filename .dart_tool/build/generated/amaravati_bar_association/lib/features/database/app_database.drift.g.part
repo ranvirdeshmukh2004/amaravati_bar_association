@@ -2097,6 +2097,519 @@ class SubscriptionConfigCompanion
   }
 }
 
+class $YearlySummariesTable extends YearlySummaries
+    with TableInfo<$YearlySummariesTable, YearlySummary> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $YearlySummariesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _enrollmentNumberMeta = const VerificationMeta(
+    'enrollmentNumber',
+  );
+  @override
+  late final GeneratedColumn<String> enrollmentNumber = GeneratedColumn<String>(
+    'enrollment_number',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _financialYearMeta = const VerificationMeta(
+    'financialYear',
+  );
+  @override
+  late final GeneratedColumn<String> financialYear = GeneratedColumn<String>(
+    'financial_year',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalExpectedMeta = const VerificationMeta(
+    'totalExpected',
+  );
+  @override
+  late final GeneratedColumn<double> totalExpected = GeneratedColumn<double>(
+    'total_expected',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _totalPaidMeta = const VerificationMeta(
+    'totalPaid',
+  );
+  @override
+  late final GeneratedColumn<double> totalPaid = GeneratedColumn<double>(
+    'total_paid',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _balanceMeta = const VerificationMeta(
+    'balance',
+  );
+  @override
+  late final GeneratedColumn<double> balance = GeneratedColumn<double>(
+    'balance',
+    aliasedName,
+    false,
+    type: DriftSqlType.double,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _closedAtMeta = const VerificationMeta(
+    'closedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> closedAt = GeneratedColumn<DateTime>(
+    'closed_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    enrollmentNumber,
+    financialYear,
+    totalExpected,
+    totalPaid,
+    balance,
+    status,
+    closedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'yearly_summaries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<YearlySummary> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('enrollment_number')) {
+      context.handle(
+        _enrollmentNumberMeta,
+        enrollmentNumber.isAcceptableOrUnknown(
+          data['enrollment_number']!,
+          _enrollmentNumberMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_enrollmentNumberMeta);
+    }
+    if (data.containsKey('financial_year')) {
+      context.handle(
+        _financialYearMeta,
+        financialYear.isAcceptableOrUnknown(
+          data['financial_year']!,
+          _financialYearMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_financialYearMeta);
+    }
+    if (data.containsKey('total_expected')) {
+      context.handle(
+        _totalExpectedMeta,
+        totalExpected.isAcceptableOrUnknown(
+          data['total_expected']!,
+          _totalExpectedMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_totalExpectedMeta);
+    }
+    if (data.containsKey('total_paid')) {
+      context.handle(
+        _totalPaidMeta,
+        totalPaid.isAcceptableOrUnknown(data['total_paid']!, _totalPaidMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_totalPaidMeta);
+    }
+    if (data.containsKey('balance')) {
+      context.handle(
+        _balanceMeta,
+        balance.isAcceptableOrUnknown(data['balance']!, _balanceMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_balanceMeta);
+    }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_statusMeta);
+    }
+    if (data.containsKey('closed_at')) {
+      context.handle(
+        _closedAtMeta,
+        closedAt.isAcceptableOrUnknown(data['closed_at']!, _closedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  YearlySummary map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return YearlySummary(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      enrollmentNumber: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}enrollment_number'],
+      )!,
+      financialYear: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}financial_year'],
+      )!,
+      totalExpected: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_expected'],
+      )!,
+      totalPaid: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}total_paid'],
+      )!,
+      balance: attachedDatabase.typeMapping.read(
+        DriftSqlType.double,
+        data['${effectivePrefix}balance'],
+      )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      closedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}closed_at'],
+      )!,
+    );
+  }
+
+  @override
+  $YearlySummariesTable createAlias(String alias) {
+    return $YearlySummariesTable(attachedDatabase, alias);
+  }
+}
+
+class YearlySummary extends DataClass implements Insertable<YearlySummary> {
+  final int id;
+  final String enrollmentNumber;
+  final String financialYear;
+  final double totalExpected;
+  final double totalPaid;
+  final double balance;
+  final String status;
+  final DateTime closedAt;
+  const YearlySummary({
+    required this.id,
+    required this.enrollmentNumber,
+    required this.financialYear,
+    required this.totalExpected,
+    required this.totalPaid,
+    required this.balance,
+    required this.status,
+    required this.closedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['enrollment_number'] = Variable<String>(enrollmentNumber);
+    map['financial_year'] = Variable<String>(financialYear);
+    map['total_expected'] = Variable<double>(totalExpected);
+    map['total_paid'] = Variable<double>(totalPaid);
+    map['balance'] = Variable<double>(balance);
+    map['status'] = Variable<String>(status);
+    map['closed_at'] = Variable<DateTime>(closedAt);
+    return map;
+  }
+
+  YearlySummariesCompanion toCompanion(bool nullToAbsent) {
+    return YearlySummariesCompanion(
+      id: Value(id),
+      enrollmentNumber: Value(enrollmentNumber),
+      financialYear: Value(financialYear),
+      totalExpected: Value(totalExpected),
+      totalPaid: Value(totalPaid),
+      balance: Value(balance),
+      status: Value(status),
+      closedAt: Value(closedAt),
+    );
+  }
+
+  factory YearlySummary.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return YearlySummary(
+      id: serializer.fromJson<int>(json['id']),
+      enrollmentNumber: serializer.fromJson<String>(json['enrollmentNumber']),
+      financialYear: serializer.fromJson<String>(json['financialYear']),
+      totalExpected: serializer.fromJson<double>(json['totalExpected']),
+      totalPaid: serializer.fromJson<double>(json['totalPaid']),
+      balance: serializer.fromJson<double>(json['balance']),
+      status: serializer.fromJson<String>(json['status']),
+      closedAt: serializer.fromJson<DateTime>(json['closedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'enrollmentNumber': serializer.toJson<String>(enrollmentNumber),
+      'financialYear': serializer.toJson<String>(financialYear),
+      'totalExpected': serializer.toJson<double>(totalExpected),
+      'totalPaid': serializer.toJson<double>(totalPaid),
+      'balance': serializer.toJson<double>(balance),
+      'status': serializer.toJson<String>(status),
+      'closedAt': serializer.toJson<DateTime>(closedAt),
+    };
+  }
+
+  YearlySummary copyWith({
+    int? id,
+    String? enrollmentNumber,
+    String? financialYear,
+    double? totalExpected,
+    double? totalPaid,
+    double? balance,
+    String? status,
+    DateTime? closedAt,
+  }) => YearlySummary(
+    id: id ?? this.id,
+    enrollmentNumber: enrollmentNumber ?? this.enrollmentNumber,
+    financialYear: financialYear ?? this.financialYear,
+    totalExpected: totalExpected ?? this.totalExpected,
+    totalPaid: totalPaid ?? this.totalPaid,
+    balance: balance ?? this.balance,
+    status: status ?? this.status,
+    closedAt: closedAt ?? this.closedAt,
+  );
+  YearlySummary copyWithCompanion(YearlySummariesCompanion data) {
+    return YearlySummary(
+      id: data.id.present ? data.id.value : this.id,
+      enrollmentNumber: data.enrollmentNumber.present
+          ? data.enrollmentNumber.value
+          : this.enrollmentNumber,
+      financialYear: data.financialYear.present
+          ? data.financialYear.value
+          : this.financialYear,
+      totalExpected: data.totalExpected.present
+          ? data.totalExpected.value
+          : this.totalExpected,
+      totalPaid: data.totalPaid.present ? data.totalPaid.value : this.totalPaid,
+      balance: data.balance.present ? data.balance.value : this.balance,
+      status: data.status.present ? data.status.value : this.status,
+      closedAt: data.closedAt.present ? data.closedAt.value : this.closedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('YearlySummary(')
+          ..write('id: $id, ')
+          ..write('enrollmentNumber: $enrollmentNumber, ')
+          ..write('financialYear: $financialYear, ')
+          ..write('totalExpected: $totalExpected, ')
+          ..write('totalPaid: $totalPaid, ')
+          ..write('balance: $balance, ')
+          ..write('status: $status, ')
+          ..write('closedAt: $closedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    enrollmentNumber,
+    financialYear,
+    totalExpected,
+    totalPaid,
+    balance,
+    status,
+    closedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is YearlySummary &&
+          other.id == this.id &&
+          other.enrollmentNumber == this.enrollmentNumber &&
+          other.financialYear == this.financialYear &&
+          other.totalExpected == this.totalExpected &&
+          other.totalPaid == this.totalPaid &&
+          other.balance == this.balance &&
+          other.status == this.status &&
+          other.closedAt == this.closedAt);
+}
+
+class YearlySummariesCompanion extends UpdateCompanion<YearlySummary> {
+  final Value<int> id;
+  final Value<String> enrollmentNumber;
+  final Value<String> financialYear;
+  final Value<double> totalExpected;
+  final Value<double> totalPaid;
+  final Value<double> balance;
+  final Value<String> status;
+  final Value<DateTime> closedAt;
+  const YearlySummariesCompanion({
+    this.id = const Value.absent(),
+    this.enrollmentNumber = const Value.absent(),
+    this.financialYear = const Value.absent(),
+    this.totalExpected = const Value.absent(),
+    this.totalPaid = const Value.absent(),
+    this.balance = const Value.absent(),
+    this.status = const Value.absent(),
+    this.closedAt = const Value.absent(),
+  });
+  YearlySummariesCompanion.insert({
+    this.id = const Value.absent(),
+    required String enrollmentNumber,
+    required String financialYear,
+    required double totalExpected,
+    required double totalPaid,
+    required double balance,
+    required String status,
+    this.closedAt = const Value.absent(),
+  }) : enrollmentNumber = Value(enrollmentNumber),
+       financialYear = Value(financialYear),
+       totalExpected = Value(totalExpected),
+       totalPaid = Value(totalPaid),
+       balance = Value(balance),
+       status = Value(status);
+  static Insertable<YearlySummary> custom({
+    Expression<int>? id,
+    Expression<String>? enrollmentNumber,
+    Expression<String>? financialYear,
+    Expression<double>? totalExpected,
+    Expression<double>? totalPaid,
+    Expression<double>? balance,
+    Expression<String>? status,
+    Expression<DateTime>? closedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (enrollmentNumber != null) 'enrollment_number': enrollmentNumber,
+      if (financialYear != null) 'financial_year': financialYear,
+      if (totalExpected != null) 'total_expected': totalExpected,
+      if (totalPaid != null) 'total_paid': totalPaid,
+      if (balance != null) 'balance': balance,
+      if (status != null) 'status': status,
+      if (closedAt != null) 'closed_at': closedAt,
+    });
+  }
+
+  YearlySummariesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? enrollmentNumber,
+    Value<String>? financialYear,
+    Value<double>? totalExpected,
+    Value<double>? totalPaid,
+    Value<double>? balance,
+    Value<String>? status,
+    Value<DateTime>? closedAt,
+  }) {
+    return YearlySummariesCompanion(
+      id: id ?? this.id,
+      enrollmentNumber: enrollmentNumber ?? this.enrollmentNumber,
+      financialYear: financialYear ?? this.financialYear,
+      totalExpected: totalExpected ?? this.totalExpected,
+      totalPaid: totalPaid ?? this.totalPaid,
+      balance: balance ?? this.balance,
+      status: status ?? this.status,
+      closedAt: closedAt ?? this.closedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (enrollmentNumber.present) {
+      map['enrollment_number'] = Variable<String>(enrollmentNumber.value);
+    }
+    if (financialYear.present) {
+      map['financial_year'] = Variable<String>(financialYear.value);
+    }
+    if (totalExpected.present) {
+      map['total_expected'] = Variable<double>(totalExpected.value);
+    }
+    if (totalPaid.present) {
+      map['total_paid'] = Variable<double>(totalPaid.value);
+    }
+    if (balance.present) {
+      map['balance'] = Variable<double>(balance.value);
+    }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (closedAt.present) {
+      map['closed_at'] = Variable<DateTime>(closedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('YearlySummariesCompanion(')
+          ..write('id: $id, ')
+          ..write('enrollmentNumber: $enrollmentNumber, ')
+          ..write('financialYear: $financialYear, ')
+          ..write('totalExpected: $totalExpected, ')
+          ..write('totalPaid: $totalPaid, ')
+          ..write('balance: $balance, ')
+          ..write('status: $status, ')
+          ..write('closedAt: $closedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -2105,12 +2618,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $MembersTable members = $MembersTable(this);
   late final $SubscriptionConfigTable subscriptionConfig =
       $SubscriptionConfigTable(this);
+  late final $YearlySummariesTable yearlySummaries = $YearlySummariesTable(
+    this,
+  );
   late final SubscriptionsDao subscriptionsDao = SubscriptionsDao(
     this as AppDatabase,
   );
   late final MembersDao membersDao = MembersDao(this as AppDatabase);
   late final SubscriptionConfigDao subscriptionConfigDao =
       SubscriptionConfigDao(this as AppDatabase);
+  late final YearlySummariesDao yearlySummariesDao = YearlySummariesDao(
+    this as AppDatabase,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -2120,6 +2639,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     adminSettings,
     members,
     subscriptionConfig,
+    yearlySummaries,
   ];
 }
 
@@ -3169,6 +3689,265 @@ typedef $$SubscriptionConfigTableProcessedTableManager =
       SubscriptionConfigData,
       PrefetchHooks Function()
     >;
+typedef $$YearlySummariesTableCreateCompanionBuilder =
+    YearlySummariesCompanion Function({
+      Value<int> id,
+      required String enrollmentNumber,
+      required String financialYear,
+      required double totalExpected,
+      required double totalPaid,
+      required double balance,
+      required String status,
+      Value<DateTime> closedAt,
+    });
+typedef $$YearlySummariesTableUpdateCompanionBuilder =
+    YearlySummariesCompanion Function({
+      Value<int> id,
+      Value<String> enrollmentNumber,
+      Value<String> financialYear,
+      Value<double> totalExpected,
+      Value<double> totalPaid,
+      Value<double> balance,
+      Value<String> status,
+      Value<DateTime> closedAt,
+    });
+
+class $$YearlySummariesTableFilterComposer
+    extends Composer<_$AppDatabase, $YearlySummariesTable> {
+  $$YearlySummariesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get enrollmentNumber => $composableBuilder(
+    column: $table.enrollmentNumber,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get financialYear => $composableBuilder(
+    column: $table.financialYear,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalExpected => $composableBuilder(
+    column: $table.totalExpected,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get totalPaid => $composableBuilder(
+    column: $table.totalPaid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<double> get balance => $composableBuilder(
+    column: $table.balance,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get closedAt => $composableBuilder(
+    column: $table.closedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$YearlySummariesTableOrderingComposer
+    extends Composer<_$AppDatabase, $YearlySummariesTable> {
+  $$YearlySummariesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get enrollmentNumber => $composableBuilder(
+    column: $table.enrollmentNumber,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get financialYear => $composableBuilder(
+    column: $table.financialYear,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalExpected => $composableBuilder(
+    column: $table.totalExpected,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get totalPaid => $composableBuilder(
+    column: $table.totalPaid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<double> get balance => $composableBuilder(
+    column: $table.balance,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get closedAt => $composableBuilder(
+    column: $table.closedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$YearlySummariesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $YearlySummariesTable> {
+  $$YearlySummariesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get enrollmentNumber => $composableBuilder(
+    column: $table.enrollmentNumber,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get financialYear => $composableBuilder(
+    column: $table.financialYear,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get totalExpected => $composableBuilder(
+    column: $table.totalExpected,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<double> get totalPaid =>
+      $composableBuilder(column: $table.totalPaid, builder: (column) => column);
+
+  GeneratedColumn<double> get balance =>
+      $composableBuilder(column: $table.balance, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get closedAt =>
+      $composableBuilder(column: $table.closedAt, builder: (column) => column);
+}
+
+class $$YearlySummariesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $YearlySummariesTable,
+          YearlySummary,
+          $$YearlySummariesTableFilterComposer,
+          $$YearlySummariesTableOrderingComposer,
+          $$YearlySummariesTableAnnotationComposer,
+          $$YearlySummariesTableCreateCompanionBuilder,
+          $$YearlySummariesTableUpdateCompanionBuilder,
+          (
+            YearlySummary,
+            BaseReferences<_$AppDatabase, $YearlySummariesTable, YearlySummary>,
+          ),
+          YearlySummary,
+          PrefetchHooks Function()
+        > {
+  $$YearlySummariesTableTableManager(
+    _$AppDatabase db,
+    $YearlySummariesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$YearlySummariesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$YearlySummariesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$YearlySummariesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> enrollmentNumber = const Value.absent(),
+                Value<String> financialYear = const Value.absent(),
+                Value<double> totalExpected = const Value.absent(),
+                Value<double> totalPaid = const Value.absent(),
+                Value<double> balance = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<DateTime> closedAt = const Value.absent(),
+              }) => YearlySummariesCompanion(
+                id: id,
+                enrollmentNumber: enrollmentNumber,
+                financialYear: financialYear,
+                totalExpected: totalExpected,
+                totalPaid: totalPaid,
+                balance: balance,
+                status: status,
+                closedAt: closedAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String enrollmentNumber,
+                required String financialYear,
+                required double totalExpected,
+                required double totalPaid,
+                required double balance,
+                required String status,
+                Value<DateTime> closedAt = const Value.absent(),
+              }) => YearlySummariesCompanion.insert(
+                id: id,
+                enrollmentNumber: enrollmentNumber,
+                financialYear: financialYear,
+                totalExpected: totalExpected,
+                totalPaid: totalPaid,
+                balance: balance,
+                status: status,
+                closedAt: closedAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$YearlySummariesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $YearlySummariesTable,
+      YearlySummary,
+      $$YearlySummariesTableFilterComposer,
+      $$YearlySummariesTableOrderingComposer,
+      $$YearlySummariesTableAnnotationComposer,
+      $$YearlySummariesTableCreateCompanionBuilder,
+      $$YearlySummariesTableUpdateCompanionBuilder,
+      (
+        YearlySummary,
+        BaseReferences<_$AppDatabase, $YearlySummariesTable, YearlySummary>,
+      ),
+      YearlySummary,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -3181,4 +3960,6 @@ class $AppDatabaseManager {
       $$MembersTableTableManager(_db, _db.members);
   $$SubscriptionConfigTableTableManager get subscriptionConfig =>
       $$SubscriptionConfigTableTableManager(_db, _db.subscriptionConfig);
+  $$YearlySummariesTableTableManager get yearlySummaries =>
+      $$YearlySummariesTableTableManager(_db, _db.yearlySummaries);
 }

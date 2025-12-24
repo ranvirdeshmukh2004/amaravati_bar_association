@@ -1,6 +1,6 @@
-^C:\LBDAM\AMARAVATI_BAR_ASSOCIATION\BUILD\WINDOWS\X64\_DEPS\SQLITE3-SUBBUILD\CMAKELISTS.TXT
+^C:\USERS\HP7\DOCUMENTS\GITHUB\AMARAVATI_BAR_ASSOCIATION\BUILD\WINDOWS\X64\_DEPS\SQLITE3-SUBBUILD\CMAKELISTS.TXT
 setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild -BC:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild --check-stamp-file C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/generate.stamp
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild -BC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild --check-stamp-file C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

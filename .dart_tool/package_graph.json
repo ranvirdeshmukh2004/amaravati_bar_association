@@ -9,6 +9,7 @@
       "dependencies": [
         "csv",
         "cupertino_icons",
+        "data_table_2",
         "drift",
         "file_picker",
         "fl_chart",
@@ -136,6 +137,14 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "data_table_2",
+      "version": "2.7.2",
+      "dependencies": [
+        "async",
+        "flutter"
       ]
     },
     {
@@ -738,6 +747,29 @@
       ]
     },
     {
+      "name": "dbus",
+      "version": "0.7.11",
+      "dependencies": [
+        "args",
+        "ffi",
+        "meta",
+        "xml"
+      ]
+    },
+    {
+      "name": "web",
+      "version": "1.1.1",
+      "dependencies": []
+    },
+    {
+      "name": "cross_file",
+      "version": "0.3.5+1",
+      "dependencies": [
+        "meta",
+        "web"
+      ]
+    },
+    {
       "name": "win32",
       "version": "5.15.0",
       "dependencies": [
@@ -745,8 +777,8 @@
       ]
     },
     {
-      "name": "web",
-      "version": "1.1.1",
+      "name": "ffi",
+      "version": "2.1.4",
       "dependencies": []
     },
     {
@@ -757,25 +789,17 @@
       ]
     },
     {
-      "name": "flutter_web_plugins",
-      "version": "0.0.0",
+      "name": "flutter_plugin_android_lifecycle",
+      "version": "2.0.33",
       "dependencies": [
         "flutter"
       ]
     },
     {
-      "name": "ffi",
-      "version": "2.1.4",
-      "dependencies": []
-    },
-    {
-      "name": "dbus",
-      "version": "0.7.11",
+      "name": "flutter_web_plugins",
+      "version": "0.0.0",
       "dependencies": [
-        "args",
-        "ffi",
-        "meta",
-        "xml"
+        "flutter"
       ]
     },
     {
@@ -1142,21 +1166,6 @@
       "name": "vm_service",
       "version": "15.0.2",
       "dependencies": []
-    },
-    {
-      "name": "cross_file",
-      "version": "0.3.5+1",
-      "dependencies": [
-        "meta",
-        "web"
-      ]
-    },
-    {
-      "name": "flutter_plugin_android_lifecycle",
-      "version": "2.0.33",
-      "dependencies": [
-        "flutter"
-      ]
     }
   ],
   "configVersion": 1

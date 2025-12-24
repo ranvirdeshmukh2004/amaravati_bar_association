@@ -7,7 +7,7 @@
       },
       "declaration": {
         "source_uri": "package:amaravati_bar_association/features/database/app_database.dart",
-        "offset": 569,
+        "offset": 648,
         "name": "AppDatabase"
       },
       "references": [
@@ -26,6 +26,10 @@
         {
           "library_uri": "package:amaravati_bar_association/features/database/tables/subscription_config.dart",
           "name": "subscription_config"
+        },
+        {
+          "library_uri": "package:amaravati_bar_association/features/database/tables.dart",
+          "name": "yearly_summaries"
         }
       ],
       "type": "database",
@@ -45,12 +49,16 @@
         {
           "library_uri": "package:amaravati_bar_association/features/database/tables/subscription_config.dart",
           "name": "subscription_config"
+        },
+        {
+          "library_uri": "package:amaravati_bar_association/features/database/tables.dart",
+          "name": "yearly_summaries"
         }
       ],
       "views": [],
       "includes": [],
       "queries": [],
-      "schema_version": 4,
+      "schema_version": 5,
       "daos": [
         {
           "library_uri": "package:amaravati_bar_association/features/database/daos/subscriptions_dao.dart",
@@ -63,6 +71,10 @@
         {
           "library_uri": "package:amaravati_bar_association/features/database/daos/subscription_config_dao.dart",
           "name": "SubscriptionConfigDao"
+        },
+        {
+          "library_uri": "package:amaravati_bar_association/features/database/daos/yearly_summaries_dao.dart",
+          "name": "YearlySummariesDao"
         }
       ],
       "has_constructor_arg": false
@@ -77,6 +89,7 @@
     "package:amaravati_bar_association/features/database/daos/subscriptions_dao.dart",
     "package:amaravati_bar_association/features/database/daos/members_dao.dart",
     "package:amaravati_bar_association/features/database/tables/subscription_config.dart",
-    "package:amaravati_bar_association/features/database/daos/subscription_config_dao.dart"
+    "package:amaravati_bar_association/features/database/daos/subscription_config_dao.dart",
+    "package:amaravati_bar_association/features/database/daos/yearly_summaries_dao.dart"
   ]
 }

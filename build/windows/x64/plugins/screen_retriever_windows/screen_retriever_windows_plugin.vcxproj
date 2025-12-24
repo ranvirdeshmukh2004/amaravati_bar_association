@@ -18,7 +18,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{2999F0C1-0A79-3B28-8E12-8D840C8DB8BA}</ProjectGuid>
+    <ProjectGuid>{6AA76E01-90ED-3BDA-B5CE-29C3F8D88962}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <WindowsTargetPlatformVersion>10.0.26100.0</WindowsTargetPlatformVersion>
     <Platform>x64</Platform>
@@ -50,19 +50,19 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\Debug\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\Debug\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">screen_retriever_windows_plugin.dir\Debug\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">screen_retriever_windows_plugin</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\Profile\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\Profile\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">screen_retriever_windows_plugin.dir\Profile\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">screen_retriever_windows_plugin</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">.dll</TargetExt>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkIncremental>
     <GenerateManifest Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">true</GenerateManifest>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\Release\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\Release\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">screen_retriever_windows_plugin.dir\Release\</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">screen_retriever_windows_plugin</TargetName>
     <TargetExt Condition="'$(Configuration)|$(Platform)'=='Release|x64'">.dll</TargetExt>
@@ -72,7 +72,7 @@
   <PropertyGroup />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -95,10 +95,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_HAS_EXCEPTIONS=0;FLUTTER_PLUGIN_IMPL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;UNICODE;_UNICODE;CMAKE_INTDIR=\"Debug\";screen_retriever_windows_plugin_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -106,13 +106,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>..\..\flutter\Debug\flutter_wrapper_plugin.lib;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\..\flutter\Debug\flutter_wrapper_plugin.lib;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Debug/screen_retriever_windows_plugin.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Debug/screen_retriever_windows_plugin.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Debug/screen_retriever_windows_plugin.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Debug/screen_retriever_windows_plugin.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -121,7 +121,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DisableSpecificWarnings>"4100"</DisableSpecificWarnings>
@@ -145,10 +145,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_PLUGIN_IMPL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;UNICODE;_UNICODE;CMAKE_INTDIR=\"Profile\";screen_retriever_windows_plugin_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -156,13 +156,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>..\..\flutter\Profile\flutter_wrapper_plugin.lib;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\..\flutter\Profile\flutter_wrapper_plugin.lib;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Profile/screen_retriever_windows_plugin.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Profile/screen_retriever_windows_plugin.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Profile/screen_retriever_windows_plugin.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Profile/screen_retriever_windows_plugin.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -171,7 +171,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>$(IntDir)</AssemblerListingLocation>
       <BasicRuntimeChecks>Default</BasicRuntimeChecks>
       <DisableSpecificWarnings>"4100"</DisableSpecificWarnings>
@@ -195,10 +195,10 @@
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_PLUGIN_IMPL;_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;UNICODE;_UNICODE;CMAKE_INTDIR=\"Release\";screen_retriever_windows_plugin_EXPORTS</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
-      <AdditionalIncludeDirectories>C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
       <HeaderFileName>%(Filename).h</HeaderFileName>
       <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
@@ -206,13 +206,13 @@
       <ProxyFileName>%(Filename)_p.c</ProxyFileName>
     </Midl>
     <Link>
-      <AdditionalDependencies>..\..\flutter\Release\flutter_wrapper_plugin.lib;C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
+      <AdditionalDependencies>..\..\flutter\Release\flutter_wrapper_plugin.lib;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\flutter_windows.dll.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;comdlg32.lib;advapi32.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>%(AdditionalOptions) /machine:x64</AdditionalOptions>
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <IgnoreSpecificDefaultLibraries>%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
-      <ImportLibrary>C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Release/screen_retriever_windows_plugin.lib</ImportLibrary>
-      <ProgramDataBaseFile>C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Release/screen_retriever_windows_plugin.pdb</ProgramDataBaseFile>
+      <ImportLibrary>C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Release/screen_retriever_windows_plugin.lib</ImportLibrary>
+      <ProgramDataBaseFile>C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/Release/screen_retriever_windows_plugin.pdb</ProgramDataBaseFile>
       <SubSystem>Console</SubSystem>
     </Link>
     <ProjectReference>
@@ -220,11 +220,11 @@
     </ProjectReference>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\CMakeLists.txt">
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\CMakeLists.txt">
       <UseUtf8Encoding>Always</UseUtf8Encoding>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/lbdam/amaravati_bar_association/windows/flutter/ephemeral/.plugin_symlinks/screen_retriever_windows/windows/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule C:/Users/HP7/Documents/GitHub/amaravati_bar_association/windows/flutter/ephemeral/.plugin_symlinks/screen_retriever_windows/windows/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/lbdam/amaravati_bar_association/windows -BC:/lbdam/amaravati_bar_association/build/windows/x64 --check-stamp-file C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/CMakeFiles/generate.stamp
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/HP7/Documents/GitHub/amaravati_bar_association/windows -BC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64 --check-stamp-file C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -233,11 +233,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Building Custom Rule C:/lbdam/amaravati_bar_association/windows/flutter/ephemeral/.plugin_symlinks/screen_retriever_windows/windows/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">Building Custom Rule C:/Users/HP7/Documents/GitHub/amaravati_bar_association/windows/flutter/ephemeral/.plugin_symlinks/screen_retriever_windows/windows/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/lbdam/amaravati_bar_association/windows -BC:/lbdam/amaravati_bar_association/build/windows/x64 --check-stamp-file C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/CMakeFiles/generate.stamp
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/HP7/Documents/GitHub/amaravati_bar_association/windows -BC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64 --check-stamp-file C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -246,11 +246,11 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Profile|x64'">false</LinkObjects>
-      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/lbdam/amaravati_bar_association/windows/flutter/ephemeral/.plugin_symlinks/screen_retriever_windows/windows/CMakeLists.txt</Message>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule C:/Users/HP7/Documents/GitHub/amaravati_bar_association/windows/flutter/ephemeral/.plugin_symlinks/screen_retriever_windows/windows/CMakeLists.txt</Message>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/lbdam/amaravati_bar_association/windows -BC:/lbdam/amaravati_bar_association/build/windows/x64 --check-stamp-file C:/lbdam/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/CMakeFiles/generate.stamp
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/HP7/Documents/GitHub/amaravati_bar_association/windows -BC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64 --check-stamp-file C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/screen_retriever_windows/CMakeFiles/generate.stamp
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
@@ -259,32 +259,32 @@ exit /b %1
 :cmDone
 if %errorlevel% neq 0 goto :VCEnd</Command>
       <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">%(AdditionalInputs)</AdditionalInputs>
-      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\lbdam\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\CMakeFiles\generate.stamp</Outputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\plugins\screen_retriever_windows\CMakeFiles\generate.stamp</Outputs>
       <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\include\screen_retriever_windows\screen_retriever_windows_plugin_c_api.h" />
-    <ClCompile Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin_c_api.cpp" />
-    <ClCompile Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin.cpp" />
-    <ClInclude Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin.h" />
+    <ClInclude Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\include\screen_retriever_windows\screen_retriever_windows_plugin_c_api.h" />
+    <ClCompile Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin_c_api.cpp" />
+    <ClCompile Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin.cpp" />
+    <ClInclude Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin.h" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
-    <ProjectReference Include="C:\lbdam\amaravati_bar_association\build\windows\x64\ZERO_CHECK.vcxproj">
-      <Project>{59A3581C-BC8A-3205-980D-DE304F2D2DB0}</Project>
+    <ProjectReference Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\ZERO_CHECK.vcxproj">
+      <Project>{4FD781DE-2B37-3E3E-8752-23C5DFE27B81}</Project>
       <Name>ZERO_CHECK</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\lbdam\amaravati_bar_association\build\windows\x64\flutter\flutter_assemble.vcxproj">
-      <Project>{CA75F9AE-F1EC-37D0-BC6A-70546E6173C3}</Project>
+    <ProjectReference Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\flutter\flutter_assemble.vcxproj">
+      <Project>{E3801F4F-1A29-3712-8F37-43AD3AA24F82}</Project>
       <Name>flutter_assemble</Name>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </ProjectReference>
-    <ProjectReference Include="C:\lbdam\amaravati_bar_association\build\windows\x64\flutter\flutter_wrapper_plugin.vcxproj">
-      <Project>{60D430D1-1E1A-3644-BDCD-9104D1C8A18E}</Project>
+    <ProjectReference Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\build\windows\x64\flutter\flutter_wrapper_plugin.vcxproj">
+      <Project>{A3898786-1DB0-3E51-A781-57CB78E317C8}</Project>
       <Name>flutter_wrapper_plugin</Name>
     </ProjectReference>
   </ItemGroup>

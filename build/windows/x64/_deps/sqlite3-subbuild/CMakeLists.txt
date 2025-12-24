@@ -20,8 +20,8 @@ project(sqlite3-populate NONE)
 include(ExternalProject)
 ExternalProject_Add(sqlite3-populate
                      "UPDATE_DISCONNECTED" "False" "DOWNLOAD_EXTRACT_TIMESTAMP" "NEW" "EXTERNALPROJECT_INTERNAL_ARGUMENT_SEPARATOR" "URL" "https://sqlite.org/2025/sqlite-autoconf-3510100.tar.gz"
-                    SOURCE_DIR          "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-src"
-                    BINARY_DIR          "C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-build"
+                    SOURCE_DIR          "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-src"
+                    BINARY_DIR          "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-build"
                     CONFIGURE_COMMAND   ""
                     BUILD_COMMAND       ""
                     INSTALL_COMMAND     ""

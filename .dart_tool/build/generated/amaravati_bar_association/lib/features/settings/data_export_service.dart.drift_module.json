@@ -1,0 +1,13 @@
+{
+  "elements": {},
+  "imports": [
+    "package:csv/csv.dart",
+    "package:drift/drift.dart",
+    "package:file_picker/file_picker.dart",
+    "package:flutter/foundation.dart",
+    "package:flutter_riverpod/flutter_riverpod.dart",
+    "package:intl/intl.dart",
+    "package:amaravati_bar_association/features/database/app_database.dart",
+    "package:amaravati_bar_association/features/database/database_provider.dart"
+  ]
+}

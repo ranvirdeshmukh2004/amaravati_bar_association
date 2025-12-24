@@ -1,0 +1,10 @@
+{
+  "elements": {},
+  "imports": [
+    "package:flutter/material.dart",
+    "package:flutter_riverpod/flutter_riverpod.dart",
+    "package:rxdart/rxdart.dart",
+    "package:amaravati_bar_association/features/database/database_provider.dart",
+    "package:amaravati_bar_association/features/database/app_database.dart"
+  ]
+}

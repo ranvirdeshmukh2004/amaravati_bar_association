@@ -1,0 +1,8 @@
+{
+  "elements": {},
+  "imports": [
+    "package:fl_chart/fl_chart.dart",
+    "package:flutter/material.dart",
+    "package:amaravati_bar_association/features/dashboard/dashboard_service.dart"
+  ]
+}

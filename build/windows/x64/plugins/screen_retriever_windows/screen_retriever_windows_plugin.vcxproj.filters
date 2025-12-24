@@ -1,30 +1,30 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin_c_api.cpp">
+    <ClCompile Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin_c_api.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin.cpp">
+    <ClCompile Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\include\screen_retriever_windows\screen_retriever_windows_plugin_c_api.h">
+    <ClInclude Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\include\screen_retriever_windows\screen_retriever_windows_plugin_c_api.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin.h">
+    <ClInclude Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\screen_retriever_windows_plugin.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <CustomBuild Include="C:\lbdam\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\CMakeLists.txt" />
+    <CustomBuild Include="C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\CMakeLists.txt" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{BB9A0F90-E8C2-3318-9EC5-239F0794B5CC}</UniqueIdentifier>
+      <UniqueIdentifier>{4A50A68A-B176-356C-ADA5-BF1F0E28AD4F}</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{D7875E37-E149-3744-9E71-6DF64E02F1EE}</UniqueIdentifier>
+      <UniqueIdentifier>{A0B80101-00C0-3D92-8F67-5A8631A97367}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

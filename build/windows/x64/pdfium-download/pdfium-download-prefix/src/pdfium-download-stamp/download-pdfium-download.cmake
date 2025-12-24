@@ -22,14 +22,14 @@ function(check_file_hash has_hash hash_is_good)
   set("${has_hash}" TRUE PARENT_SCOPE)
 
   message(VERBOSE "verifying file...
-       file='C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz'")
+       file='C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz'")
 
-  file("" "C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz" actual_value)
+  file("" "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz" actual_value)
 
   if(NOT "${actual_value}" STREQUAL "")
     set("${hash_is_good}" FALSE PARENT_SCOPE)
     message(VERBOSE " hash of
-    C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz
+    C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz
   does not match expected value
     expected: ''
       actual: '${actual_value}'")
@@ -71,32 +71,32 @@ function(sleep_before_download attempt)
   execute_process(COMMAND "${CMAKE_COMMAND}" -E sleep "${sleep_seconds}")
 endfunction()
 
-if(EXISTS "C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz")
+if(EXISTS "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz")
   check_file_hash(has_hash hash_is_good)
   if(has_hash)
     if(hash_is_good)
       message(VERBOSE "File already exists and hash match (skip download):
-  file='C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz'
+  file='C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz'
   =''"
       )
       return()
     else()
       message(VERBOSE "File already exists but hash mismatch. Removing...")
-      file(REMOVE "C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz")
+      file(REMOVE "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz")
     endif()
   else()
     message(VERBOSE "File already exists but no hash specified (use URL_HASH):
-  file='C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz'
+  file='C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz'
 Old file will be removed and new file downloaded from URL."
     )
-    file(REMOVE "C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz")
+    file(REMOVE "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz")
   endif()
 endif()
 
 set(retry_number 5)
 
 message(VERBOSE "Downloading...
-   dst='C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz'
+   dst='C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz'
    timeout='none'
    inactivity timeout='none'"
 )
@@ -119,7 +119,7 @@ foreach(i RANGE ${retry_number})
 
       file(
         DOWNLOAD
-        "${url}" "C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz"
+        "${url}" "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz"
         SHOW_PROGRESS
         # no TIMEOUT
         # no INACTIVITY_TIMEOUT
@@ -136,7 +136,7 @@ foreach(i RANGE ${retry_number})
         check_file_hash(has_hash hash_is_good)
         if(has_hash AND NOT hash_is_good)
           message(VERBOSE "Hash mismatch, removing...")
-          file(REMOVE "C:/lbdam/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz")
+          file(REMOVE "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-download/pdfium-download-prefix/src/pdfium-win-x64.tgz")
         else()
           message(VERBOSE "Downloading... done")
           return()

@@ -137,6 +137,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final formKey = GlobalKey<FormState>();
     bool deleteMembers = false;
     bool deleteSubscriptions = false;
+    bool deleteHistory = false;
 
     showDialog(
       context: context,
@@ -167,6 +168,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onChanged: (v) =>
                           setState(() => deleteSubscriptions = v == true),
                     ),
+                    CheckboxListTile(
+                      title: const Text('Delete Subscription History'),
+                      value: deleteHistory,
+                      onChanged: (v) =>
+                          setState(() => deleteHistory = v == true),
+                    ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: passwordController,
@@ -188,7 +195,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 FilledButton(
                   style: FilledButton.styleFrom(backgroundColor: Colors.red),
                   onPressed: () async {
-                    if (!deleteMembers && !deleteSubscriptions) {
+                    if (!deleteMembers && !deleteSubscriptions && !deleteHistory) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Select at least one option'),
@@ -212,6 +219,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                           await ref
                               .read(databaseProvider)
                               .deleteSubscriptions();
+                        }
+                         if (deleteHistory) {
+                          await ref
+                              .read(databaseProvider)
+                              .yearlySummariesDao
+                              .deleteAllSummaries();
                         }
 
                         if (context.mounted) {
@@ -734,6 +747,30 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             },
           ),
           ListTile(
+            leading: const Icon(Icons.file_upload),
+            title: const Text('Import Members (CSV)'),
+            subtitle: const Text('Bulk add members from file'),
+            onTap: () async {
+              if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Select CSV file...')),
+                  );
+               }
+               
+              final message = await ref.read(dataExportServiceProvider).importMembersFromCsv();
+              
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(message),
+                    backgroundColor: message.contains('Import Complete') ? Colors.green : Colors.orange,
+                    duration: const Duration(seconds: 4),
+                  ),
+                );
+              }
+            },
+          ),
+          ListTile(
             leading: const Icon(Icons.receipt_long),
             title: const Text('Export Subscriptions (CSV)'),
             subtitle: const Text('Download subscription records'),
@@ -801,6 +838,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ),
             onTap: _seedSubscriptions,
           ),
+          ListTile(
+            leading: const Icon(Icons.history_edu, color: Colors.blueGrey),
+            title: const Text(
+              'Seed History (Debug)',
+              style: TextStyle(color: Colors.blueGrey),
+            ),
+            subtitle: const Text('Add dummy history for 2023-2024'),
+            onTap: _seedHistory,
+          ),
           const Divider(),
           const _SectionHeader(title: 'About'),
           const ListTile(
@@ -811,6 +857,50 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ],
       ),
     );
+  }
+
+  Future<void> _seedHistory() async {
+    try {
+      final db = ref.read(databaseProvider);
+      final members = await db.membersDao.getAllMembers();
+      
+      if (members.isEmpty) {
+        if (mounted) {
+           ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('No members found. Seed members first.')),
+          );
+        }
+        return;
+      }
+
+      int count = 0;
+      for (final member in members) {
+        await db.yearlySummariesDao.insertSummary(
+          YearlySummariesCompanion(
+            enrollmentNumber: drift.Value(member.registrationNumber),
+            financialYear: const drift.Value("2023-2024"),
+            totalExpected: const drift.Value(1200.0),
+            totalPaid: drift.Value(count % 2 == 0 ? 1200.0 : 600.0),
+            balance: drift.Value(count % 2 == 0 ? 0.0 : 600.0),
+            status: drift.Value(count % 2 == 0 ? 'Paid' : 'Partial'),
+            closedAt: drift.Value(DateTime.now()),
+          )
+        );
+        count++;
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Seeded history for $count members')),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
   }
 }
 

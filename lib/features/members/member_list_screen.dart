@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../database/app_database.dart';
@@ -219,73 +220,88 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                 if (members.isEmpty) {
                   return const Center(child: Text('No members found.'));
                 }
-                return Scrollbar(
-                  controller: _verticalController,
-                  thumbVisibility: true,
-                  trackVisibility: true,
-                  child: SingleChildScrollView(
-                    controller: _verticalController,
-                    scrollDirection: Axis.vertical,
-                    child: SizedBox(
-                      width: double.infinity,
-                      child: DataTable(
-                        columnSpacing: 20,
-                        horizontalMargin: 12,
-                        columns: const [
-                          DataColumn(label: Text('Reg No')),
-                          DataColumn(label: Text('Name')),
-                          DataColumn(label: Text('Mobile')),
-                          DataColumn(label: Text('Blood Group')),
-                          DataColumn(label: Text('Enrolled')),
-                          DataColumn(label: Text('Actions')),
-                        ],
-                        rows: members.map((m) {
-                          return DataRow(
-                            cells: [
-                              DataCell(Text(m.registrationNumber)),
-                              DataCell(
-                                SizedBox(
-                                  width: 140,
-                                  child: Text(
-                                    [m.surname, m.firstName, m.middleName ?? '']
+                return Card(
+                    margin: const EdgeInsets.all(16),
+                    child: Padding( // Add padding for Card content
+                      padding: const EdgeInsets.all(0),
+                      child: DataTable2(
+                          scrollController: _verticalController,
+                          headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
+                          headingTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
+                          columnSpacing: 12,
+                          horizontalMargin: 12,
+                          minWidth: 1000,
+                          fixedLeftColumns: 1,
+                          columns: const [
+                            DataColumn2(label: Text('NAME'), size: ColumnSize.L), // Flexible width for equality
+                            DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
+                            DataColumn2(label: Text('MOBILE'), size: ColumnSize.L),
+                            DataColumn2(label: Text('ENROLLED'), size: ColumnSize.L),
+                            DataColumn2(label: Text('ACTIONS'), fixedWidth: 100),
+                          ],
+                          rows: members.map((m) {
+                            return DataRow(
+                              cells: [
+                                DataCell(
+                                  Text(
+                                    [
+                                      m.surname,
+                                      m.firstName,
+                                      m.middleName ?? '',
+                                    ]
                                         .join(' ')
                                         .trim()
                                         .replaceAll(RegExp(r'\s+'), ' '),
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                              ),
-                              DataCell(Text(m.mobileNumber)),
-                              DataCell(Text(m.bloodGroup ?? '-')),
-                              DataCell(
-                                Text(
-                                  m.enrollmentDateAba != null
-                                      ? DateFormat(
-                                          'dd/MM/yyyy',
-                                        ).format(m.enrollmentDateAba!)
-                                      : '-',
+                                DataCell(Text(m.registrationNumber)),
+                                DataCell(Text(m.mobileNumber)),
+                                DataCell(
+                                  Text(
+                                    m.enrollmentDateAba != null
+                                        ? DateFormat(
+                                            'dd/MM/yyyy',
+                                          ).format(m.enrollmentDateAba!)
+                                        : '-',
+                                  ),
                                 ),
-                              ),
-                              DataCell(
-                                IconButton(
-                                  icon: const Icon(Icons.visibility),
-                                  onPressed: () {
-                                    // Open Details
-                                    showDialog(
-                                      context: context,
-                                      builder: (c) =>
-                                          _MemberDetailDialog(member: m),
-                                    );
-                                  },
+                                DataCell(
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      IconButton(
+                                        icon: const Icon(Icons.visibility),
+                                        onPressed: () {
+                                          // Open Details
+                                          showDialog(
+                                            context: context,
+                                            builder: (c) =>
+                                                _MemberDetailDialog(member: m),
+                                          );
+                                        },
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.edit),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) =>
+                                                  MemberFormScreen(member: m),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
+                              ],
+                            );
+                          }).toList(),
+                        ),
                     ),
-                  ),
-                );
+                  );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) => Center(child: Text('Error: $err')),

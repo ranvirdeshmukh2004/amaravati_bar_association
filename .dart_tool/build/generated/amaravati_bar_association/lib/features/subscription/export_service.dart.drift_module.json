@@ -1,0 +1,10 @@
+{
+  "elements": {},
+  "imports": [
+    "package:csv/csv.dart",
+    "package:file_picker/file_picker.dart",
+    "package:flutter_riverpod/flutter_riverpod.dart",
+    "package:intl/intl.dart",
+    "package:amaravati_bar_association/features/subscription/subscription_service.dart"
+  ]
+}

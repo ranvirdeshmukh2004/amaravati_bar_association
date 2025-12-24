@@ -259,4 +259,111 @@ class DataExportService {
       return false; // Or rethrow
     }
   }
+
+  /// Import members from a CSV file.
+  /// Returns a summary string of the operation.
+  Future<String> importMembersFromCsv() async {
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['csv'],
+    );
+
+    if (result == null || result.files.single.path == null) {
+      return 'Import cancelled';
+    }
+
+    final file = File(result.files.single.path!);
+    final input = await file.readAsString();
+    
+    // Parse CSV
+    final List<List<dynamic>> rows = const CsvToListConverter().convert(input, eol: '\n');
+    if (rows.isEmpty || rows.length < 2) {
+      return 'CSV file is empty or missing data rows.';
+    }
+
+    // Headers verification (Optional strict check, or loose mapping)
+    final headers = rows.first.map((e) => e.toString().trim().toLowerCase()).toList();
+    
+    // Minimal required headers
+    final reqIndexReg = headers.indexOf('registration number');
+    final reqIndexName = headers.indexOf('first name');
+    final reqIndexSurname = headers.indexOf('surname');
+
+    if (reqIndexReg == -1 || reqIndexName == -1 || reqIndexSurname == -1) {
+      return 'Missing required columns: Registration Number, First Name, Surname.';
+    }
+    
+    // Optional headers indices
+    final indexMiddle = headers.indexOf('middle name');
+    final indexAge = headers.indexOf('age');
+    final indexMobile = headers.indexOf('mobile number');
+    final indexAddress = headers.indexOf('address');
+    final indexEmail = headers.indexOf('email');
+    final indexDob = headers.indexOf('date of birth');
+    final indexEnrollAba = headers.indexOf('enrollment date aba');
+    final indexEnrollBar = headers.indexOf('enrollment date bar');
+    final indexBlood = headers.indexOf('blood group');
+
+    int success = 0;
+    int skipped = 0;
+    int errors = 0;
+
+    final existingMembers = await _db.membersDao.getAllMembers();
+    final existingRegNos = existingMembers.map((e) => e.registrationNumber.toLowerCase()).toSet();
+
+    for (int i = 1; i < rows.length; i++) {
+        try {
+            final row = rows[i];
+            // Safety check for row length
+            if (row.length < headers.length) continue; 
+
+            final regNo = row[reqIndexReg].toString().trim();
+            if (regNo.isEmpty) {
+                errors++;
+                continue;
+            }
+
+            if (existingRegNos.contains(regNo.toLowerCase())) {
+                skipped++; // Duplicate
+                continue;
+            }
+
+            // Parsing helper
+            String? getStr(int idx) => idx != -1 && idx < row.length ? row[idx].toString().trim() : null;
+            
+            final dobStr = getStr(indexDob);
+            final enrollAbaStr = getStr(indexEnrollAba);
+            final enrollBarStr = getStr(indexEnrollBar);
+
+            DateTime? parseDate(String? s) {
+                if (s == null || s.isEmpty) return null;
+                try { return DateTime.tryParse(s); } catch (e) { return null; }
+            }
+
+            await _db.membersDao.insertMember(
+                MembersCompanion(
+                    registrationNumber: Value(regNo),
+                    firstName: Value(row[reqIndexName].toString().trim()),
+                    surname: Value(row[reqIndexSurname].toString().trim()),
+                    middleName: Value(getStr(indexMiddle)),
+                    age: Value(int.tryParse(getStr(indexAge) ?? '0') ?? 0),
+                    mobileNumber: Value(getStr(indexMobile) ?? ''),
+                    address: Value(getStr(indexAddress) ?? ''),
+                    email: Value(getStr(indexEmail)),
+                    dateOfBirth: Value(parseDate(dobStr)),
+                    enrollmentDateAba: Value(parseDate(enrollAbaStr)),
+                    enrollmentDateBar: Value(parseDate(enrollBarStr)),
+                    bloodGroup: Value(getStr(indexBlood)),
+                    createdAt: Value(DateTime.now()),
+                ),
+            );
+            success++;
+        } catch (e) {
+            errors++;
+            debugPrint('Error importing row $i: $e');
+        }
+    }
+
+    return 'Import Complete: $success added, $skipped skipped (duplicate), $errors failed.';
+  }
 }

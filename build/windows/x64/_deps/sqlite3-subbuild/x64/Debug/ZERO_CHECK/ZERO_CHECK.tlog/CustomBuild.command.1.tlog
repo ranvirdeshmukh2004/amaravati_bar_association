@@ -1,6 +1,6 @@
-^C:\LBDAM\AMARAVATI_BAR_ASSOCIATION\BUILD\WINDOWS\X64\_DEPS\SQLITE3-SUBBUILD\CMAKEFILES\F7FFA6BFAAEF62346D7ED5A938E7ECF3\GENERATE.STAMP.RULE
+^C:\USERS\HP7\DOCUMENTS\GITHUB\AMARAVATI_BAR_ASSOCIATION\BUILD\WINDOWS\X64\_DEPS\SQLITE3-SUBBUILD\CMAKEFILES\4C1AD69E4F6C3772899EA46BCD3A5D00\GENERATE.STAMP.RULE
 setlocal
-"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild -BC:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/lbdam/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate.sln
+"C:\Program Files\Microsoft Visual Studio\2022\Professional\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin\cmake.exe" -SC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild -BC:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/_deps/sqlite3-subbuild/sqlite3-populate.sln
 if %errorlevel% neq 0 goto :cmEnd
 :cmEnd
 endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone

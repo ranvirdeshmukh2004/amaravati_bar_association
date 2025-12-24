@@ -39,3 +39,14 @@ class Members extends Table {
   TextColumn get email => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
+
+class YearlySummaries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get enrollmentNumber => text()();
+  TextColumn get financialYear => text()(); // e.g., "2024-2025"
+  RealColumn get totalExpected => real()();
+  RealColumn get totalPaid => real()();
+  RealColumn get balance => real()();
+  TextColumn get status => text()(); // "Paid" or "Due"
+  DateTimeColumn get closedAt => dateTime().withDefault(currentDateAndTime)();
+}
