@@ -31,7 +31,7 @@ class ReceiptService {
                       style: pw.TextStyle(font: fontBold, fontSize: 24),
                     ),
                     pw.Text(
-                      'Amaravati, Andhra Pradesh',
+                      'Amravati District',
                       style: pw.TextStyle(font: font, fontSize: 12),
                     ),
                     pw.SizedBox(height: 10),
@@ -129,7 +129,7 @@ class ReceiptService {
               pw.SizedBox(height: 10),
               pw.Center(
                 child: pw.Text(
-                  'This is to certify that the above-mentioned individual has paid the subscription fee to the Amaravati Bar Association.',
+                  'This is to certify that the above-mentioned individual has paid the subscription fee to the ${AppConstants.organizationName}.',
                   textAlign: pw.TextAlign.center,
                   style: pw.TextStyle(
                     font: font,
@@ -158,7 +158,7 @@ class ReceiptService {
                         style: pw.TextStyle(font: fontBold),
                       ),
                       pw.Text(
-                        'Amaravati Bar Association',
+                        AppConstants.organizationName,
                         style: pw.TextStyle(font: font, fontSize: 10),
                       ),
                     ],

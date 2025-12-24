@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/utils.dart';
+import '../../core/app_gradients.dart';
 import 'dashboard_service.dart';
 import 'widgets/kpi_card.dart';
 
@@ -15,10 +16,15 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Dashboard')),
-      body: analyticsAsync.when(
-        data: (data) => _DashboardLayout(data: data),
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, s) => Center(child: Text('Error: $e')),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppGradients.dashboardBackground(context),
+        ),
+        child: analyticsAsync.when(
+          data: (data) => _DashboardLayout(data: data),
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, s) => Center(child: Text('Error: $e')),
+        ),
       ),
     );
   }
@@ -168,8 +174,14 @@ class _DashboardLayout extends StatelessWidget {
 
   Widget _buildMonthlyTrendSection(BuildContext context) {
     return Card(
-      child: Padding(
+      elevation: 4, // Subtle elevation
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
         padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: AppGradients.analyticsCard(context),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -190,8 +202,14 @@ class _DashboardLayout extends StatelessWidget {
 
   Widget _buildPaymentModeSection(BuildContext context) {
     return Card(
-      child: Padding(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
         padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: AppGradients.analyticsCard(context),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -248,8 +266,14 @@ class _DashboardLayout extends StatelessWidget {
 
   Widget _buildHealthPanel(BuildContext context) {
     return Card(
-      child: Padding(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
         padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: AppGradients.analyticsCard(context),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -279,9 +303,16 @@ class _DashboardLayout extends StatelessWidget {
 
   Widget _buildAlertsPanel(BuildContext context) {
     return Card(
-      color: Colors.orange.withOpacity(0.05),
-      child: Padding(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      // Removed color: argument as we use gradient
+      child: Container(
         padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: AppGradients.analyticsCard(context), // Using analytics card gradient for consistency, alert icon handles color
+          border: Border.all(color: Colors.orange.withOpacity(0.3)), // Subtle border for alert
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -313,8 +344,14 @@ class _DashboardLayout extends StatelessWidget {
 
   Widget _buildRecentActivity(BuildContext context) {
     return Card(
-      child: Padding(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      child: Container(
         padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: AppGradients.analyticsCard(context),
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

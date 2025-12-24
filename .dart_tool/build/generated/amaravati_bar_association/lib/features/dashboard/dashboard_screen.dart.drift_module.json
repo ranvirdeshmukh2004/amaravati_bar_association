@@ -6,6 +6,7 @@
     "package:flutter_riverpod/flutter_riverpod.dart",
     "package:intl/intl.dart",
     "package:amaravati_bar_association/core/utils.dart",
+    "package:amaravati_bar_association/core/app_gradients.dart",
     "package:amaravati_bar_association/features/dashboard/dashboard_service.dart",
     "package:amaravati_bar_association/features/dashboard/widgets/kpi_card.dart"
   ]

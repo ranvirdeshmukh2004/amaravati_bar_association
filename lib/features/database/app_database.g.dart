@@ -1086,6 +1086,18 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _memberStatusMeta = const VerificationMeta(
+    'memberStatus',
+  );
+  @override
+  late final GeneratedColumn<String> memberStatus = GeneratedColumn<String>(
+    'member_status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('Active'),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -1113,6 +1125,7 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
     address,
     mobileNumber,
     email,
+    memberStatus,
     createdAt,
   ];
   @override
@@ -1229,6 +1242,15 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
         email.isAcceptableOrUnknown(data['email']!, _emailMeta),
       );
     }
+    if (data.containsKey('member_status')) {
+      context.handle(
+        _memberStatusMeta,
+        memberStatus.isAcceptableOrUnknown(
+          data['member_status']!,
+          _memberStatusMeta,
+        ),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -1296,6 +1318,10 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
         DriftSqlType.string,
         data['${effectivePrefix}email'],
       ),
+      memberStatus: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}member_status'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -1323,6 +1349,7 @@ class Member extends DataClass implements Insertable<Member> {
   final String address;
   final String mobileNumber;
   final String? email;
+  final String memberStatus;
   final DateTime createdAt;
   const Member({
     required this.id,
@@ -1338,6 +1365,7 @@ class Member extends DataClass implements Insertable<Member> {
     required this.address,
     required this.mobileNumber,
     this.email,
+    required this.memberStatus,
     required this.createdAt,
   });
   @override
@@ -1368,6 +1396,7 @@ class Member extends DataClass implements Insertable<Member> {
     if (!nullToAbsent || email != null) {
       map['email'] = Variable<String>(email);
     }
+    map['member_status'] = Variable<String>(memberStatus);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -1399,6 +1428,7 @@ class Member extends DataClass implements Insertable<Member> {
       email: email == null && nullToAbsent
           ? const Value.absent()
           : Value(email),
+      memberStatus: Value(memberStatus),
       createdAt: Value(createdAt),
     );
   }
@@ -1428,6 +1458,7 @@ class Member extends DataClass implements Insertable<Member> {
       address: serializer.fromJson<String>(json['address']),
       mobileNumber: serializer.fromJson<String>(json['mobileNumber']),
       email: serializer.fromJson<String?>(json['email']),
+      memberStatus: serializer.fromJson<String>(json['memberStatus']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -1448,6 +1479,7 @@ class Member extends DataClass implements Insertable<Member> {
       'address': serializer.toJson<String>(address),
       'mobileNumber': serializer.toJson<String>(mobileNumber),
       'email': serializer.toJson<String?>(email),
+      'memberStatus': serializer.toJson<String>(memberStatus),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -1466,6 +1498,7 @@ class Member extends DataClass implements Insertable<Member> {
     String? address,
     String? mobileNumber,
     Value<String?> email = const Value.absent(),
+    String? memberStatus,
     DateTime? createdAt,
   }) => Member(
     id: id ?? this.id,
@@ -1485,6 +1518,7 @@ class Member extends DataClass implements Insertable<Member> {
     address: address ?? this.address,
     mobileNumber: mobileNumber ?? this.mobileNumber,
     email: email.present ? email.value : this.email,
+    memberStatus: memberStatus ?? this.memberStatus,
     createdAt: createdAt ?? this.createdAt,
   );
   Member copyWithCompanion(MembersCompanion data) {
@@ -1516,6 +1550,9 @@ class Member extends DataClass implements Insertable<Member> {
           ? data.mobileNumber.value
           : this.mobileNumber,
       email: data.email.present ? data.email.value : this.email,
+      memberStatus: data.memberStatus.present
+          ? data.memberStatus.value
+          : this.memberStatus,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -1536,6 +1573,7 @@ class Member extends DataClass implements Insertable<Member> {
           ..write('address: $address, ')
           ..write('mobileNumber: $mobileNumber, ')
           ..write('email: $email, ')
+          ..write('memberStatus: $memberStatus, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -1556,6 +1594,7 @@ class Member extends DataClass implements Insertable<Member> {
     address,
     mobileNumber,
     email,
+    memberStatus,
     createdAt,
   );
   @override
@@ -1575,6 +1614,7 @@ class Member extends DataClass implements Insertable<Member> {
           other.address == this.address &&
           other.mobileNumber == this.mobileNumber &&
           other.email == this.email &&
+          other.memberStatus == this.memberStatus &&
           other.createdAt == this.createdAt);
 }
 
@@ -1592,6 +1632,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
   final Value<String> address;
   final Value<String> mobileNumber;
   final Value<String?> email;
+  final Value<String> memberStatus;
   final Value<DateTime> createdAt;
   const MembersCompanion({
     this.id = const Value.absent(),
@@ -1607,6 +1648,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     this.address = const Value.absent(),
     this.mobileNumber = const Value.absent(),
     this.email = const Value.absent(),
+    this.memberStatus = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   MembersCompanion.insert({
@@ -1623,6 +1665,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     required String address,
     required String mobileNumber,
     this.email = const Value.absent(),
+    this.memberStatus = const Value.absent(),
     this.createdAt = const Value.absent(),
   }) : surname = Value(surname),
        firstName = Value(firstName),
@@ -1644,6 +1687,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     Expression<String>? address,
     Expression<String>? mobileNumber,
     Expression<String>? email,
+    Expression<String>? memberStatus,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -1660,6 +1704,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
       if (address != null) 'address': address,
       if (mobileNumber != null) 'mobile_number': mobileNumber,
       if (email != null) 'email': email,
+      if (memberStatus != null) 'member_status': memberStatus,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -1678,6 +1723,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
     Value<String>? address,
     Value<String>? mobileNumber,
     Value<String?>? email,
+    Value<String>? memberStatus,
     Value<DateTime>? createdAt,
   }) {
     return MembersCompanion(
@@ -1694,6 +1740,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
       address: address ?? this.address,
       mobileNumber: mobileNumber ?? this.mobileNumber,
       email: email ?? this.email,
+      memberStatus: memberStatus ?? this.memberStatus,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -1740,6 +1787,9 @@ class MembersCompanion extends UpdateCompanion<Member> {
     if (email.present) {
       map['email'] = Variable<String>(email.value);
     }
+    if (memberStatus.present) {
+      map['member_status'] = Variable<String>(memberStatus.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -1762,6 +1812,7 @@ class MembersCompanion extends UpdateCompanion<Member> {
           ..write('address: $address, ')
           ..write('mobileNumber: $mobileNumber, ')
           ..write('email: $email, ')
+          ..write('memberStatus: $memberStatus, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -3141,6 +3192,7 @@ typedef $$MembersTableCreateCompanionBuilder =
       required String address,
       required String mobileNumber,
       Value<String?> email,
+      Value<String> memberStatus,
       Value<DateTime> createdAt,
     });
 typedef $$MembersTableUpdateCompanionBuilder =
@@ -3158,6 +3210,7 @@ typedef $$MembersTableUpdateCompanionBuilder =
       Value<String> address,
       Value<String> mobileNumber,
       Value<String?> email,
+      Value<String> memberStatus,
       Value<DateTime> createdAt,
     });
 
@@ -3232,6 +3285,11 @@ class $$MembersTableFilterComposer
 
   ColumnFilters<String> get email => $composableBuilder(
     column: $table.email,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get memberStatus => $composableBuilder(
+    column: $table.memberStatus,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -3315,6 +3373,11 @@ class $$MembersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get memberStatus => $composableBuilder(
+    column: $table.memberStatus,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -3383,6 +3446,11 @@ class $$MembersTableAnnotationComposer
   GeneratedColumn<String> get email =>
       $composableBuilder(column: $table.email, builder: (column) => column);
 
+  GeneratedColumn<String> get memberStatus => $composableBuilder(
+    column: $table.memberStatus,
+    builder: (column) => column,
+  );
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 }
@@ -3428,6 +3496,7 @@ class $$MembersTableTableManager
                 Value<String> address = const Value.absent(),
                 Value<String> mobileNumber = const Value.absent(),
                 Value<String?> email = const Value.absent(),
+                Value<String> memberStatus = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => MembersCompanion(
                 id: id,
@@ -3443,6 +3512,7 @@ class $$MembersTableTableManager
                 address: address,
                 mobileNumber: mobileNumber,
                 email: email,
+                memberStatus: memberStatus,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -3460,6 +3530,7 @@ class $$MembersTableTableManager
                 required String address,
                 required String mobileNumber,
                 Value<String?> email = const Value.absent(),
+                Value<String> memberStatus = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => MembersCompanion.insert(
                 id: id,
@@ -3475,6 +3546,7 @@ class $$MembersTableTableManager
                 address: address,
                 mobileNumber: mobileNumber,
                 email: email,
+                memberStatus: memberStatus,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0

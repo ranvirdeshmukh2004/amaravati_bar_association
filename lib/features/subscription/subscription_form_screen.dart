@@ -8,6 +8,7 @@ import '../receipt/receipt_service.dart';
 import 'package:printing/printing.dart';
 import '../database/database_provider.dart';
 import '../database/app_database.dart';
+import '../../core/app_gradients.dart';
 
 class SubscriptionFormScreen extends ConsumerStatefulWidget {
   const SubscriptionFormScreen({super.key});
@@ -152,9 +153,13 @@ class _SubscriptionFormScreenState
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Card(
-                elevation: 2,
-                child: Padding(
+                elevation: 4,
+                child: Container(
                   padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: AppGradients.formPanel(context),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
@@ -179,6 +184,7 @@ class _SubscriptionFormScreenState
                                     final db = ref.read(databaseProvider);
                                     return await db.membersDao.searchMembers(
                                       textEditingValue.text,
+                                      onlyActive: true,
                                     );
                                   },
                               displayStringForOption: (Member option) =>
@@ -318,9 +324,13 @@ class _SubscriptionFormScreenState
               ),
               const SizedBox(height: 24),
               Card(
-                elevation: 2,
-                child: Padding(
+                elevation: 4,
+                child: Container(
                   padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: AppGradients.formPanel(context),
+                  ),
                   child: Column(
                     children: [
                       Row(

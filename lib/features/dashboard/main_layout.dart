@@ -10,6 +10,7 @@ import '../members/member_form_screen.dart';
 import '../members/member_list_screen.dart';
 
 import '../subscription/subscription_dashboard_screen.dart';
+import 'widgets/app_sidebar.dart';
 
 import 'package:flutter/services.dart';
 
@@ -63,70 +64,11 @@ class MainLayout extends ConsumerWidget {
           child: Scaffold(
             body: Row(
               children: [
-                NavigationRail(
+                AppSidebar(
                   selectedIndex: curIndex,
                   onDestinationSelected: (value) {
-                    if (value == 7) {
-                      // Updated logout index
-                      _showLogoutDialog(context, ref);
-                    } else {
-                      ref.read(navigationProvider.notifier).state = value;
-                    }
+                    ref.read(navigationProvider.notifier).state = value;
                   },
-                  extended: true,
-                  minExtendedWidth: 200,
-                  leading: const Padding(
-                    padding: EdgeInsets.symmetric(vertical: 24.0),
-                    child: Icon(
-                      Icons.account_balance,
-                      size: 48,
-                      color: AppConstants.primaryColor,
-                    ),
-                  ),
-                  destinations: const [
-                    NavigationRailDestination(
-                      icon: Icon(Icons.dashboard_outlined),
-                      selectedIcon: Icon(Icons.dashboard),
-                      label: Text('Dashboard'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.monetization_on_outlined),
-                      selectedIcon: Icon(Icons.monetization_on),
-                      label: Text('Subscription status'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.favorite_border),
-                      selectedIcon: Icon(Icons.favorite),
-                      label: Text('Subscription Entry'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.receipt_long_outlined),
-                      selectedIcon: Icon(Icons.receipt_long),
-                      label: Text('Subscription Records'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.person_add_outlined),
-                      selectedIcon: Icon(Icons.person_add),
-                      label: Text('Add Member'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.people_outline),
-                      selectedIcon: Icon(Icons.people),
-                      label: Text('Member Registry'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.settings_outlined),
-                      selectedIcon: Icon(Icons.settings),
-                      label: Text('Settings'),
-                    ),
-                    NavigationRailDestination(
-                      icon: Icon(Icons.logout, color: Colors.red),
-                      label: Text(
-                        'Logout',
-                        style: TextStyle(color: Colors.red),
-                      ),
-                    ),
-                  ],
                 ),
                 const VerticalDivider(thickness: 1, width: 1),
                 Expanded(child: _buildBody(curIndex)),
@@ -160,26 +102,4 @@ class MainLayout extends ConsumerWidget {
     }
   }
 
-  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Logout'),
-        content: const Text('Are you sure you want to logout?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () {
-              Navigator.pop(context);
-              ref.read(authProvider.notifier).logout();
-            },
-            child: const Text('Logout'),
-          ),
-        ],
-      ),
-    );
-  }
 }

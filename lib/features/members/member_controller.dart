@@ -34,6 +34,7 @@ class MemberController {
     required String address,
     required String mobileNumber,
     String? email,
+    String memberStatus = 'Active',
   }) async {
     final db = _ref.read(databaseProvider);
 
@@ -60,6 +61,7 @@ class MemberController {
       address: drift.Value(address),
       mobileNumber: drift.Value(mobileNumber),
       email: drift.Value(email),
+      memberStatus: drift.Value(memberStatus),
     );
 
     await db.membersDao.insertMember(entry);
@@ -68,5 +70,19 @@ class MemberController {
   Future<void> updateMember(Member member) async {
     final db = _ref.read(databaseProvider);
     await db.membersDao.updateMember(member);
+  }
+
+  static const List<String> memberStatuses = [
+    'Active',
+    'Inactive',
+    'Expired',
+    'Suspended',
+    'Deceased'
+  ];
+
+  Future<void> updateMemberStatus(Member member, String newStatus) async {
+    final db = _ref.read(databaseProvider);
+    final updatedMember = member.copyWith(memberStatus: newStatus);
+    await db.membersDao.updateMember(updatedMember);
   }
 }

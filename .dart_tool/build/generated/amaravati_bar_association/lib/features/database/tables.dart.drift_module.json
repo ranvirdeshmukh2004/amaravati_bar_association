@@ -663,6 +663,36 @@
         },
         {
           "sqlType": {
+            "builtin": "string"
+          },
+          "nullable": false,
+          "nameInSql": "member_status",
+          "nameInDart": "memberStatus",
+          "declaration": {
+            "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
+            "offset": 1573,
+            "name": "memberStatus"
+          },
+          "typeConverter": null,
+          "clientDefaultCode": null,
+          "defaultArgument": {
+            "elements": [
+              "const ",
+              {
+                "lexeme": "Constant",
+                "import_uri": "package:drift/src/runtime/query_builder/query_builder.dart"
+              },
+              "('Active')"
+            ]
+          },
+          "overriddenJsonName": null,
+          "referenceName": null,
+          "documentationComment": null,
+          "constraints": [],
+          "customConstraints": null
+        },
+        {
+          "sqlType": {
             "builtin": "dateTime"
           },
           "nullable": false,
@@ -670,7 +700,7 @@
           "nameInDart": "createdAt",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 1577,
+            "offset": 1659,
             "name": "createdAt"
           },
           "typeConverter": null,
@@ -711,7 +741,7 @@
       },
       "declaration": {
         "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-        "offset": 1648,
+        "offset": 1730,
         "name": "YearlySummaries"
       },
       "references": [],
@@ -726,7 +756,7 @@
           "nameInDart": "id",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 1697,
+            "offset": 1779,
             "name": "id"
           },
           "typeConverter": null,
@@ -752,7 +782,7 @@
           "nameInDart": "enrollmentNumber",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 1750,
+            "offset": 1832,
             "name": "enrollmentNumber"
           },
           "typeConverter": null,
@@ -773,7 +803,7 @@
           "nameInDart": "financialYear",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 1798,
+            "offset": 1880,
             "name": "financialYear"
           },
           "typeConverter": null,
@@ -794,7 +824,7 @@
           "nameInDart": "totalExpected",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 1864,
+            "offset": 1946,
             "name": "totalExpected"
           },
           "typeConverter": null,
@@ -815,7 +845,7 @@
           "nameInDart": "totalPaid",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 1909,
+            "offset": 1991,
             "name": "totalPaid"
           },
           "typeConverter": null,
@@ -836,7 +866,7 @@
           "nameInDart": "balance",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 1950,
+            "offset": 2032,
             "name": "balance"
           },
           "typeConverter": null,
@@ -857,7 +887,7 @@
           "nameInDart": "status",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 1989,
+            "offset": 2071,
             "name": "status"
           },
           "typeConverter": null,
@@ -878,7 +908,7 @@
           "nameInDart": "closedAt",
           "declaration": {
             "source_uri": "package:amaravati_bar_association/features/database/tables.dart",
-            "offset": 2050,
+            "offset": 2132,
             "name": "closedAt"
           },
           "typeConverter": null,

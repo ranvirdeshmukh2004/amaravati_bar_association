@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../subscription_filter_provider.dart';
+import '../../../core/app_gradients.dart';
 
 class AdvancedFilterPanel extends ConsumerStatefulWidget {
   const AdvancedFilterPanel({super.key});
@@ -22,26 +23,32 @@ class _AdvancedFilterPanelState extends ConsumerState<AdvancedFilterPanel> {
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: 2,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: ExpansionPanelList(
-        elevation: 0,
-        expandedHeaderPadding: EdgeInsets.zero,
-        expansionCallback: (int index, bool isExpanded) {
-          setState(() {
-            _isExpanded = !_isExpanded; // Toggle since we only have 1 panel
-          });
-        },
-        children: [
-          ExpansionPanel(
-            headerBuilder: (BuildContext context, bool isExpanded) {
-              return const ListTile(
-                leading: Icon(Icons.filter_list_alt, color: Colors.blue),
-                title: Text(
-                  'Advanced Subscription Filters',
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Text('Status, Due Amount, Overdue Duration'),
-              );
-            },
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: AppGradients.filterDrawer(context),
+        ),
+        child: ExpansionPanelList(
+          elevation: 0,
+          expandedHeaderPadding: EdgeInsets.zero,
+          expansionCallback: (int index, bool isExpanded) {
+            setState(() {
+              _isExpanded = !_isExpanded; // Toggle since we only have 1 panel
+            });
+          },
+          children: [
+            ExpansionPanel(
+              backgroundColor: Colors.transparent,
+              headerBuilder: (BuildContext context, bool isExpanded) {
+                return const ListTile(
+                  leading: Icon(Icons.filter_list_alt, color: Colors.blue),
+                  title: Text(
+                    'Advanced Subscription Filters',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text('Status, Due Amount, Overdue Duration'),
+                );
+              },
             body: Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(
@@ -138,6 +145,7 @@ class _AdvancedFilterPanelState extends ConsumerState<AdvancedFilterPanel> {
             canTapOnHeader: true,
           ),
         ],
+        ),
       ),
     );
   }

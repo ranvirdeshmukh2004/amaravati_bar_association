@@ -10,6 +10,7 @@
     "package:amaravati_bar_association/features/receipt/receipt_service.dart",
     "package:printing/printing.dart",
     "package:amaravati_bar_association/features/database/database_provider.dart",
-    "package:amaravati_bar_association/features/database/app_database.dart"
+    "package:amaravati_bar_association/features/database/app_database.dart",
+    "package:amaravati_bar_association/core/app_gradients.dart"
   ]
 }

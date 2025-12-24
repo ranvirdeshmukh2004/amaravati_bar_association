@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:data_table_2/data_table_2.dart';
+import 'package:intl/intl.dart'; 
 import '../database/database_provider.dart'; // Correct relative path
 import 'subscription_config_screen.dart'; // Same dir
 import 'subscription_service.dart';
@@ -8,6 +9,7 @@ import 'year_history_screen.dart';
 import 'subscription_filter_provider.dart';
 import 'widgets/advanced_filter_panel.dart';
 import 'export_service.dart';
+import '../../core/app_gradients.dart';
 
 class SubscriptionDashboardScreen extends ConsumerStatefulWidget {
   const SubscriptionDashboardScreen({super.key});
@@ -205,25 +207,62 @@ class _SubscriptionDashboardScreenState
                         color: Colors.grey,
                       ),
                     ),
-                    TextButton.icon(
-                      icon: const Icon(Icons.download),
-                      label: const Text('Export Filtered CSV'),
-                      onPressed: () async {
-                        final success = await ref
-                            .read(subscriptionExportProvider)
-                            .exportToCsv(filteredStatuses);
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                success
-                                    ? 'Export Successful'
-                                    : 'Export Failed or Cancelled',
+                    Row(
+                      children: [
+                        Consumer(
+                           builder: (context, ref, _) {
+                            final filter = ref.watch(subscriptionFilterProvider);
+                            final date = filter.calculationDate ?? DateTime.now();
+                            return OutlinedButton.icon(
+                              icon: const Icon(Icons.calendar_month, size: 18),
+                              label: Text(
+                                'Calculate Till: ${DateFormat('dd MMM yyyy').format(date)}',
+                                style: const TextStyle(fontSize: 12),
                               ),
-                            ),
-                          );
-                        }
-                      },
+                              style: OutlinedButton.styleFrom(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                              ),
+                              onPressed: () async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: date,
+                                  firstDate: DateTime(2020),
+                                  lastDate: DateTime(2030),
+                                );
+                                if (picked != null) {
+                                  ref
+                                      .read(subscriptionFilterProvider.notifier)
+                                      .updateCalculationDate(picked);
+                                }
+                              },
+                            );
+                          },
+                        ),
+                        const SizedBox(width: 12),
+                        TextButton.icon(
+                          icon: const Icon(Icons.download),
+                          label: const Text('Export Filtered CSV'),
+                          onPressed: () async {
+                            final success = await ref
+                                .read(subscriptionExportProvider)
+                                .exportToCsv(filteredStatuses);
+                            if (context.mounted) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    success
+                                        ? 'Export Successful'
+                                        : 'Export Failed or Cancelled',
+                                  ),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -233,7 +272,13 @@ class _SubscriptionDashboardScreenState
               Expanded(
                 child: Card(
                   margin: const EdgeInsets.all(16),
-                  child: DataTable2(
+                  elevation: 4,
+                  child: Container( 
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: AppGradients.tableContainer(context),
+                    ),
+                    child: DataTable2(
                       scrollController: _verticalScrollController,
                       headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
                       headingTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
@@ -305,6 +350,7 @@ class _SubscriptionDashboardScreenState
                       }).toList(),
                     ),
                 ),
+                ),
               ),
             ],
           );
@@ -333,8 +379,12 @@ class _SummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 2,
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          gradient: AppGradients.kpiCard(context),
+        ),
         child: Row(
           children: [
             Container(

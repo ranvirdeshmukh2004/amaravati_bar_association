@@ -7,6 +7,7 @@ C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/sqlite3_flutter_libs_plugin.dll
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/sqlite3.dll
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/window_manager_plugin.dll
+C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/native_assets.json
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/data/flutter_assets/AssetManifest.bin
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/data/flutter_assets/FontManifest.json
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/data/flutter_assets/fonts/MaterialIcons-Regular.otf

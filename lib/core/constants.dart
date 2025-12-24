@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 
 class AppConstants {
   static const String appTitle =
-      'Amaravati Bar Association - Donation Management';
-  static const String organizationName = 'Amaravati Bar Association';
+      'Amravati District Bar Association - Subscription Pavati';
+  static const String organizationName = 'Amravati District Bar Association';
   static const String receiptPrefix = 'ABA_Donation_Receipt_';
 
   // Colors

@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:drift/drift.dart' as drift;
 import 'member_controller.dart';
 import '../database/app_database.dart';
+import '../../core/app_gradients.dart';
 
 class MemberFormScreen extends ConsumerStatefulWidget {
   final Member? member;
@@ -27,6 +28,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
   final _emailController = TextEditingController();
 
   String? _bloodGroup;
+  String _status = 'Active'; // Default
   DateTime? _dob;
   DateTime? _enrollmentAba;
   DateTime? _enrollmentBar;
@@ -44,6 +46,14 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
     'O-',
   ];
 
+  final List<String> _statusOptions = [
+    'Active',
+    'Inactive',
+    'Expired',
+    'Retired',
+    'Suspended',
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -58,6 +68,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
       _mobileController.text = m.mobileNumber;
       _emailController.text = m.email ?? '';
       _bloodGroup = m.bloodGroup;
+      _status = m.memberStatus;
       _dob = m.dateOfBirth;
       _enrollmentAba = m.enrollmentDateAba;
       _enrollmentBar = m.enrollmentDateBar;
@@ -142,6 +153,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                 email: _emailController.text.isNotEmpty
                     ? _emailController.text
                     : null,
+                memberStatus: _status,
               );
         } else {
           // Update existing member
@@ -156,6 +168,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
             age: int.parse(_ageController.text),
             dateOfBirth: drift.Value(_dob),
             bloodGroup: drift.Value(_bloodGroup),
+            memberStatus: _status,
             enrollmentDateAba: drift.Value(_enrollmentAba),
             enrollmentDateBar: drift.Value(_enrollmentBar),
             registrationNumber: _regNoController.text,
@@ -229,8 +242,13 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
             children: [
               // Personal Details
               Card(
-                child: Padding(
+                elevation: 4,
+                child: Container(
                   padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: AppGradients.formPanel(context),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -373,6 +391,32 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                           ),
                         ],
                       ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: DropdownButtonFormField<String>(
+                              value: _status,
+                              decoration: const InputDecoration(
+                                labelText: 'Member Status',
+                                border: OutlineInputBorder(),
+                                prefixIcon: Icon(Icons.info_outline),
+                              ),
+                              items:
+                                  _statusOptions
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Text(e),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged:
+                                  (v) => setState(() => _status = v!),
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -381,8 +425,13 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
 
               // Enrollment Details
               Card(
-                child: Padding(
+                elevation: 4,
+                child: Container(
                   padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: AppGradients.formPanel(context),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -458,8 +507,13 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
 
               // Contact Details
               Card(
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
+                elevation: 4,
+                child: Container(
+                   padding: const EdgeInsets.all(16),
+                   decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: AppGradients.formPanel(context),
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

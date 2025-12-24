@@ -58,7 +58,7 @@
       "views": [],
       "includes": [],
       "queries": [],
-      "schema_version": 5,
+      "schema_version": 6,
       "daos": [
         {
           "library_uri": "package:amaravati_bar_association/features/database/daos/subscriptions_dao.dart",

@@ -7,8 +7,8 @@ class SubscriptionFilterState {
   final RangeValues dueAmountRange;
   final double overdueMonthsMin;
   final String searchQuery;
-  final bool
-  showDefaultersOnly; // Kept for legacy compatibility if needed, but 'Due' status covers it
+  final bool showDefaultersOnly; 
+  final DateTime? calculationDate; // New field for custom "Expected" calculation date
 
   const SubscriptionFilterState({
     this.selectedStatuses = const [],
@@ -16,6 +16,7 @@ class SubscriptionFilterState {
     this.overdueMonthsMin = 0,
     this.searchQuery = '',
     this.showDefaultersOnly = false,
+    this.calculationDate,
   });
 
   SubscriptionFilterState copyWith({
@@ -24,6 +25,7 @@ class SubscriptionFilterState {
     double? overdueMonthsMin,
     String? searchQuery,
     bool? showDefaultersOnly,
+    DateTime? calculationDate,
   }) {
     return SubscriptionFilterState(
       selectedStatuses: selectedStatuses ?? this.selectedStatuses,
@@ -31,6 +33,7 @@ class SubscriptionFilterState {
       overdueMonthsMin: overdueMonthsMin ?? this.overdueMonthsMin,
       searchQuery: searchQuery ?? this.searchQuery,
       showDefaultersOnly: showDefaultersOnly ?? this.showDefaultersOnly,
+      calculationDate: calculationDate ?? this.calculationDate,
     );
   }
 }
@@ -61,20 +64,39 @@ class SubscriptionFilterNotifier
     state = state.copyWith(overdueMonthsMin: months);
   }
 
+  void updateCalculationDate(DateTime? date) {
+    state = state.copyWith(calculationDate: date);
+  }
+
   void reset() {
     state = const SubscriptionFilterState();
   }
 }
 
 final subscriptionFilterProvider =
-    StateNotifierProvider<SubscriptionFilterNotifier, SubscriptionFilterState>((
+    StateNotifierProvider.autoDispose<SubscriptionFilterNotifier, SubscriptionFilterState>((
       ref,
     ) {
       return SubscriptionFilterNotifier();
     });
 
+// Primary Status Provider (Filtered by Calculation Date)
+final subscriptionStatusProvider = Provider.autoDispose<AsyncValue<List<SubscriptionStatus>>>((
+  ref,
+) {
+  final filter = ref.watch(subscriptionFilterProvider);
+  final rawDataAsync = ref.watch(rawSubscriptionDataProvider);
+
+  return rawDataAsync.whenData((rawData) {
+    return ref.read(subscriptionServiceProvider).calculateStatuses(
+      rawData,
+      calculationEndDate: filter.calculationDate,
+    );
+  });
+});
+
 // Dependent provider to filter the list
-final filteredSubscriptionStatusProvider = Provider<List<SubscriptionStatus>>((
+final filteredSubscriptionStatusProvider = Provider.autoDispose<List<SubscriptionStatus>>((
   ref,
 ) {
   final allStatusesAsync = ref.watch(subscriptionStatusProvider);

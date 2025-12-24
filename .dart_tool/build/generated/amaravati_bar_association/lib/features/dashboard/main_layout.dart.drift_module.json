@@ -12,6 +12,7 @@
     "package:amaravati_bar_association/features/members/member_form_screen.dart",
     "package:amaravati_bar_association/features/members/member_list_screen.dart",
     "package:amaravati_bar_association/features/subscription/subscription_dashboard_screen.dart",
+    "package:amaravati_bar_association/features/dashboard/widgets/app_sidebar.dart",
     "package:flutter/services.dart"
   ]
 }

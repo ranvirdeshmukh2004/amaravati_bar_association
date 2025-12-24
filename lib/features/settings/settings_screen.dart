@@ -10,6 +10,7 @@ import 'data_export_service.dart';
 // User mentioned Export all donation data (CSV / Excel).
 
 import '../../core/theme_provider.dart';
+import '../../core/app_gradients.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -692,8 +693,12 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: AppGradients.settingsPanel(context),
+        ),
+        child: ListView(
+          padding: const EdgeInsets.all(16),
         children: [
           const _SectionHeader(title: 'General'),
           Consumer(
@@ -851,10 +856,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const _SectionHeader(title: 'About'),
           const ListTile(
             leading: Icon(Icons.info_outline),
-            title: Text('Amaravati Bar Association'),
-            subtitle: Text('Donation Management System v1.0.0'),
+            title: Text('Amravati District Bar Association'),
+            subtitle: Text('Subscription Pavati System v1.0.0'),
           ),
         ],
+        ),
       ),
     );
   }

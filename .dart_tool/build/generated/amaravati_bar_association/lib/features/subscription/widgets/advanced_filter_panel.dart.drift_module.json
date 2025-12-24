@@ -3,6 +3,7 @@
   "imports": [
     "package:flutter/material.dart",
     "package:flutter_riverpod/flutter_riverpod.dart",
-    "package:amaravati_bar_association/features/subscription/subscription_filter_provider.dart"
+    "package:amaravati_bar_association/features/subscription/subscription_filter_provider.dart",
+    "package:amaravati_bar_association/core/app_gradients.dart"
   ]
 }

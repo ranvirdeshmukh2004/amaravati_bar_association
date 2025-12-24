@@ -71,15 +71,21 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
     return query.watch();
   }
 
-  Future<List<Member>> searchMembers(String queryStr) {
-    return (select(members)..where(
-          (t) =>
-              t.firstName.like('%$queryStr%') |
+  Future<List<Member>> searchMembers(String queryStr, {bool onlyActive = false}) {
+     final query = select(members)..where(
+          (t) {
+             final matchesText = t.firstName.like('%$queryStr%') |
               t.surname.like('%$queryStr%') |
               t.registrationNumber.like('%$queryStr%') |
-              t.mobileNumber.like('%$queryStr%'),
-        ))
-        .get();
+              t.mobileNumber.like('%$queryStr%');
+              
+             if (onlyActive) {
+               return matchesText & t.memberStatus.equals('Active');
+             }
+             return matchesText;
+          },
+        );
+      return query.get();
   }
 
   Future<List<Member>> getAllMembers() {

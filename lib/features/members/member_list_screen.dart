@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../database/app_database.dart';
 import '../database/database_provider.dart';
+import '../../core/app_gradients.dart';
 import 'member_form_screen.dart';
+import 'member_controller.dart';
 
 final memberSearchQueryProvider = StateProvider.autoDispose<String>(
   (ref) => '',
@@ -17,7 +19,7 @@ final memberFilterTypeProvider = StateProvider.autoDispose<String?>(
   (ref) => null,
 );
 
-final memberListStreamProvider = StreamProvider.autoDispose<List<Member>>((
+final memberListStreamProvider = StreamProvider<List<Member>>((
   ref,
 ) {
   final db = ref.watch(databaseProvider);
@@ -59,8 +61,13 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
           // Filters
           Card(
             margin: const EdgeInsets.all(16),
-            child: Padding(
+            elevation: 4,
+            child: Container( // Using Container for gradient
               padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(12),
+                gradient: AppGradients.filterDrawer(context),
+              ),
               child: Column(
                 children: [
                   TextField(
@@ -222,8 +229,13 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                 }
                 return Card(
                     margin: const EdgeInsets.all(16),
-                    child: Padding( // Add padding for Card content
+                    elevation: 4,
+                    child: Container(
                       padding: const EdgeInsets.all(0),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(12),
+                        gradient: AppGradients.tableContainer(context),
+                      ),
                       child: DataTable2(
                           scrollController: _verticalController,
                           headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
@@ -237,7 +249,7 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                             DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
                             DataColumn2(label: Text('MOBILE'), size: ColumnSize.L),
                             DataColumn2(label: Text('ENROLLED'), size: ColumnSize.L),
-                            DataColumn2(label: Text('ACTIONS'), fixedWidth: 100),
+                            DataColumn2(label: Text('ACTIONS'), fixedWidth: 150),
                           ],
                           rows: members.map((m) {
                             return DataRow(
@@ -293,6 +305,47 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                                           );
                                         },
                                       ),
+
+                                      PopupMenuButton<String>(
+                                        icon: Icon(
+                                          Icons.verified_user,
+                                          color: _getStatusColor(m.memberStatus),
+                                        ),
+                                        tooltip: 'Change Status',
+                                        onSelected: (String newStatus) {
+                                          if (newStatus != m.memberStatus) {
+                                            ref
+                                                .read(memberControllerProvider)
+                                                .updateMemberStatus(
+                                                  m,
+                                                  newStatus,
+                                                );
+                                          }
+                                        },
+                                        itemBuilder: (BuildContext context) {
+                                          return MemberController.memberStatuses
+                                              .map((String status) {
+                                            return PopupMenuItem<String>(
+                                              value: status,
+                                              child: Row(
+                                                children: [
+                                                  Icon(
+                                                    Icons.circle,
+                                                    size: 12,
+                                                    color: _getStatusColor(status),
+                                                  ),
+                                                  const SizedBox(width: 8),
+                                                  Text(status),
+                                                  if (m.memberStatus == status) ...[
+                                                    const Spacer(),
+                                                    const Icon(Icons.check, size: 16),
+                                                  ],
+                                                ],
+                                              ),
+                                            );
+                                          }).toList();
+                                        },
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -310,6 +363,23 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
         ],
       ),
     );
+  }
+
+  Color _getStatusColor(String status) {
+    switch (status) {
+      case 'Active':
+        return Colors.green;
+      case 'Inactive':
+        return Colors.grey;
+      case 'Suspended':
+        return Colors.red;
+      case 'Expired':
+        return Colors.orange;
+      case 'Deceased':
+        return Colors.black;
+      default:
+        return Colors.blue;
+    }
   }
 }
 

@@ -37,6 +37,7 @@ class Members extends Table {
   TextColumn get address => text()();
   TextColumn get mobileNumber => text()();
   TextColumn get email => text().nullable()();
+  TextColumn get memberStatus => text().withDefault(const Constant('Active'))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
 }
 
