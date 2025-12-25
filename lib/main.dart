@@ -5,6 +5,7 @@ import 'core/constants.dart';
 import 'core/theme.dart';
 import 'core/theme_provider.dart';
 import 'features/auth/auth_controller.dart';
+import 'features/developer/developer_dashboard.dart';
 import 'features/auth/login_screen.dart';
 import 'features/dashboard/main_layout.dart';
 
@@ -35,7 +36,7 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLoggedIn = ref.watch(authProvider);
+    final authState = ref.watch(authProvider);
     final themeMode = ref.watch(themeProvider);
 
     return MaterialApp(
@@ -44,7 +45,11 @@ class MyApp extends ConsumerWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeMode,
-      home: isLoggedIn ? const MainLayout() : const LoginScreen(),
+      home: authState.isAuthenticated 
+          ? (authState.role == AuthRole.developer 
+              ? const DeveloperDashboard() 
+              : const MainLayout())
+          : const LoginScreen(),
     );
   }
 }

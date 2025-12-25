@@ -25,4 +25,18 @@ class YearlySummariesDao extends DatabaseAccessor<AppDatabase>
     return delete(yearlySummaries).go();
   }
 
+  // Aggregations for Developer Dashboard
+  Stream<double> watchTotalPendingAmount() {
+    final sumBalance = yearlySummaries.balance.sum();
+    return (selectOnly(yearlySummaries)..addColumns([sumBalance]))
+        .map((row) => row.read(sumBalance) ?? 0.0)
+        .watchSingle();
+  }
+
+  Stream<double> watchTotalCollectedAmount() {
+    final sumPaid = yearlySummaries.totalPaid.sum();
+    return (selectOnly(yearlySummaries)..addColumns([sumPaid]))
+        .map((row) => row.read(sumPaid) ?? 0.0)
+        .watchSingle();
+  }
 }

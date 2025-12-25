@@ -5,12 +5,22 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 const String _kPasswordKey = 'admin_password';
 const String _kDefaultPassword = 'admin'; // Default password
 
-final authProvider = StateNotifierProvider<AuthController, bool>((ref) {
+
+enum AuthRole { none, admin, developer }
+
+class AuthState {
+  final bool isAuthenticated;
+  final AuthRole role;
+
+  const AuthState({this.isAuthenticated = false, this.role = AuthRole.none});
+}
+
+final authProvider = StateNotifierProvider<AuthController, AuthState>((ref) {
   return AuthController();
 });
 
-class AuthController extends StateNotifier<bool> {
-  AuthController() : super(false) {
+class AuthController extends StateNotifier<AuthState> {
+  AuthController() : super(const AuthState()) {
     _init();
   }
 
@@ -27,14 +37,23 @@ class AuthController extends StateNotifier<bool> {
   Future<bool> login(String password) async {
     final storedPassword = await _storage.read(key: _kPasswordKey);
     if (password == storedPassword) {
-      state = true;
+      state = const AuthState(isAuthenticated: true, role: AuthRole.admin);
       return true;
     }
     return false;
   }
+  
+  Future<bool> loginAsDeveloper(String pin) async {
+     // Hardcoded for now as per plan
+     if (pin == 'dev123') {
+       state = const AuthState(isAuthenticated: true, role: AuthRole.developer);
+       return true;
+     }
+     return false;
+  }
 
   void logout() {
-    state = false;
+    state = const AuthState(isAuthenticated: false, role: AuthRole.none);
   }
 
   Future<bool> changePassword(
@@ -58,6 +77,11 @@ class AuthController extends StateNotifier<bool> {
 
   static const String _kSecurityQuestionKey = 'security_question';
   static const String _kSecurityAnswerKey = 'security_answer';
+
+  // DEV ONLY: Get current admin password
+  Future<String?> getAdminPassword() async {
+    return await _storage.read(key: _kPasswordKey);
+  }
 
   Future<String?> getSecurityQuestion() async {
     return await _storage.read(key: _kSecurityQuestionKey);

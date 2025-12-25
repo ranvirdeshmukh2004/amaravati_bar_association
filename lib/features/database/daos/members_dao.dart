@@ -91,4 +91,21 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
   Future<List<Member>> getAllMembers() {
     return select(members).get();
   }
+
+  // Aggregations for Developer Dashboard
+  Stream<int> watchTotalMemberCount() {
+    var count = members.id.count();
+    return (selectOnly(members)..addColumns([count]))
+        .map((row) => row.read(count) ?? 0)
+        .watchSingle();
+  }
+
+  Stream<int> watchActiveMemberCount() {
+    var count = members.id.count();
+    return (selectOnly(members)
+          ..where(members.memberStatus.equals('Active'))
+          ..addColumns([count]))
+        .map((row) => row.read(count) ?? 0)
+        .watchSingle();
+  }
 }

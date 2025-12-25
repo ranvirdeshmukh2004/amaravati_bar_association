@@ -143,6 +143,60 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     );
   }
 
+  void _showDeveloperLoginDialog() {
+    final pinController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Developer Access'),
+        content: TextField(
+          controller: pinController,
+          decoration: const InputDecoration(
+            labelText: 'Enter PIN',
+            border: OutlineInputBorder(),
+          ),
+          obscureText: true,
+          autofocus: true,
+          onSubmitted: (_) async {
+              final success = await ref
+                  .read(authProvider.notifier)
+                  .loginAsDeveloper(pinController.text);
+              if (mounted) {
+                Navigator.pop(context);
+                if (!success) {
+                   ScaffoldMessenger.of(context).showSnackBar(
+                     const SnackBar(content: Text('Access Denied'), backgroundColor: Colors.red),
+                   );
+                }
+              }
+          },
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+           FilledButton(
+            onPressed: () async {
+              final success = await ref
+                  .read(authProvider.notifier)
+                  .loginAsDeveloper(pinController.text);
+              if (mounted) {
+                Navigator.pop(context);
+                if (!success) {
+                   ScaffoldMessenger.of(context).showSnackBar(
+                     const SnackBar(content: Text('Access Denied'), backgroundColor: Colors.red),
+                   );
+                }
+              }
+            },
+            child: const Text('Enter'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -162,10 +216,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
-                      Icons.account_balance,
-                      size: 64,
-                      color: AppConstants.primaryColor,
+                    GestureDetector(
+                      onLongPress: () => _showDeveloperLoginDialog(),
+                      child: const Icon(
+                        Icons.account_balance,
+                        size: 64,
+                        color: AppConstants.primaryColor,
+                      ),
                     ),
                     const SizedBox(height: 16),
                     Text(
