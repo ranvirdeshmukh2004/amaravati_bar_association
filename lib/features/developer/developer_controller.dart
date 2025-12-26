@@ -118,7 +118,7 @@ final rawTableDataProvider = FutureProvider.family.autoDispose<List<Map<String, 
   
   // Sanitize input roughly, though this is internal dev tool
   // Drift customSelect takes a string. Only allow specific table names for safety.
-  if (!['members', 'subscriptions', 'admin_settings', 'yearly_summaries'].contains(tableName)) {
+  if (!['members', 'subscriptions', 'admin_settings', 'yearly_summaries', 'donations', 'past_outstanding_dues'].contains(tableName)) {
     throw Exception('Invalid table name');
   }
   

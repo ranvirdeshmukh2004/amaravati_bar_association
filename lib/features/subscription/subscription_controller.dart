@@ -26,10 +26,14 @@ class SubscriptionController {
   }) async {
     final db = _ref.read(databaseProvider);
 
-    // Auto-generate receipt number: ABA-{Year}-{Month}-{Random/Sequence}
+    // Generate Standardized Receipt Number: SUB-YYYYMMDD-SEQ
     final now = DateTime.now();
-    final receiptNumber =
-        '${AppConstants.receiptPrefix}${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}-${now.millisecondsSinceEpoch.toString().substring(8)}';
+    const type = 'SUB';
+    final seq = await db.subscriptionsDao.getNextSequence(type, now);
+    
+    final dateStr = '${now.year}${now.month.toString().padLeft(2, '0')}${now.day.toString().padLeft(2, '0')}';
+    final seqStr = seq.toString().padLeft(3, '0');
+    final receiptNumber = '$type-$dateStr-$seqStr';
 
     final entry = SubscriptionsCompanion(
       firstName: drift.Value(firstName),
@@ -43,6 +47,8 @@ class SubscriptionController {
       transactionInfo: drift.Value(transactionInfo),
       subscriptionDate: drift.Value(now),
       receiptNumber: drift.Value(receiptNumber),
+      receiptType: drift.Value(type),
+      dailySequence: drift.Value(seq),
     );
 
     final id = await db.subscriptionsDao.insertSubscription(entry);
@@ -60,6 +66,8 @@ class SubscriptionController {
       transactionInfo: transactionInfo,
       subscriptionDate: now,
       receiptNumber: receiptNumber,
+      receiptType: type,
+      dailySequence: seq,
     );
   }
 }

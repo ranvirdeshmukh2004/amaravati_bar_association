@@ -44,6 +44,16 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
+  include("C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/camera_windows/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
+  include("C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/file_selector_windows/cmake_install.cmake")
+endif()
+
+if(NOT CMAKE_INSTALL_LOCAL_ONLY)
+  # Include the install script for the subdirectory.
   include("C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/flutter_secure_storage_windows/cmake_install.cmake")
 endif()
 
@@ -172,7 +182,7 @@ endif()
 if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
   if(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Dd][Ee][Bb][Uu][Gg])$")
     list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/flutter_secure_storage_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/printing_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/pdfium.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/screen_retriever_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/sqlite3_flutter_libs_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/sqlite3.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/window_manager_plugin.dll")
+     "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/camera_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/file_selector_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/flutter_secure_storage_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/printing_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/pdfium.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/screen_retriever_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/sqlite3_flutter_libs_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/sqlite3.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug/window_manager_plugin.dll")
     if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
       message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
@@ -180,6 +190,8 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
       message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
     file(INSTALL DESTINATION "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Debug" TYPE FILE FILES
+      "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/camera_windows/Debug/camera_windows_plugin.dll"
+      "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/file_selector_windows/Debug/file_selector_windows_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/flutter_secure_storage_windows/Debug/flutter_secure_storage_windows_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/printing/Debug/printing_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-src/bin/pdfium.dll"
@@ -190,7 +202,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
       )
   elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Pp][Rr][Oo][Ff][Ii][Ll][Ee])$")
     list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/flutter_secure_storage_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/printing_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/pdfium.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/screen_retriever_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/sqlite3_flutter_libs_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/sqlite3.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/window_manager_plugin.dll")
+     "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/camera_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/file_selector_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/flutter_secure_storage_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/printing_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/pdfium.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/screen_retriever_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/sqlite3_flutter_libs_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/sqlite3.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile/window_manager_plugin.dll")
     if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
       message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
@@ -198,6 +210,8 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
       message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
     file(INSTALL DESTINATION "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Profile" TYPE FILE FILES
+      "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/camera_windows/Profile/camera_windows_plugin.dll"
+      "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/file_selector_windows/Profile/file_selector_windows_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/flutter_secure_storage_windows/Profile/flutter_secure_storage_windows_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/printing/Profile/printing_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-src/bin/pdfium.dll"
@@ -208,7 +222,7 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
       )
   elseif(CMAKE_INSTALL_CONFIG_NAME MATCHES "^([Rr][Ee][Ll][Ee][Aa][Ss][Ee])$")
     list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-     "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/flutter_secure_storage_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/printing_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/pdfium.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/screen_retriever_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/sqlite3_flutter_libs_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/sqlite3.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/window_manager_plugin.dll")
+     "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/camera_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/file_selector_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/flutter_secure_storage_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/printing_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/pdfium.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/screen_retriever_windows_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/sqlite3_flutter_libs_plugin.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/sqlite3.dll;C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release/window_manager_plugin.dll")
     if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
       message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
@@ -216,6 +230,8 @@ if(CMAKE_INSTALL_COMPONENT STREQUAL "Runtime" OR NOT CMAKE_INSTALL_COMPONENT)
       message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
     endif()
     file(INSTALL DESTINATION "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/Release" TYPE FILE FILES
+      "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/camera_windows/Release/camera_windows_plugin.dll"
+      "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/file_selector_windows/Release/file_selector_windows_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/flutter_secure_storage_windows/Release/flutter_secure_storage_windows_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/printing/Release/printing_plugin.dll"
       "C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/pdfium-src/bin/pdfium.dll"

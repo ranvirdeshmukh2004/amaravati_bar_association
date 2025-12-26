@@ -273,6 +273,8 @@ class _DeveloperDashboardState extends ConsumerState<DeveloperDashboard> {
                    DropdownMenuItem(value: 'subscriptions', child: Text('Subscriptions (Receipts)')),
                    DropdownMenuItem(value: 'yearly_summaries', child: Text('Yearly Summaries')),
                    DropdownMenuItem(value: 'admin_settings', child: Text('Admin Settings')),
+                   DropdownMenuItem(value: 'donations', child: Text('Donations')),
+                   DropdownMenuItem(value: 'past_outstanding_dues', child: Text('Past Outstanding Dues')),
                  ],
                  onChanged: (v) {
                    if (v != null) setState(() => _selectedTable = v);

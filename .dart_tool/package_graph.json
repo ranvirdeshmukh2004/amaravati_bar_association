@@ -5,8 +5,10 @@
   "packages": [
     {
       "name": "amaravati_bar_association",
-      "version": "1.0.0+1",
+      "version": "1.1.0+11",
       "dependencies": [
+        "camera",
+        "camera_windows",
         "csv",
         "cupertino_icons",
         "data_table_2",
@@ -17,6 +19,8 @@
         "flutter_riverpod",
         "flutter_secure_storage",
         "google_fonts",
+        "image",
+        "image_picker",
         "intl",
         "path",
         "path_provider",
@@ -137,6 +141,51 @@
         "stream_channel",
         "test_api",
         "vector_math"
+      ]
+    },
+    {
+      "name": "image_picker",
+      "version": "1.2.1",
+      "dependencies": [
+        "flutter",
+        "image_picker_android",
+        "image_picker_for_web",
+        "image_picker_ios",
+        "image_picker_linux",
+        "image_picker_macos",
+        "image_picker_platform_interface",
+        "image_picker_windows"
+      ]
+    },
+    {
+      "name": "image",
+      "version": "4.5.4",
+      "dependencies": [
+        "archive",
+        "meta",
+        "xml"
+      ]
+    },
+    {
+      "name": "camera_windows",
+      "version": "0.2.6+4",
+      "dependencies": [
+        "camera_platform_interface",
+        "cross_file",
+        "flutter",
+        "stream_transform"
+      ]
+    },
+    {
+      "name": "camera",
+      "version": "0.10.6",
+      "dependencies": [
+        "camera_android",
+        "camera_avfoundation",
+        "camera_platform_interface",
+        "camera_web",
+        "flutter",
+        "flutter_plugin_android_lifecycle"
       ]
     },
     {
@@ -335,15 +384,6 @@
       "version": "4.9.0",
       "dependencies": [
         "meta"
-      ]
-    },
-    {
-      "name": "image",
-      "version": "4.5.4",
-      "dependencies": [
-        "archive",
-        "meta",
-        "xml"
       ]
     },
     {
@@ -747,6 +787,147 @@
       ]
     },
     {
+      "name": "image_picker_windows",
+      "version": "0.2.2",
+      "dependencies": [
+        "file_selector_platform_interface",
+        "file_selector_windows",
+        "flutter",
+        "image_picker_platform_interface"
+      ]
+    },
+    {
+      "name": "image_picker_platform_interface",
+      "version": "2.11.1",
+      "dependencies": [
+        "cross_file",
+        "flutter",
+        "http",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "image_picker_macos",
+      "version": "0.2.2+1",
+      "dependencies": [
+        "file_selector_macos",
+        "file_selector_platform_interface",
+        "flutter",
+        "image_picker_platform_interface"
+      ]
+    },
+    {
+      "name": "image_picker_linux",
+      "version": "0.2.2",
+      "dependencies": [
+        "file_selector_linux",
+        "file_selector_platform_interface",
+        "flutter",
+        "image_picker_platform_interface"
+      ]
+    },
+    {
+      "name": "image_picker_ios",
+      "version": "0.8.13+3",
+      "dependencies": [
+        "flutter",
+        "image_picker_platform_interface"
+      ]
+    },
+    {
+      "name": "image_picker_for_web",
+      "version": "3.1.1",
+      "dependencies": [
+        "flutter",
+        "flutter_web_plugins",
+        "image_picker_platform_interface",
+        "mime",
+        "web"
+      ]
+    },
+    {
+      "name": "image_picker_android",
+      "version": "0.8.13+10",
+      "dependencies": [
+        "flutter",
+        "flutter_plugin_android_lifecycle",
+        "image_picker_platform_interface"
+      ]
+    },
+    {
+      "name": "xml",
+      "version": "6.6.1",
+      "dependencies": [
+        "collection",
+        "meta",
+        "petitparser"
+      ]
+    },
+    {
+      "name": "archive",
+      "version": "4.0.7",
+      "dependencies": [
+        "crypto",
+        "path",
+        "posix"
+      ]
+    },
+    {
+      "name": "cross_file",
+      "version": "0.3.5+1",
+      "dependencies": [
+        "meta",
+        "web"
+      ]
+    },
+    {
+      "name": "camera_platform_interface",
+      "version": "2.12.0",
+      "dependencies": [
+        "cross_file",
+        "flutter",
+        "plugin_platform_interface",
+        "stream_transform"
+      ]
+    },
+    {
+      "name": "flutter_plugin_android_lifecycle",
+      "version": "2.0.33",
+      "dependencies": [
+        "flutter"
+      ]
+    },
+    {
+      "name": "camera_web",
+      "version": "0.3.5+2",
+      "dependencies": [
+        "camera_platform_interface",
+        "flutter",
+        "flutter_web_plugins",
+        "stream_transform",
+        "web"
+      ]
+    },
+    {
+      "name": "camera_avfoundation",
+      "version": "0.9.22+8",
+      "dependencies": [
+        "camera_platform_interface",
+        "flutter",
+        "stream_transform"
+      ]
+    },
+    {
+      "name": "camera_android",
+      "version": "0.10.10+14",
+      "dependencies": [
+        "camera_platform_interface",
+        "flutter",
+        "flutter_plugin_android_lifecycle",
+        "stream_transform"
+      ]
+    },
+    {
       "name": "dbus",
       "version": "0.7.11",
       "dependencies": [
@@ -760,14 +941,6 @@
       "name": "web",
       "version": "1.1.1",
       "dependencies": []
-    },
-    {
-      "name": "cross_file",
-      "version": "0.3.5+1",
-      "dependencies": [
-        "meta",
-        "web"
-      ]
     },
     {
       "name": "win32",
@@ -786,13 +959,6 @@
       "version": "2.1.8",
       "dependencies": [
         "meta"
-      ]
-    },
-    {
-      "name": "flutter_plugin_android_lifecycle",
-      "version": "2.0.33",
-      "dependencies": [
-        "flutter"
       ]
     },
     {
@@ -886,15 +1052,6 @@
       ]
     },
     {
-      "name": "xml",
-      "version": "6.6.1",
-      "dependencies": [
-        "collection",
-        "meta",
-        "petitparser"
-      ]
-    },
-    {
       "name": "path_parsing",
       "version": "1.1.0",
       "dependencies": [
@@ -913,15 +1070,6 @@
       "dependencies": [
         "meta",
         "qr"
-      ]
-    },
-    {
-      "name": "archive",
-      "version": "4.0.7",
-      "dependencies": [
-        "crypto",
-        "path",
-        "posix"
       ]
     },
     {
@@ -1093,6 +1241,60 @@
       ]
     },
     {
+      "name": "file_selector_windows",
+      "version": "0.9.3+5",
+      "dependencies": [
+        "cross_file",
+        "file_selector_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "file_selector_platform_interface",
+      "version": "2.7.0",
+      "dependencies": [
+        "cross_file",
+        "flutter",
+        "http",
+        "plugin_platform_interface"
+      ]
+    },
+    {
+      "name": "file_selector_macos",
+      "version": "0.9.5",
+      "dependencies": [
+        "cross_file",
+        "file_selector_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "file_selector_linux",
+      "version": "0.9.4",
+      "dependencies": [
+        "cross_file",
+        "file_selector_platform_interface",
+        "flutter"
+      ]
+    },
+    {
+      "name": "petitparser",
+      "version": "7.0.1",
+      "dependencies": [
+        "collection",
+        "meta"
+      ]
+    },
+    {
+      "name": "posix",
+      "version": "6.0.3",
+      "dependencies": [
+        "ffi",
+        "meta",
+        "path"
+      ]
+    },
+    {
       "name": "screen_retriever_windows",
       "version": "0.2.0",
       "dependencies": [
@@ -1126,27 +1328,10 @@
       ]
     },
     {
-      "name": "petitparser",
-      "version": "7.0.1",
-      "dependencies": [
-        "collection",
-        "meta"
-      ]
-    },
-    {
       "name": "qr",
       "version": "3.0.2",
       "dependencies": [
         "meta"
-      ]
-    },
-    {
-      "name": "posix",
-      "version": "6.0.3",
-      "dependencies": [
-        "ffi",
-        "meta",
-        "path"
       ]
     },
     {

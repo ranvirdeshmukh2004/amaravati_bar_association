@@ -35,6 +35,7 @@ class MemberController {
     required String mobileNumber,
     String? email,
     String memberStatus = 'Active',
+    String? profilePhotoPath,
   }) async {
     final db = _ref.read(databaseProvider);
 
@@ -62,6 +63,7 @@ class MemberController {
       mobileNumber: drift.Value(mobileNumber),
       email: drift.Value(email),
       memberStatus: drift.Value(memberStatus),
+      profilePhotoPath: drift.Value(profilePhotoPath),
     );
 
     await db.membersDao.insertMember(entry);

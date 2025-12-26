@@ -5,85 +5,61 @@ import '../app_database.dart';
 part 'donations_dao.g.dart';
 
 @DriftAccessor(tables: [Donations])
-class DonationsDao extends DatabaseAccessor<AppDatabase>
-    with _$DonationsDaoMixin {
+class DonationsDao extends DatabaseAccessor<AppDatabase> with _$DonationsDaoMixin {
   DonationsDao(super.db);
 
-  // Insert a donation
-  Future<int> insertDonation(DonationsCompanion donation) =>
-      into(donations).insert(donation);
+  Future<int> insertDonation(DonationsCompanion donation) {
+    return into(donations).insert(donation);
+  }
 
-  // Get all donations
-  Future<List<Donation>> getAllDonations() => select(donations).get();
-  Stream<List<Donation>> watchAllDonations() =>
-      (select(donations)..orderBy([
-            (t) => OrderingTerm(
-              expression: t.donationDate,
-              mode: OrderingMode.desc,
-            ),
-          ]))
-          .watch();
+  Future<void> updateDonation(Donation donation) {
+    return update(donations).replace(donation);
+  }
 
-  // Get current month donations
-  Stream<List<Donation>> watchCurrentMonthDonations() {
-    final now = DateTime.now();
-    final startOfMonth = DateTime(now.year, now.month);
-    final endOfMonth = DateTime(now.year, now.month + 1);
+  Future<void> deleteDonation(Donation donation) {
+    return delete(donations).delete(donation);
+  }
 
+  Stream<List<Donation>> watchAllDonations() {
     return (select(donations)
-          ..where(
-            (t) => t.donationDate.isBetweenValues(startOfMonth, endOfMonth),
-          )
-          ..orderBy([
-            (t) => OrderingTerm(
-              expression: t.donationDate,
-              mode: OrderingMode.desc,
-            ),
-          ]))
+          ..orderBy([(t) => OrderingTerm(expression: t.donationDate, mode: OrderingMode.desc)]))
         .watch();
   }
-
-  // Get total amount donated
-  Stream<double> watchTotalDonationAmount() {
-    final sumAmount = donations.amount.sum();
-    final query = selectOnly(donations)..addColumns([sumAmount]);
-    return query.map((row) => row.read(sumAmount) ?? 0.0).watchSingle();
+  
+  Future<List<Donation>> getAllDonations() {
+     return (select(donations)
+          ..orderBy([(t) => OrderingTerm(expression: t.donationDate, mode: OrderingMode.desc)]))
+        .get();
   }
 
-  // Get total number of donations
-  Stream<int> watchTotalDonationCount() {
-    final count = donations.id.count();
-    final query = selectOnly(donations)..addColumns([count]);
-    return query.map((row) => row.read(count) ?? 0).watchSingle();
+  // Dashboard Aggregations
+  Stream<double> watchTotalDonations() {
+    var sumAmount = donations.amount.sum();
+    return (selectOnly(donations)..addColumns([sumAmount]))
+        .map((row) => row.read(sumAmount) ?? 0.0)
+        .watchSingle();
   }
+  
+    Stream<double> watchMonthlyDonations(DateTime startOfMonth) {
+      // Simple filter for current month
+      var sumAmount = donations.amount.sum();
+      return (selectOnly(donations)
+            ..where(donations.donationDate.isBiggerOrEqualValue(startOfMonth))
+            ..addColumns([sumAmount]))
+          .map((row) => row.read(sumAmount) ?? 0.0)
+          .watchSingle();
+    }
 
-  // Get count for current month
-  Stream<int> watchCurrentMonthDonationCount() {
-    final now = DateTime.now();
-    final startOfMonth = DateTime(now.year, now.month);
-    final endOfMonth = DateTime(now.year, now.month + 1);
+  Future<int> getNextSequence(DateTime date) async {
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
 
-    final count = donations.id.count();
-    final query = selectOnly(donations)
-      ..where(donations.donationDate.isBetweenValues(startOfMonth, endOfMonth))
-      ..addColumns([count]);
+    final query = select(donations)
+      ..where((tbl) => tbl.donationDate.isBetweenValues(startOfDay, endOfDay))
+      ..orderBy([(t) => OrderingTerm(expression: t.dailySequence, mode: OrderingMode.desc)])
+      ..limit(1);
 
-    return query.map((row) => row.read(count) ?? 0).watchSingle();
-  }
-
-  // Get donations for a specific year
-  Stream<List<Donation>> watchDonationsForYear(int year) {
-    final startOfYear = DateTime(year, 1, 1);
-    final endOfYear = DateTime(year + 1, 1, 1);
-
-    return (select(donations)
-          ..where((t) => t.donationDate.isBetweenValues(startOfYear, endOfYear))
-          ..orderBy([
-            (t) => OrderingTerm(
-              expression: t.donationDate,
-              mode: OrderingMode.asc,
-            ),
-          ]))
-        .watch();
+    final result = await query.getSingleOrNull();
+    return (result?.dailySequence ?? 0) + 1;
   }
 }

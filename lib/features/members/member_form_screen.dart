@@ -6,6 +6,9 @@ import 'package:drift/drift.dart' as drift;
 import 'member_controller.dart';
 import '../database/app_database.dart';
 import '../../core/app_gradients.dart';
+import 'widgets/member_photo_card.dart';
+import 'services/member_photo_service.dart';
+import 'dart:io';
 
 class MemberFormScreen extends ConsumerStatefulWidget {
   final Member? member;
@@ -34,6 +37,8 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
   DateTime? _enrollmentBar;
 
   bool _isLoading = false;
+  File? _photoFile;
+
 
   final List<String> _bloodGroups = [
     'A+',
@@ -133,6 +138,16 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
       setState(() => _isLoading = true);
 
       try {
+        String? savedPhotoPath;
+        if (_photoFile != null) {
+          // If it's a new file (not the initial path), save it
+           if (widget.member?.profilePhotoPath != _photoFile!.path) {
+             savedPhotoPath = await MemberPhotoService().savePhoto(_photoFile!, _regNoController.text);
+           } else {
+             savedPhotoPath = widget.member?.profilePhotoPath;
+           }
+        }
+
         if (widget.member == null) {
           await ref
               .read(memberControllerProvider)
@@ -154,6 +169,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                     ? _emailController.text
                     : null,
                 memberStatus: _status,
+                profilePhotoPath: savedPhotoPath,
               );
         } else {
           // Update existing member
@@ -177,6 +193,7 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
             email: drift.Value(
               _emailController.text.isNotEmpty ? _emailController.text : null,
             ),
+            profilePhotoPath: drift.Value(savedPhotoPath),
           );
           await ref.read(memberControllerProvider).updateMember(updatedMember);
         }
@@ -224,8 +241,8 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
     setState(() {
       _bloodGroup = null;
       _dob = null;
-      _enrollmentAba = null;
       _enrollmentBar = null;
+      _photoFile = null;
     });
   }
 
@@ -240,6 +257,15 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Photo Card
+              MemberPhotoCard(
+                initialPhotoPath: widget.member?.profilePhotoPath,
+                onPhotoChanged: (file) {
+                  _photoFile = file;
+                },
+              ),
+              const SizedBox(height: 24),
+
               // Personal Details
               Card(
                 elevation: 4,

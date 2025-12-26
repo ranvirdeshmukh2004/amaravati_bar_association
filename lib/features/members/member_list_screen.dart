@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:io';
 import 'package:data_table_2/data_table_2.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -227,16 +228,30 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                 if (members.isEmpty) {
                   return const Center(child: Text('No members found.'));
                 }
-                return Card(
-                    margin: const EdgeInsets.all(16),
-                    elevation: 4,
-                    child: Container(
-                      padding: const EdgeInsets.all(0),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        gradient: AppGradients.tableContainer(context),
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 8.0),
+                      child: Row(
+                        children: [
+                          Text(
+                            'Showing ${members.length} Members',
+                            style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
+                          ),
+                        ],
                       ),
-                      child: DataTable2(
+                    ),
+                    Expanded(
+                      child: Card(
+                        margin: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                        elevation: 4,
+                        child: Container(
+                          padding: const EdgeInsets.all(0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            gradient: AppGradients.tableContainer(context),
+                          ),
+                          child: DataTable2(
                           scrollController: _verticalController,
                           headingRowColor: MaterialStateProperty.all(Colors.grey[200]),
                           headingTextStyle: const TextStyle(fontWeight: FontWeight.bold, color: Colors.black),
@@ -245,15 +260,34 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                           minWidth: 1000,
                           fixedLeftColumns: 1,
                           columns: const [
+                            DataColumn2(label: Text('PHOTO'), fixedWidth: 60), // New Column
                             DataColumn2(label: Text('NAME'), size: ColumnSize.L), // Flexible width for equality
                             DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
                             DataColumn2(label: Text('MOBILE'), size: ColumnSize.L),
                             DataColumn2(label: Text('ENROLLED'), size: ColumnSize.L),
-                            DataColumn2(label: Text('ACTIONS'), fixedWidth: 150),
+                            DataColumn2(label: Text('ACTIONS'), fixedWidth: 180),
                           ],
                           rows: members.map((m) {
                             return DataRow(
                               cells: [
+                                DataCell(
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(4),
+                                    child: m.profilePhotoPath != null
+                                        ? Image.file(
+                                            File(m.profilePhotoPath!),
+                                            width: 36,
+                                            height: 36,
+                                            fit: BoxFit.cover,
+                                          )
+                                        : Container(
+                                            width: 36,
+                                            height: 36,
+                                            color: Colors.grey[200],
+                                            child: const Icon(Icons.person, size: 20, color: Colors.grey),
+                                          ),
+                                  ),
+                                ),
                                 DataCell(
                                   Text(
                                     [
@@ -354,7 +388,10 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                           }).toList(),
                         ),
                     ),
-                  );
+                  ),
+                ),
+              ],
+            );
               },
               loading: () => const Center(child: CircularProgressIndicator()),
               error: (err, stack) => Center(child: Text('Error: $err')),
@@ -415,7 +452,28 @@ class _MemberDetailDialog extends StatelessWidget {
     ].join(' ').trim().replaceAll(RegExp(r'\s+'), ' ');
 
     return AlertDialog(
-      title: Text(fullName),
+      title: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(8),
+            child: member.profilePhotoPath != null
+                ? Image.file(
+                    File(member.profilePhotoPath!),
+                    width: 48,
+                    height: 48,
+                    fit: BoxFit.cover,
+                  )
+                : Container(
+                    width: 48,
+                    height: 48,
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.person, color: Colors.grey),
+                  ),
+          ),
+          const SizedBox(width: 16),
+          Expanded(child: Text(fullName)),
+        ],
+      ),
       content: SizedBox(
         width: 500,
         child: SingleChildScrollView(

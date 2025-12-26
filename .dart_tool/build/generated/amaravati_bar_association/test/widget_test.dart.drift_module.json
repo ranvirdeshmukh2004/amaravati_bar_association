@@ -1,8 +1,0 @@
-{
-  "elements": {},
-  "imports": [
-    "package:flutter_test/flutter_test.dart",
-    "package:amaravati_bar_association/features/database/app_database.dart",
-    "package:flutter_riverpod/flutter_riverpod.dart"
-  ]
-}

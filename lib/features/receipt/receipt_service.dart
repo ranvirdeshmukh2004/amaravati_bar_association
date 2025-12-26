@@ -1,4 +1,4 @@
-import 'dart:typed_data';
+import 'package:flutter_riverpod/flutter_riverpod.dart'; // Added
 import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
@@ -7,8 +7,10 @@ import 'package:intl/intl.dart';
 import '../../core/constants.dart';
 import '../database/app_database.dart';
 
+final receiptServiceProvider = Provider((ref) => ReceiptService());
+
 class ReceiptService {
-  Future<Uint8List> generateReceipt(Subscription subscription) async {
+  Future<Uint8List> generateReceipt(Subscription subscription, {String title = 'SUBSCRIPTION RECEIPT'}) async {
     final doc = pw.Document();
 
     // Load fonts if necessary or use standard ones
@@ -36,7 +38,7 @@ class ReceiptService {
                     ),
                     pw.SizedBox(height: 10),
                     pw.Text(
-                      'SUBSCRIPTION RECEIPT',
+                      title,
                       style: pw.TextStyle(
                         font: fontBold,
                         fontSize: 18,
@@ -161,6 +163,135 @@ class ReceiptService {
                         AppConstants.organizationName,
                         style: pw.TextStyle(font: font, fontSize: 10),
                       ),
+                    ],
+                  ),
+                ],
+              ),
+              pw.SizedBox(height: 30),
+            ],
+          );
+        },
+      ),
+    );
+
+    return doc.save();
+  }
+
+  Future<Uint8List> generateDonationReceipt(Donation donation) async {
+    final doc = pw.Document();
+    final font = await PdfGoogleFonts.notoSansRegular();
+    final fontBold = await PdfGoogleFonts.notoSansBold();
+
+    doc.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.a4,
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAxisAlignment.start,
+            children: [
+              // Header
+              pw.Center(
+                child: pw.Column(
+                  children: [
+                    pw.Text(
+                      AppConstants.organizationName.toUpperCase(),
+                      style: pw.TextStyle(font: fontBold, fontSize: 24),
+                    ),
+                    pw.Text(
+                      'Amravati District',
+                      style: pw.TextStyle(font: font, fontSize: 12),
+                    ),
+                    pw.SizedBox(height: 10),
+                    pw.Text(
+                      'DONATION RECEIPT',
+                      style: pw.TextStyle(
+                        font: fontBold,
+                        fontSize: 18,
+                        decoration: pw.TextDecoration.underline,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              pw.SizedBox(height: 40),
+
+              // Receipt Details
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('Receipt No: ${donation.receiptNumber}', style: pw.TextStyle(font: font)),
+                  pw.Text('Date: ${DateFormat('dd MMM yyyy').format(donation.donationDate)}', style: pw.TextStyle(font: font)),
+                ],
+              ),
+              pw.SizedBox(height: 20),
+
+              // Content
+              pw.Text('Received with thanks from:', style: pw.TextStyle(font: font, fontSize: 14)),
+              pw.SizedBox(height: 5),
+              pw.Text(
+                donation.donorName,
+                style: pw.TextStyle(font: fontBold, fontSize: 16),
+              ),
+              pw.Text(
+                'Type: ${donation.donorType}',
+                style: pw.TextStyle(font: font, fontSize: 12, color: PdfColors.grey700),
+              ),
+              
+              pw.SizedBox(height: 20),
+              pw.Text(
+                'The sum of Rupees ${NumberFormat.currency(locale: "en_IN", symbol: "").format(donation.amount)}',
+                style: pw.TextStyle(font: font, fontSize: 14),
+              ),
+              pw.Text(
+                '(${_convertNumberToWords(donation.amount.toInt())} Only)',
+                style: pw.TextStyle(font: font, fontSize: 12, fontStyle: pw.FontStyle.italic),
+              ),
+
+              pw.SizedBox(height: 20),
+              pw.Row(
+                children: [
+                  pw.Text('Payment Mode: ', style: pw.TextStyle(font: fontBold)),
+                  pw.Text(donation.paymentMode, style: pw.TextStyle(font: font)),
+                ],
+              ),
+              if (donation.transactionRef != null && donation.transactionRef!.isNotEmpty)
+                pw.Row(
+                  children: [
+                    pw.Text('Ref ID: ', style: pw.TextStyle(font: fontBold)),
+                    pw.Text(donation.transactionRef!, style: pw.TextStyle(font: font)),
+                  ],
+                ),
+              if (donation.purpose != null && donation.purpose!.isNotEmpty)
+                 pw.Row(
+                  children: [
+                    pw.Text('Purpose: ', style: pw.TextStyle(font: fontBold)),
+                    pw.Text(donation.purpose!, style: pw.TextStyle(font: font)),
+                  ],
+                ),
+
+              pw.SizedBox(height: 40),
+              pw.Divider(),
+              pw.SizedBox(height: 10),
+              pw.Center(
+                child: pw.Text(
+                  'This is to certify that the above-mentioned donation has been received by ${AppConstants.organizationName}.',
+                  textAlign: pw.TextAlign.center,
+                  style: pw.TextStyle(font: font, fontSize: 10, color: PdfColors.grey700),
+                ),
+              ),
+
+              pw.Spacer(),
+
+              // Signatures
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.end,
+                children: [
+                  pw.Column(
+                    children: [
+                      pw.Container(width: 150, height: 1, color: PdfColors.black),
+                      pw.SizedBox(height: 5),
+                      pw.Text('Authorized Signature', style: pw.TextStyle(font: fontBold)),
+                      pw.Text(AppConstants.organizationName, style: pw.TextStyle(font: font, fontSize: 10)),
                     ],
                   ),
                 ],

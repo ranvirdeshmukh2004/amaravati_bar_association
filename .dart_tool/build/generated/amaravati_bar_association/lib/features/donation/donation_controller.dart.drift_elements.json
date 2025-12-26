@@ -1,1 +1,0 @@
-{"valid_import":true,"imports":[{"uri":"package:flutter_riverpod/flutter_riverpod.dart","transitive":false},{"uri":"package:drift/drift.dart","transitive":false},{"uri":"package:amaravati_bar_association/core/constants.dart","transitive":false},{"uri":"package:amaravati_bar_association/features/database/database_provider.dart","transitive":false}],"elements":[]}

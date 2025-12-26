@@ -8,8 +8,11 @@ import '../records/records_screen.dart';
 import '../settings/settings_screen.dart';
 import '../members/member_form_screen.dart';
 import '../members/member_list_screen.dart';
+import '../subscription/arrears_clearance_screen.dart';
+import '../donation/donation_entry_screen.dart'; // Added this import
 
 import '../subscription/subscription_dashboard_screen.dart';
+import '../subscription/past_outstanding_screen.dart';
 import 'widgets/app_sidebar.dart';
 
 import 'package:flutter/services.dart';
@@ -97,6 +100,12 @@ class MainLayout extends ConsumerWidget {
         return const MemberListScreen();
       case 6:
         return const SettingsScreen();
+      case 7:
+        return const PastOutstandingScreen();
+      case 8:
+         return const ArrearsClearanceScreen();
+      case 9:
+        return const DonationEntryScreen();
       default:
         return const DashboardScreen();
     }

@@ -16,8 +16,16 @@ final filteredSubscriptionsProvider = StreamProvider<List<Subscription>>((ref) {
   final query = ref.watch(searchQueryProvider).toLowerCase();
 
   return db.subscriptionsDao.watchAllSubscriptions().map((list) {
-    if (query.isEmpty) return list;
-    return list.where((d) {
+    // 1. Filter out Arrears (AR-) and Donations (DON-) and Carry Forwards (CF-) if needed
+    // The user specifically asked to hide Arrears and Donations.
+    final cleanList = list.where((sub) {
+       final r = sub.receiptNumber.toUpperCase();
+       return !r.startsWith('AR-') && !r.startsWith('DON-'); 
+    }).toList();
+
+    if (query.isEmpty) return cleanList;
+    
+    return cleanList.where((d) {
       return d.firstName.toLowerCase().contains(query) ||
           d.lastName.toLowerCase().contains(query) ||
           d.receiptNumber.toLowerCase().contains(query) ||
@@ -67,10 +75,16 @@ class RecordsScreen extends ConsumerWidget {
                 elevation: 2,
                 margin: const EdgeInsets.only(bottom: 12),
                 child: ListTile(
-                  leading: CircleAvatar(
-                    backgroundColor: AppConstants.primaryColor.withOpacity(0.1),
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      color: AppConstants.primaryColor.withOpacity(0.1),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                     child: Text(
-                      subscription.firstName[0],
+                      subscription.firstName.isNotEmpty ? subscription.firstName[0] : '?',
                       style: const TextStyle(
                         color: AppConstants.primaryColor,
                         fontWeight: FontWeight.bold,
@@ -113,10 +127,9 @@ class RecordsScreen extends ConsumerWidget {
                           );
                           final pdfBytes = await ReceiptService()
                               .generateReceipt(subscription);
-                          await Printing.sharePdf(
-                            bytes: pdfBytes,
-                            filename:
-                                'ABA_Subscription_Receipt_${subscription.receiptNumber}.pdf',
+                          await Printing.layoutPdf(
+                            onLayout: (format) async => pdfBytes,
+                            name: 'Receipt_${subscription.receiptNumber}',
                           );
                         },
                       ),

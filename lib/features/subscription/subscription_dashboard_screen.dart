@@ -291,6 +291,7 @@ class _SubscriptionDashboardScreenState
                         DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
                         DataColumn2(label: Text('MONTHS'), size: ColumnSize.L),
                         DataColumn2(label: Text('EXPECTED'), size: ColumnSize.L),
+                        DataColumn2(label: Text('ARREARS'), size: ColumnSize.L), // New Column
                         DataColumn2(label: Text('PAID'), size: ColumnSize.L),
                         DataColumn2(label: Text('DUE'), size: ColumnSize.L),
                         DataColumn2(label: Text('STATUS'), size: ColumnSize.L),
@@ -309,6 +310,12 @@ class _SubscriptionDashboardScreenState
                             DataCell(
                               Text(
                                 '₹${s.totalExpected.toStringAsFixed(0)}',
+                              ),
+                            ),
+                            DataCell(
+                              Text(
+                                '₹${s.pastOutstanding.toStringAsFixed(0)}',
+                                style: const TextStyle(color: Colors.orange), // Highlight arrears
                               ),
                             ),
                             DataCell(

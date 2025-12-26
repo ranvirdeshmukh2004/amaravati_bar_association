@@ -1,4 +1,0 @@
-// ignore_for_file: type=lint
-mixin _$YearlySummariesDaoMixin on DatabaseAccessor<AppDatabase> {
-  $YearlySummariesTable get yearlySummaries => attachedDatabase.yearlySummaries;
-}

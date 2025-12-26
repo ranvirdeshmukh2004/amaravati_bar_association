@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift;
 import '../auth/auth_controller.dart';
@@ -139,6 +140,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     bool deleteMembers = false;
     bool deleteSubscriptions = false;
     bool deleteHistory = false;
+    bool deleteDonations = false;
+    bool deletePastClearance = false;
 
     showDialog(
       context: context,
@@ -175,6 +178,18 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       onChanged: (v) =>
                           setState(() => deleteHistory = v == true),
                     ),
+                    CheckboxListTile(
+                      title: const Text('Delete All Donations'),
+                      value: deleteDonations,
+                      onChanged: (v) =>
+                          setState(() => deleteDonations = v == true),
+                    ),
+                    CheckboxListTile(
+                      title: const Text('Delete Past Clearance Data'),
+                      value: deletePastClearance,
+                      onChanged: (v) =>
+                          setState(() => deletePastClearance = v == true),
+                    ),
                     const SizedBox(height: 16),
                     TextFormField(
                       controller: passwordController,
@@ -196,7 +211,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 FilledButton(
                   style: FilledButton.styleFrom(backgroundColor: Colors.red),
                   onPressed: () async {
-                    if (!deleteMembers && !deleteSubscriptions && !deleteHistory) {
+                    if (!deleteMembers &&
+                        !deleteSubscriptions &&
+                        !deleteHistory &&
+                        !deleteDonations &&
+                        !deletePastClearance) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('Select at least one option'),
@@ -213,19 +232,21 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       if (!context.mounted) return;
 
                       if (isValid) {
+                        final db = ref.read(databaseProvider);
                         if (deleteMembers) {
-                          await ref.read(databaseProvider).deleteMembers();
+                          await db.deleteMembers();
                         }
                         if (deleteSubscriptions) {
-                          await ref
-                              .read(databaseProvider)
-                              .deleteSubscriptions();
+                          await db.deleteSubscriptions();
                         }
-                         if (deleteHistory) {
-                          await ref
-                              .read(databaseProvider)
-                              .yearlySummariesDao
-                              .deleteAllSummaries();
+                        if (deleteHistory) {
+                          await db.yearlySummariesDao.deleteAllSummaries();
+                        }
+                        if (deleteDonations) {
+                          await db.deleteDonations();
+                        }
+                        if (deletePastClearance) {
+                          await db.deletePastOutstanding();
                         }
 
                         if (context.mounted) {
@@ -823,35 +844,37 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             subtitle: const Text('Warning: This cannot be undone'),
             onTap: _showResetConfirmationDialog,
           ),
-          ListTile(
-            leading: const Icon(Icons.science, color: Colors.purple),
-            title: const Text(
-              'Seed Test Data (Debug)',
-              style: TextStyle(color: Colors.purple),
+          if (kDebugMode) ...[
+            ListTile(
+              leading: const Icon(Icons.science, color: Colors.purple),
+              title: const Text(
+                'Seed Test Data (Debug)',
+                style: TextStyle(color: Colors.purple),
+              ),
+              subtitle: const Text('Insert 20 random members'),
+              onTap: _seedMembers,
             ),
-            subtitle: const Text('Insert 20 random members'),
-            onTap: _seedMembers,
-          ),
-          ListTile(
-            leading: const Icon(Icons.science, color: Colors.deepPurple),
-            title: const Text(
-              'Seed Subscriptions (Debug)',
-              style: TextStyle(color: Colors.deepPurple),
+            ListTile(
+              leading: const Icon(Icons.science, color: Colors.deepPurple),
+              title: const Text(
+                'Seed Subscriptions (Debug)',
+                style: TextStyle(color: Colors.deepPurple),
+              ),
+              subtitle: const Text(
+                'Add 1 subscription per member (Unique Date/Amount)',
+              ),
+              onTap: _seedSubscriptions,
             ),
-            subtitle: const Text(
-              'Add 1 subscription per member (Unique Date/Amount)',
+            ListTile(
+              leading: const Icon(Icons.history_edu, color: Colors.blueGrey),
+              title: const Text(
+                'Seed History (Debug)',
+                style: TextStyle(color: Colors.blueGrey),
+              ),
+              subtitle: const Text('Add dummy history for 2023-2024'),
+              onTap: _seedHistory,
             ),
-            onTap: _seedSubscriptions,
-          ),
-          ListTile(
-            leading: const Icon(Icons.history_edu, color: Colors.blueGrey),
-            title: const Text(
-              'Seed History (Debug)',
-              style: TextStyle(color: Colors.blueGrey),
-            ),
-            subtitle: const Text('Add dummy history for 2023-2024'),
-            onTap: _seedHistory,
-          ),
+          ],
           const Divider(),
           const _SectionHeader(title: 'About'),
           const ListTile(

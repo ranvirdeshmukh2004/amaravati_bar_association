@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'subscription_service.dart';
+import '../receipt/receipt_service.dart';
 
 class SubscriptionExportService {
   Future<bool> exportToCsv(List<SubscriptionStatus> data) async {
@@ -19,6 +20,7 @@ class SubscriptionExportService {
         'Enrollment Date',
         'Months Active',
         'Total Expected',
+        'Past Arrears',
         'Total Paid',
         'Balance Due',
         'Status',
@@ -37,6 +39,7 @@ class SubscriptionExportService {
               : '-',
           status.totalMonths,
           status.totalExpected.toStringAsFixed(2),
+          status.pastOutstanding.toStringAsFixed(2),
           status.totalPaid.toStringAsFixed(2),
           status.balance.toStringAsFixed(2),
           status.statusText,
@@ -75,3 +78,5 @@ class SubscriptionExportService {
 final subscriptionExportProvider = Provider(
   (ref) => SubscriptionExportService(),
 );
+
+

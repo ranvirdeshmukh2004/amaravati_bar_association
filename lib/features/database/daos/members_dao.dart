@@ -62,10 +62,11 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
       );
     }
 
-    // Default Sort: Name
+    // Default Sort: Surname, then Name (Matches Display)
     query.orderBy([
-      (t) => OrderingTerm(expression: t.firstName),
       (t) => OrderingTerm(expression: t.surname),
+      (t) => OrderingTerm(expression: t.firstName),
+      (t) => OrderingTerm(expression: t.middleName),
     ]);
 
     return query.watch();

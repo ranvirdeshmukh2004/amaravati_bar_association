@@ -48,6 +48,9 @@ class DataExportService {
       'Date of Birth',
       'Blood Group',
       'Created At',
+      'Member Status',
+      'Profile Photo Path',
+      'Remarks',
     ]);
 
     for (var m in members) {
@@ -66,6 +69,9 @@ class DataExportService {
         m.dateOfBirth?.toIso8601String(),
         m.bloodGroup,
         m.createdAt.toIso8601String(),
+        m.memberStatus,
+        m.profilePhotoPath,
+        m.remarks,
       ]);
     }
 
@@ -97,6 +103,9 @@ class DataExportService {
       'Mobile',
       'Email',
       'Address',
+      'Receipt Type',
+      'Daily Sequence',
+      'Notes',
     ]);
 
     for (var s in subs) {
@@ -112,6 +121,9 @@ class DataExportService {
         s.mobileNumber,
         s.email,
         s.address,
+        s.receiptType,
+        s.dailySequence,
+        s.notes,
       ]);
     }
 
@@ -123,7 +135,59 @@ class DataExportService {
     if (path != null) {
       final file = File(path);
       await file.writeAsString(csvData);
+      await file.writeAsString(csvData);
       debugPrint('Subscriptions exported to $path');
+    }
+  }
+
+  Future<void> exportDonationsCsv() async {
+    final donations = await _db.donationsDao.getAllDonations();
+
+    final List<List<dynamic>> rows = [];
+    rows.add([
+      'Receipt Number',
+      'Date',
+      'Donor Name',
+      'Donor Type',
+      'Member ID',
+      'Amount',
+      'Payment Mode',
+      'Reference',
+      'Purpose',
+      'Daily Sequence',
+      'Donor Mobile',
+      'Donor Email',
+      'Donor Address',
+      'Organization',
+    ]);
+
+    for (var d in donations) {
+      rows.add([
+        d.receiptNumber,
+        d.donationDate.toIso8601String(),
+        d.donorName,
+        d.donorType,
+        d.memberId ?? '',
+        d.amount,
+        d.paymentMode,
+        d.transactionRef ?? '',
+        d.purpose ?? '',
+        d.dailySequence,
+        d.donorMobile ?? '',
+        d.donorEmail ?? '',
+        d.donorAddress ?? '',
+        d.organization ?? '',
+      ]);
+    }
+
+    final csvData = const ListToCsvConverter().convert(rows);
+    final fileName = 'donations_export_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.csv';
+    final path = await _pickSavePath(fileName: fileName);
+
+    if (path != null) {
+      final file = File(path);
+      await file.writeAsString(csvData);
+      debugPrint('Donations exported to $path');
     }
   }
 
@@ -132,16 +196,24 @@ class DataExportService {
   Future<void> exportFullDataJson() async {
     final members = await _db.membersDao.getAllMembers();
     final subs = await _db.subscriptionsDao.getAllSubscriptions();
+    final donations = await _db.donationsDao.getAllDonations();
+    final arrears = await _db.pastOutstandingDao.getAllOutstanding();
+    final history = await _db.yearlySummariesDao.watchAllSummaries().first;
+    final settings = await _db.select(_db.adminSettings).get();
     final config = await _db.subscriptionConfigDao.getConfig();
 
     final Map<String, dynamic> data = {
       'meta': {
-        'version': 1,
+        'version': 2, // Bump version
         'timestamp': DateTime.now().toIso8601String(),
-        'app_version': 4, // Schema version
+        'app_version': 12, // Schema version
       },
       'members': members.map((m) => m.toJson()).toList(),
       'subscriptions': subs.map((s) => s.toJson()).toList(),
+      'donations': donations.map((d) => d.toJson()).toList(),
+      'arrears': arrears.map((a) => a.toJson()).toList(),
+      'history': history.map((h) => h.toJson()).toList(),
+      'settings': settings.map((s) => s.toJson()).toList(),
       'config': config?.toJson(),
     };
 
@@ -182,12 +254,20 @@ class DataExportService {
 
       final List<dynamic> membersJson = data['members'];
       final List<dynamic> subsJson = data['subscriptions'];
+      final List<dynamic> donationsJson = data['donations'] ?? [];
+      final List<dynamic> arrearsJson = data['arrears'] ?? [];
+      final List<dynamic> historyJson = data['history'] ?? [];
+      final List<dynamic> settingsJson = data['settings'] ?? [];
       final Map<String, dynamic>? configJson = data['config'];
 
       await _db.transaction(() async {
         // 1. Clear existing data
         await _db.deleteMembers();
         await _db.deleteSubscriptions();
+        await _db.deleteDonations();
+        await _db.deletePastOutstanding();
+        await _db.yearlySummariesDao.deleteAllSummaries();
+        await _db.delete(_db.adminSettings).go();
         await _db.delete(_db.subscriptionConfig).go();
 
         // 2. Insert Members
@@ -219,6 +299,9 @@ class DataExportService {
               mobileNumber: Value(m['mobileNumber']),
               email: Value(m['email']),
               createdAt: Value(DateTime.parse(m['createdAt'])),
+              memberStatus: Value(m['memberStatus'] ?? 'Active'),
+              profilePhotoPath: Value(m['profilePhotoPath']),
+              remarks: Value(m['remarks']),
             ),
           );
         }
@@ -241,6 +324,9 @@ class DataExportService {
               transactionInfo: Value(s['transactionInfo']),
               subscriptionDate: Value(DateTime.parse(s['subscriptionDate'])),
               receiptNumber: Value(s['receiptNumber']),
+              receiptType: Value(s['receiptType']),
+              dailySequence: Value(s['dailySequence'] != null ? (s['dailySequence'] as num).toInt() : 0),
+              notes: Value(s['notes']),
             ),
           );
         }
@@ -251,6 +337,70 @@ class DataExportService {
             (configJson['monthlyAmount'] as num).toDouble(),
             DateTime.parse(configJson['subscriptionStartDate']),
           );
+        }
+
+        // 5. Insert Donations
+        for (var d in donationsJson) {
+           await _db.donationsDao.insertDonation(
+             DonationsCompanion(
+               donorName: Value(d['donorName']),
+               donorType: Value(d['donorType']),
+               memberId: Value(d['memberId']),
+               amount: Value((d['amount'] as num).toDouble()),
+               donationDate: Value(DateTime.parse(d['donationDate'])),
+               paymentMode: Value(d['paymentMode']),
+               transactionRef: Value(d['transactionRef']),
+               purpose: Value(d['purpose']),
+               receiptNumber: Value(d['receiptNumber']),
+               dailySequence: Value(d['dailySequence'] != null ? (d['dailySequence'] as num).toInt() : 0),
+               donorMobile: Value(d['donorMobile']),
+               donorEmail: Value(d['donorEmail']),
+               donorAddress: Value(d['donorAddress']),
+               organization: Value(d['organization']),
+             )
+           );
+        }
+
+        // 6. Insert Arrears
+        for (var a in arrearsJson) {
+           await _db.pastOutstandingDao.insertOutstanding(
+             PastOutstandingDuesCompanion(
+               enrollmentNumber: Value(a['enrollmentNumber']),
+               amount: Value((a['amount'] as num).toDouble()),
+               // Handle newly added columns
+               periodLabel: Value(a['periodLabel'] ?? 'Unknown Period'),
+               type: Value(a['type'] ?? 'Arrears'),
+               notes: Value(a['notes']),
+               isCleared: Value(a['isCleared'] ?? false),
+               clearedAt: Value(a['clearedAt'] != null ? DateTime.parse(a['clearedAt']) : null),
+               linkedPaymentId: Value(a['linkedPaymentId']),
+             )
+           );
+        }
+
+        // 7. Insert History
+        for (var h in historyJson) {
+           await _db.yearlySummariesDao.insertSummary(
+             YearlySummariesCompanion(
+               enrollmentNumber: Value(h['enrollmentNumber']),
+               financialYear: Value(h['financialYear']),
+               totalExpected: Value((h['totalExpected'] as num).toDouble()),
+               totalPaid: Value((h['totalPaid'] as num).toDouble()),
+               balance: Value((h['balance'] as num).toDouble()),
+               status: Value(h['status']),
+               closedAt: Value(h['closedAt'] != null ? DateTime.parse(h['closedAt']) : DateTime.now()),
+             )
+           );
+        }
+
+        // 8. Insert Settings
+        for (var s in settingsJson) {
+           await _db.into(_db.adminSettings).insert(
+             AdminSettingsCompanion(
+               key: Value(s['key']),
+               value: Value(s['value']),
+             )
+           );
         }
       });
       return true;
@@ -303,6 +453,8 @@ class DataExportService {
     final indexEnrollAba = headers.indexOf('enrollment date aba');
     final indexEnrollBar = headers.indexOf('enrollment date bar');
     final indexBlood = headers.indexOf('blood group');
+    final indexStatus = headers.indexOf('member status');
+    final indexRemarks = headers.indexOf('remarks');
 
     int success = 0;
     int skipped = 0;
@@ -355,6 +507,8 @@ class DataExportService {
                     enrollmentDateBar: Value(parseDate(enrollBarStr)),
                     bloodGroup: Value(getStr(indexBlood)),
                     createdAt: Value(DateTime.now()),
+                    memberStatus: Value(getStr(indexStatus) ?? 'Active'),
+                    remarks: Value(getStr(indexRemarks)),
                 ),
             );
             success++;

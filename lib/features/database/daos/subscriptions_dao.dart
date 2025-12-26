@@ -16,6 +16,11 @@ class SubscriptionsDao extends DatabaseAccessor<AppDatabase>
   // Get all subscriptions
   Future<List<Subscription>> getAllSubscriptions() =>
       select(subscriptions).get();
+
+  Future<Subscription?> getSubscriptionById(int id) {
+    return (select(subscriptions)..where((t) => t.id.equals(id))).getSingleOrNull();
+  }
+
   Stream<List<Subscription>> watchAllSubscriptions() =>
       (select(subscriptions)..orderBy([
             (t) => OrderingTerm(
@@ -93,5 +98,20 @@ class SubscriptionsDao extends DatabaseAccessor<AppDatabase>
             ),
           ]))
         .watch();
+  }
+  // Get next daily sequence for a receipt type
+  Future<int> getNextSequence(String type, DateTime date) async {
+    final startOfDay = DateTime(date.year, date.month, date.day);
+    final endOfDay = DateTime(date.year, date.month, date.day, 23, 59, 59);
+
+    final query = select(subscriptions)
+      ..where((tbl) => tbl.receiptType.equals(type))
+      ..where((tbl) => tbl.subscriptionDate.isBetweenValues(startOfDay, endOfDay))
+      ..orderBy([(t) => OrderingTerm(expression: t.dailySequence, mode: OrderingMode.desc)])
+      ..limit(1);
+
+    final result = await query.getSingleOrNull();
+    // Default to 0 if no record found, so next is 1
+    return (result?.dailySequence ?? 0) + 1;
   }
 }

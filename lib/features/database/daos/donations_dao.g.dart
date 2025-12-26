@@ -3,4 +3,6 @@
 part of 'donations_dao.dart';
 
 // ignore_for_file: type=lint
-mixin _$DonationsDaoMixin on DatabaseAccessor<AppDatabase> {}
+mixin _$DonationsDaoMixin on DatabaseAccessor<AppDatabase> {
+  $DonationsTable get donations => attachedDatabase.donations;
+}

@@ -100,6 +100,38 @@ class _AppSidebarState extends ConsumerState<AppSidebar> {
                   ],
                 ),
                 _buildGroup(
+                  title: 'Arrears',
+                  items: [
+                    _SidebarItem(
+                      icon: Icons.history_edu_outlined,
+                      activeIcon: Icons.history_edu,
+                      label: 'Past Arrears',
+                      index: 7,
+                      selectedIndex: widget.selectedIndex,
+                      isCollapsed: _isCollapsed,
+                      onTap: () => widget.onDestinationSelected(7),
+                    ),
+                    _SidebarItem(
+                      icon: Icons.cleaning_services_outlined,
+                      activeIcon: Icons.cleaning_services,
+                      label: 'Clear Arrears',
+                      index: 8,
+                      selectedIndex: widget.selectedIndex,
+                      isCollapsed: _isCollapsed,
+                      onTap: () => widget.onDestinationSelected(8),
+                    ),
+                    _SidebarItem(
+                      icon: Icons.volunteer_activism_outlined,
+                      activeIcon: Icons.volunteer_activism,
+                      label: 'Donations',
+                      index: 9,
+                      selectedIndex: widget.selectedIndex,
+                      isCollapsed: _isCollapsed,
+                      onTap: () => widget.onDestinationSelected(9),
+                    ),
+                  ],
+                ),
+                _buildGroup(
                   title: 'Directory',
                   items: [
                     _SidebarItem(
@@ -380,6 +412,9 @@ class _SidebarFooter extends StatelessWidget {
           ),
           
           const SizedBox(height: 8),
+
+          
+          // Logout Button
 
           // Logout Button
           Padding(

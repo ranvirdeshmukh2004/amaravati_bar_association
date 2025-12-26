@@ -150,6 +150,15 @@ class _DashboardLayout extends StatelessWidget {
             SizedBox(
               width: count > 3 ? (width - 72) / 4 : (width - 24) / 2,
               child: KpiCard(
+                title: 'Total Donations',
+                value: AppUtils.formatCurrency(data.totalDonations),
+                icon: Icons.volunteer_activism,
+                color: Colors.teal,
+              ),
+            ),
+            SizedBox(
+              width: count > 3 ? (width - 72) / 4 : (width - 24) / 2,
+              child: KpiCard(
                 title: 'Total Members',
                 value: data.totalMembers.toString(),
                 icon: Icons.people,
@@ -163,6 +172,26 @@ class _DashboardLayout extends StatelessWidget {
                 value: AppUtils.formatCurrency(data.totalDue),
                 icon: Icons.warning,
                 color: Colors.red,
+                isPositiveTrend: false,
+              ),
+            ),
+            SizedBox(
+              width: count > 3 ? (width - 72) / 4 : (width - 24) / 2,
+              child: KpiCard(
+                title: 'Past Arrears',
+                value: AppUtils.formatCurrency(data.totalPastOutstanding),
+                icon: Icons.history, 
+                color: Colors.orange[800]!,
+                isPositiveTrend: false,
+              ),
+            ),
+            SizedBox(
+              width: count > 3 ? (width - 72) / 4 : (width - 24) / 2,
+              child: KpiCard(
+                title: 'Defaulters',
+                value: data.membersWithArrears.toString(),
+                icon: Icons.person_off,
+                color: Colors.red[700]!,
                 isPositiveTrend: false,
               ),
             ),
@@ -361,44 +390,56 @@ class _DashboardLayout extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             ...data.recentActivity.map((item) {
-              if (item.runtimeType.toString().contains('Subscription')) {
-                // Hacky check since we lost type info in dynamic list
-                // It's a Subscription (actually Drift row class name is 'Subscription')
-                // Wait, Drift class is 'Subscription', my logic in service used generic dynamic
-                // Let's assume fields exist
+              final type = item.runtimeType.toString();
+              if (type.contains('Subscription')) {
                 return ListTile(
-                  leading: const CircleAvatar(
-                    backgroundColor: Colors.green,
-                    child: Icon(Icons.receipt, color: Colors.white, size: 16),
+                  leading: Container(
+                    width: 40, 
+                    height: 40,
+                    decoration: BoxDecoration(color: Colors.green, borderRadius: BorderRadius.circular(4)),
+                    child: const Icon(Icons.receipt, color: Colors.white, size: 20),
                   ),
-                  title: Text('Payment Received'),
+                  title: const Text('Payment Received'),
                   subtitle: Text(
-                    DateFormat(
-                      'dd MMM',
-                    ).format((item as dynamic).subscriptionDate),
+                    DateFormat('dd MMM').format((item as dynamic).subscriptionDate),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                   ),
                   trailing: Text(
                     '+${(item as dynamic).amount}',
-                    style: const TextStyle(
-                      color: Colors.green,
-                      fontWeight: FontWeight.bold,
-                    ),
+                    style: const TextStyle(color: Colors.green, fontWeight: FontWeight.bold),
+                  ),
+                );
+              } else if (type.contains('Donation')) {
+                 return ListTile(
+                  leading: Container(
+                    width: 40, 
+                    height: 40,
+                    decoration: BoxDecoration(color: Colors.teal, borderRadius: BorderRadius.circular(4)),
+                    child: const Icon(Icons.volunteer_activism, color: Colors.white, size: 20),
+                  ),
+                  title: const Text('Donation Received'),
+                  subtitle: Text(
+                    DateFormat('dd MMM').format((item as dynamic).donationDate),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
+                  ),
+                  trailing: Text(
+                    '+${(item as dynamic).amount}',
+                    style: const TextStyle(color: Colors.teal, fontWeight: FontWeight.bold),
                   ),
                 );
               } else {
                 // Member
                 return ListTile(
-                  leading: const CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: Icon(
-                      Icons.person_add,
-                      color: Colors.white,
-                      size: 16,
-                    ),
+                  leading: Container(
+                    width: 40, 
+                    height: 40,
+                    decoration: BoxDecoration(color: Colors.blue, borderRadius: BorderRadius.circular(4)),
+                    child: const Icon(Icons.person_add, color: Colors.white, size: 20),
                   ),
-                  title: Text('New Member Joined'),
+                  title: const Text('New Member Joined'),
                   subtitle: Text(
                     DateFormat('dd MMM').format((item as dynamic).createdAt),
+                    style: TextStyle(color: Theme.of(context).textTheme.bodySmall?.color),
                   ),
                   trailing: Text((item as dynamic).registrationNumber),
                 );

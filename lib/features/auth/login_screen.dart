@@ -302,10 +302,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       onPressed: _showForgotPasswordDialog,
                       child: const Text('Forgot Password?'),
                     ),
-                    const Text(
-                      'Default password: admin',
-                      style: TextStyle(color: Colors.grey, fontSize: 12),
-                    ),
+
                   ],
                 ),
               ),

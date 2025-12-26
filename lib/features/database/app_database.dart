@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -13,48 +14,115 @@ import 'tables/subscription_config.dart';
 
 import 'daos/subscription_config_dao.dart';
 import 'daos/yearly_summaries_dao.dart';
+import 'daos/past_outstanding_dao.dart';
+import 'daos/donations_dao.dart';
 
 part 'app_database.g.dart';
 
 @DriftDatabase(
-  tables: [Subscriptions, AdminSettings, Members, SubscriptionConfig, YearlySummaries],
-  daos: [SubscriptionsDao, MembersDao, SubscriptionConfigDao, YearlySummariesDao],
+  tables: [Subscriptions, AdminSettings, Members, SubscriptionConfig, YearlySummaries, PastOutstandingDues, Donations],
+  daos: [SubscriptionsDao, MembersDao, SubscriptionConfigDao, YearlySummariesDao, PastOutstandingDao, DonationsDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 6;
+  int get schemaVersion => 13;
 
   @override
-  MigrationStrategy get migration => MigrationStrategy(
-    onCreate: (Migrator m) async {
-      await m.createAll();
-    },
-    onUpgrade: (Migrator m, int from, int to) async {
-      if (from < 2) {
-        await m.createTable(members);
-      }
-      if (from < 3) {
-        // Since user wiped data, we can just create the new table.
-        // Old donations table will persist but be unused.
-        await m.createTable(subscriptions);
-      }
-      if (from < 4) {
-        await m.createTable(subscriptionConfig);
-      }
-      if (from < 5) {
-        await m.createTable(yearlySummaries);
-      }
-      if (from < 6) {
-        await m.addColumn(members, members.memberStatus);
-      }
-    },
-  );
+  MigrationStrategy get migration {
+    return MigrationStrategy(
+      onCreate: (Migrator m) async {
+        await m.createAll();
+      },
+      onUpgrade: (Migrator m, int from, int to) async {
+        
+        Future<void> safeAddColumn(TableInfo table, GeneratedColumn column) async {
+          try {
+            await m.addColumn(table, column);
+          } catch (e) {
+            // Ignore duplicate column errors (SqliteException code 1)
+            if (e.toString().contains('duplicate column name')) {
+              print('Column ${column.name} already exists, skipping.');
+            } else {
+              rethrow;
+            }
+          }
+        }
+
+        if (from < 2) {
+          await safeAddColumn(members, members.memberStatus);
+        } else if (from < 6) {
+           if (from >= 2) {
+             await safeAddColumn(members, members.memberStatus);
+           }
+        }
+        
+        if (from < 3) {
+          // Future migrations
+        }
+        if (from < 4) {
+          await m.createTable(subscriptions);
+        }
+        if (from < 5) {
+          if (from >= 4) {
+             await safeAddColumn(subscriptions, subscriptions.notes);
+          }
+        }
+        if (from < 6) {
+           await m.createTable(pastOutstandingDues);
+        }
+        if (from < 7) {
+           // ..
+        }
+        if (from < 8) {
+           if (from >= 6) {
+             await safeAddColumn(pastOutstandingDues, pastOutstandingDues.isCleared);
+             await safeAddColumn(pastOutstandingDues, pastOutstandingDues.clearedAt);
+             await safeAddColumn(pastOutstandingDues, pastOutstandingDues.linkedPaymentId);
+           }
+        }
+        if (from < 9) {
+           if (from >= 2) { 
+              await safeAddColumn(members, members.profilePhotoPath);
+           }
+        }
+        if (from < 10) {
+           if (from >= 2) {
+              await safeAddColumn(members, members.remarks);
+           }
+        }
+        if (from < 11) {
+           await m.createTable(donations);
+        }
+        if (from < 12) {
+           if (from >= 4) {
+              await safeAddColumn(subscriptions, subscriptions.receiptType);
+              await safeAddColumn(subscriptions, subscriptions.dailySequence);
+           }
+           if (from >= 11) {
+              await safeAddColumn(donations, donations.dailySequence);
+           }
+        }
+        if (from < 13) {
+           if (from >= 11) {
+              await safeAddColumn(donations, donations.donorMobile);
+              await safeAddColumn(donations, donations.donorEmail);
+              await safeAddColumn(donations, donations.donorAddress);
+              await safeAddColumn(donations, donations.organization);
+           }
+        }
+      },
+    );
+  }
 
   Future<void> deleteSubscriptions() => delete(subscriptions).go();
 
   Future<void> deleteMembers() => delete(members).go();
+
+  Future<void> deleteDonations() => delete(donations).go();
+
+  Future<void> deletePastOutstanding() => delete(pastOutstandingDues).go();
 
   Future<void> deleteAllData() async {
     await deleteSubscriptions();
@@ -62,10 +130,19 @@ class AppDatabase extends _$AppDatabase {
   }
 }
 
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    final file = File(p.join(dbFolder.path, 'aba_donation.sqlite'));
+    final File file;
+    if (kReleaseMode) {
+      // In Release mode, store the DB next to the executable (Portable)
+      final exeDir = File(Platform.resolvedExecutable).parent;
+      file = File(p.join(exeDir.path, 'aba_donation.sqlite'));
+    } else {
+      // In Debug mode, keep using Documents folder
+      final dbFolder = await getApplicationDocumentsDirectory();
+      file = File(p.join(dbFolder.path, 'aba_donation.sqlite'));
+    }
     return NativeDatabase.createInBackground(file);
   });
 }

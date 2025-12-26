@@ -8,6 +8,12 @@ C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/flutte
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/CMakeFiles/amaravati_bar_association.dir
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/CMakeFiles/INSTALL.dir
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/runner/CMakeFiles/ALL_BUILD.dir
+C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/camera_windows/CMakeFiles/camera_windows_plugin.dir
+C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/camera_windows/CMakeFiles/INSTALL.dir
+C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/camera_windows/CMakeFiles/ALL_BUILD.dir
+C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/file_selector_windows/CMakeFiles/file_selector_windows_plugin.dir
+C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/file_selector_windows/CMakeFiles/INSTALL.dir
+C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/file_selector_windows/CMakeFiles/ALL_BUILD.dir
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/flutter_secure_storage_windows/CMakeFiles/flutter_secure_storage_windows_plugin.dir
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/flutter_secure_storage_windows/CMakeFiles/INSTALL.dir
 C:/Users/HP7/Documents/GitHub/amaravati_bar_association/build/windows/x64/plugins/flutter_secure_storage_windows/CMakeFiles/ALL_BUILD.dir
