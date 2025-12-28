@@ -88,12 +88,12 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_HAS_EXCEPTIONS=0;_DEBUG;FLUTTER_VERSION="1.1.0+11";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=11;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;_HAS_EXCEPTIONS=0;_DEBUG;FLUTTER_VERSION="1.1.0+12";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=12;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR="Debug"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.1.0+11\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=11;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_DEBUG;_WINDOWS;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.1.0+12\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=12;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Debug\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\camera_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\flutter_secure_storage_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\printing\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\sqlite3_flutter_libs\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\window_manager\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -139,14 +139,14 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION="1.1.0+11";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=11;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR="Profile"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION="1.1.0+12";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=12;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR="Profile"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.1.0+11\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=11;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Profile\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.1.0+12\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=12;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Profile\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\camera_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\flutter_secure_storage_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\printing\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\sqlite3_flutter_libs\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\window_manager\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>
@@ -192,14 +192,14 @@
       <TreatWarningAsError>true</TreatWarningAsError>
       <UseFullPaths>false</UseFullPaths>
       <WarningLevel>Level4</WarningLevel>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION="1.1.0+11";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=11;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION="1.1.0+12";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=12;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR="Release"</PreprocessorDefinitions>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <DebugInformationFormat>
       </DebugInformationFormat>
       <ScanSourceForModuleDependencies>false</ScanSourceForModuleDependencies>
     </ClCompile>
     <ResourceCompile>
-      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.1.0+11\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=11;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
+      <PreprocessorDefinitions>%(PreprocessorDefinitions);WIN32;_WINDOWS;NDEBUG;_HAS_EXCEPTIONS=0;FLUTTER_VERSION=\"1.1.0+12\";FLUTTER_VERSION_MAJOR=1;FLUTTER_VERSION_MINOR=1;FLUTTER_VERSION_PATCH=0;FLUTTER_VERSION_BUILD=12;NOMINMAX;UNICODE;_UNICODE;CMAKE_INTDIR=\"Release\"</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\cpp_client_wrapper\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\camera_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\file_selector_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\flutter_secure_storage_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\printing\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\screen_retriever_windows\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\sqlite3_flutter_libs\windows\include;C:\Users\HP7\Documents\GitHub\amaravati_bar_association\windows\flutter\ephemeral\.plugin_symlinks\window_manager\windows\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Midl>

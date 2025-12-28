@@ -135,9 +135,23 @@ LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final File file;
     if (kReleaseMode) {
-      // In Release mode, store the DB next to the executable (Portable)
-      final exeDir = File(Platform.resolvedExecutable).parent;
-      file = File(p.join(exeDir.path, 'aba_donation.sqlite'));
+      // In Release mode, store the DB in a hidden folder at the DRIVE ROOT
+      // e.g., if App is at H:\MyApp\app.exe, DB is at H:\.aba_data\aba_donation.sqlite
+      final exePath = Platform.resolvedExecutable;
+      final driveRoot = p.rootPrefix(exePath); // Returns "H:\" on Windows
+      final dataDir = Directory(p.join(driveRoot, '.aba_data'));
+
+      if (!await dataDir.exists()) {
+        await dataDir.create();
+        // Hide the directory on Windows
+        if (Platform.isWindows) {
+          try {
+             await Process.run('attrib', ['+h', dataDir.path]);
+          } catch (_) {} // Ignore if fails
+        }
+      }
+
+      file = File(p.join(dataDir.path, 'aba_donation.sqlite'));
     } else {
       // In Debug mode, keep using Documents folder
       final dbFolder = await getApplicationDocumentsDirectory();
