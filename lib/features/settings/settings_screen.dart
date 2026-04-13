@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -12,6 +13,8 @@ import 'data_export_service.dart';
 
 import '../../core/theme_provider.dart';
 import '../../core/app_gradients.dart';
+import '../../features/voter_list/voter_list_service.dart';
+import '../../core/auth/app_session.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -24,64 +27,139 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void _showChangePasswordDialog() {
     final currentController = TextEditingController();
     final newController = TextEditingController();
+    final confirmController = TextEditingController();
     final formKey = GlobalKey<FormState>();
+    bool isLoading = false;
 
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Change Password'),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextFormField(
-                controller: currentController,
-                obscureText: true,
-                decoration: const InputDecoration(
-                  labelText: 'Current Password',
+      barrierDismissible: false,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setState) {
+          return AlertDialog(
+            title: const Text('Change User Password'),
+            content: Form(
+              key: formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    TextFormField(
+                      controller: currentController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Current Password',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.lock_outline),
+                      ),
+                      validator: (v) => v?.isEmpty == true ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: newController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'New Password',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.vpn_key),
+                      ),
+                      validator: (v) => v?.isEmpty == true ? 'Required' : null,
+                    ),
+                    const SizedBox(height: 16),
+                    TextFormField(
+                      controller: confirmController,
+                      obscureText: true,
+                      decoration: const InputDecoration(
+                        labelText: 'Confirm New Password',
+                        border: OutlineInputBorder(),
+                        prefixIcon: Icon(Icons.check_circle_outline),
+                      ),
+                      validator: (v) {
+                        if (v?.isEmpty == true) return 'Required';
+                        if (v != newController.text) return 'Passwords do not match';
+                        return null;
+                      },
+                    ),
+                    if (isLoading) ...[
+                      const SizedBox(height: 16),
+                      const LinearProgressIndicator(),
+                    ],
+                  ],
                 ),
-                validator: (v) => v?.isEmpty == true ? 'Required' : null,
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: newController,
-                obscureText: true,
-                decoration: const InputDecoration(labelText: 'New Password'),
-                validator: (v) => v?.isEmpty == true ? 'Required' : null,
+            ),
+            actions: [
+              TextButton(
+                onPressed: isLoading ? null : () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              ),
+              FilledButton(
+                onPressed: isLoading
+                    ? null
+                    : () async {
+                        if (formKey.currentState!.validate()) {
+                          setState(() => isLoading = true);
+                          try {
+                            await ref.read(authProvider.notifier).changePassword(
+                                  currentController.text,
+                                  newController.text,
+                                );
+                            
+                            if (context.mounted) {
+                               Navigator.pop(context); // Close Dialog
+                               // Determine safe navigation context
+                               ScaffoldMessenger.of(context).showSnackBar(
+                                 const SnackBar(
+                                   content: Text('Password Updated! Logging out...'),
+                                   backgroundColor: Colors.green,
+                                 ),
+                               );
+                               await Future.delayed(const Duration(seconds: 1));
+                               // Logout and likely trigger redirect from AuthWrapper
+                               await ref.read(authProvider.notifier).logout();
+                            }
+                          } on FirebaseAuthException catch (e) {
+                             if (context.mounted) {
+                               String msg = 'Update Failed';
+                               if (e.code == 'wrong-password') msg = 'Incorrect Current Password';
+                               if (e.code == 'weak-password') msg = 'Password is too weak';
+                               if (e.code == 'requires-recent-login') msg = 'Please re-login and try again';
+                               if (e.code == 'network-request-failed') msg = 'Network Error: Check internet connection';
+                               
+                               showDialog(
+                                 context: context,
+                                 builder: (ctx) => AlertDialog(
+                                   title: const Text('Error'),
+                                   content: Text(msg),
+                                   actions: [
+                                     TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))
+                                   ],
+                                 ),
+                               );
+                             }
+                          } catch (e) {
+                             if (context.mounted) {
+                               showDialog(
+                                 context: context,
+                                 builder: (ctx) => AlertDialog(
+                                   title: const Text('Error'),
+                                   content: Text('Unexpected Error: $e'),
+                                   actions: [
+                                     TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))
+                                   ],
+                                 ),
+                               );
+                             }
+                          } finally {
+                            if (context.mounted) setState(() => isLoading = false);
+                          }
+                        }
+                      },
+                child: const Text('Update Password'),
               ),
             ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          FilledButton(
-            onPressed: () async {
-              if (formKey.currentState!.validate()) {
-                final success = await ref
-                    .read(authProvider.notifier)
-                    .changePassword(currentController.text, newController.text);
-                if (context.mounted) {
-                  Navigator.pop(context);
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        success
-                            ? 'Password Changed Successfully'
-                            : 'Incorrect Current Password',
-                      ),
-                      backgroundColor: success ? Colors.green : Colors.red,
-                    ),
-                  );
-                }
-              }
-            },
-            child: const Text('Update'),
-          ),
-        ],
+          );
+        },
       ),
     );
   }
@@ -135,148 +213,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showResetConfirmationDialog() {
-    final passwordController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-    bool deleteMembers = false;
-    bool deleteSubscriptions = false;
-    bool deleteHistory = false;
-    bool deleteDonations = false;
-    bool deletePastClearance = false;
+    final user = FirebaseAuth.instance.currentUser;
+    if (user?.email != 'admin@adba.com') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Restricted: Only Super Admin (admin@adba.com) can clear data.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
 
     showDialog(
       context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return AlertDialog(
-              title: const Text('Reset Data'),
-              content: Form(
-                key: formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      'Select data to delete and confirm with password. This action cannot be undone.',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                    const SizedBox(height: 16),
-                    CheckboxListTile(
-                      title: const Text('Delete All Members'),
-                      value: deleteMembers,
-                      onChanged: (v) =>
-                          setState(() => deleteMembers = v == true),
-                    ),
-                    CheckboxListTile(
-                      title: const Text('Delete All Subscriptions'),
-                      value: deleteSubscriptions,
-                      onChanged: (v) =>
-                          setState(() => deleteSubscriptions = v == true),
-                    ),
-                    CheckboxListTile(
-                      title: const Text('Delete Subscription History'),
-                      value: deleteHistory,
-                      onChanged: (v) =>
-                          setState(() => deleteHistory = v == true),
-                    ),
-                    CheckboxListTile(
-                      title: const Text('Delete All Donations'),
-                      value: deleteDonations,
-                      onChanged: (v) =>
-                          setState(() => deleteDonations = v == true),
-                    ),
-                    CheckboxListTile(
-                      title: const Text('Delete Past Clearance Data'),
-                      value: deletePastClearance,
-                      onChanged: (v) =>
-                          setState(() => deletePastClearance = v == true),
-                    ),
-                    const SizedBox(height: 16),
-                    TextFormField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Admin Password',
-                        border: OutlineInputBorder(),
-                      ),
-                      validator: (v) => v?.isEmpty == true ? 'Required' : null,
-                    ),
-                  ],
-                ),
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('Cancel'),
-                ),
-                FilledButton(
-                  style: FilledButton.styleFrom(backgroundColor: Colors.red),
-                  onPressed: () async {
-                    if (!deleteMembers &&
-                        !deleteSubscriptions &&
-                        !deleteHistory &&
-                        !deleteDonations &&
-                        !deletePastClearance) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Select at least one option'),
-                        ),
-                      );
-                      return;
-                    }
-
-                    if (formKey.currentState!.validate()) {
-                      final isValid = await ref
-                          .read(authProvider.notifier)
-                          .validatePassword(passwordController.text);
-
-                      if (!context.mounted) return;
-
-                      if (isValid) {
-                        final db = ref.read(databaseProvider);
-                        if (deleteMembers) {
-                          await db.deleteMembers();
-                        }
-                        if (deleteSubscriptions) {
-                          await db.deleteSubscriptions();
-                        }
-                        if (deleteHistory) {
-                          await db.yearlySummariesDao.deleteAllSummaries();
-                        }
-                        if (deleteDonations) {
-                          await db.deleteDonations();
-                        }
-                        if (deletePastClearance) {
-                          await db.deletePastOutstanding();
-                        }
-
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Selected Data Reset Successfully'),
-                              backgroundColor: Colors.green,
-                            ),
-                          );
-                        }
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Incorrect Password'),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      }
-                    }
-                  },
-                  child: const Text('Delete Selected'),
-                ),
-              ],
-            );
-          },
-        );
-      },
+      builder: (context) => const _ResetDataDialog(),
     );
   }
+
+// ... existing code ...
+
+
 
   void _showSubscriptionConfigDialog() {
     final amountController = TextEditingController();
@@ -710,8 +666,37 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
   }
 
+
+// ... class ...
   @override
   Widget build(BuildContext context) {
+    // Check Viewer Role
+    final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
+
+    if (isViewer) {
+       return Scaffold(
+        appBar: AppBar(title: const Text('Settings')),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.lock, size: 64, color: Colors.grey[400]),
+              const SizedBox(height: 16),
+              const Text(
+                'Settings Disabled',
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Viewer account cannot modify application settings.',
+                style: TextStyle(color: Colors.grey),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
       body: Container(
@@ -739,7 +724,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const _SectionHeader(title: 'Security'),
           ListTile(
             leading: const Icon(Icons.password),
-            title: const Text('Change Admin Password'),
+            title: const Text('Change User Password'),
             trailing: const Icon(Icons.chevron_right),
             onTap: _showChangePasswordDialog,
           ),
@@ -813,37 +798,69 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               }
             },
           ),
+          const Divider(),
+          const _SectionHeader(title: 'Documents & Reports'),
           ListTile(
-            leading: const Icon(Icons.backup),
-            title: const Text('Full Backup (JSON)'),
-            subtitle: const Text('Export all data for backup'),
+            leading: const Icon(Icons.picture_as_pdf),
+            title: const Text('Generate Final Voter List'),
+            subtitle: const Text('Eligible members (Paid + Active)'),
             onTap: () async {
-              await ref.read(dataExportServiceProvider).exportFullDataJson();
               if (context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Full backup prompt opened')),
+                  const SnackBar(content: Text('Generating Voter List... Please wait.')),
                 );
+              }
+              
+              try {
+                await ref.read(voterListServiceProvider).saveVoterListToDownloads();
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Voter List saved to Downloads!'),
+                      backgroundColor: Colors.green,
+                      duration: Duration(seconds: 4),
+                    ),
+                  );
+                }
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('Error: $e'),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                }
               }
             },
           ),
-          ListTile(
-            leading: const Icon(Icons.restore, color: Colors.orange),
-            title: const Text(
-              'Restore Data (JSON)',
-              style: TextStyle(color: Colors.orange),
-            ),
-            subtitle: const Text('Overwrite app data from backup'),
-            onTap: _showRestoreConfirmationDialog,
+          const Divider(),
+          const _SectionHeader(title: 'Backup & Restore'),
+           ListTile(
+            leading: const Icon(Icons.save),
+            title: const Text('Full Backup (JSON)'),
+            subtitle: const Text('Save all data to a local file'),
+            onTap: () async {
+               await ref.read(dataExportServiceProvider).exportFullDataJson();
+               if(context.mounted) {
+                   ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Backup file save prompt opened')));
+               }
+            },
           ),
+          ListTile(
+            leading: const Icon(Icons.restore),
+            title: const Text('Restore from Backup'),
+            subtitle: const Text('Overwrite data from backup file'),
+            onTap: _showRestoreConfirmationDialog,
+            // Uses existing dialog which calls restoreFullDataJson
+          ),
+          const SizedBox(height: 24),
           ListTile(
             leading: const Icon(Icons.delete_forever, color: Colors.red),
-            title: const Text(
-              'Reset All Data',
-              style: TextStyle(color: Colors.red),
-            ),
-            subtitle: const Text('Warning: This cannot be undone'),
+            title: const Text('Reset / Clear Data', style: TextStyle(color: Colors.red)),
             onTap: _showResetConfirmationDialog,
           ),
+
           if (kDebugMode) ...[
             ListTile(
               leading: const Icon(Icons.science, color: Colors.purple),
@@ -950,5 +967,148 @@ class _SectionHeader extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// ADD NEW CLASS HERE
+class _ResetDataDialog extends ConsumerStatefulWidget {
+  const _ResetDataDialog();
+
+  @override
+  ConsumerState<_ResetDataDialog> createState() => _ResetDataDialogState();
+}
+
+class _ResetDataDialogState extends ConsumerState<_ResetDataDialog> {
+  final _passwordController = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  
+  bool _deleteMembers = false;
+  bool _deleteSubscriptions = false;
+  bool _deleteHistory = false;
+  bool _deleteDonations = false;
+  bool _deletePastClearance = false;
+
+  @override
+  void dispose() {
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Reset Data'),
+      content: Form(
+        key: _formKey,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Select data to delete and confirm with password. This action cannot be undone.',
+                style: TextStyle(color: Colors.red),
+              ),
+              const SizedBox(height: 16),
+              CheckboxListTile(
+                title: const Text('Delete All Members'),
+                value: _deleteMembers,
+                onChanged: (v) => setState(() => _deleteMembers = v == true),
+              ),
+              CheckboxListTile(
+                title: const Text('Delete All Subscriptions'),
+                value: _deleteSubscriptions,
+                onChanged: (v) => setState(() => _deleteSubscriptions = v == true),
+              ),
+              CheckboxListTile(
+                title: const Text('Delete Subscription History'),
+                value: _deleteHistory,
+                onChanged: (v) => setState(() => _deleteHistory = v == true),
+              ),
+              CheckboxListTile(
+                title: const Text('Delete All Donations'),
+                value: _deleteDonations,
+                onChanged: (v) => setState(() => _deleteDonations = v == true),
+              ),
+              CheckboxListTile(
+                title: const Text('Delete Past Clearance Data'),
+                value: _deletePastClearance,
+                onChanged: (v) => setState(() => _deletePastClearance = v == true),
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: _passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  labelText: 'Admin Password',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v?.isEmpty == true ? 'Required' : null,
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+           onPressed: () => Navigator.pop(context),
+           child: const Text('Cancel'),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(backgroundColor: Colors.red),
+          onPressed: _onDeletePressed,
+          child: const Text('Delete Selected'),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _onDeletePressed() async {
+    if (!_deleteMembers &&
+        !_deleteSubscriptions &&
+        !_deleteHistory &&
+        !_deleteDonations &&
+        !_deletePastClearance) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Select at least one option')),
+      );
+      return;
+    }
+
+    if (_formKey.currentState!.validate()) {
+      final isValid = await ref
+          .read(authProvider.notifier)
+          .validatePassword(_passwordController.text);
+
+      if (!mounted) return;
+
+      if (isValid) {
+        final db = ref.read(databaseProvider);
+        
+        final scaffoldMessenger = ScaffoldMessenger.of(context);
+        
+        if (_deleteMembers) await db.deleteMembers();
+        if (_deleteSubscriptions) await db.deleteSubscriptions();
+        if (_deleteHistory) await db.yearlySummariesDao.deleteAllSummaries();
+        if (_deleteDonations) await db.deleteDonations();
+        if (_deletePastClearance) await db.deletePastOutstanding();
+
+        // Close dialog first
+        if (mounted) Navigator.pop(context);
+        
+        scaffoldMessenger.showSnackBar(
+          const SnackBar(
+            content: Text('Selected Data Reset Successfully'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Incorrect Password'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

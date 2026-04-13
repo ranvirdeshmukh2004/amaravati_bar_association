@@ -2,6 +2,10 @@ import 'package:drift/drift.dart';
 
 class Subscriptions extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get uuid => text().nullable()(); // Global ID (Firebase)
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get lastUpdatedAt => dateTime().nullable()();
+  BoolColumn get deleted => boolean().withDefault(const Constant(false))();
   TextColumn get firstName => text()();
   TextColumn get lastName => text()();
   TextColumn get address => text()();
@@ -29,6 +33,10 @@ class AdminSettings extends Table {
 
 class Members extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get uuid => text().nullable()(); // Global ID (Firebase)
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get lastUpdatedAt => dateTime().nullable()();
+  BoolColumn get deleted => boolean().withDefault(const Constant(false))();
   TextColumn get surname => text()();
   TextColumn get firstName => text()();
   TextColumn get middleName => text().nullable()();
@@ -60,6 +68,10 @@ class YearlySummaries extends Table {
 
 class PastOutstandingDues extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get uuid => text().nullable()(); // Global ID (Firebase)
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get lastUpdatedAt => dateTime().nullable()();
+  BoolColumn get deleted => boolean().withDefault(const Constant(false))();
   TextColumn get enrollmentNumber => text()();
   RealColumn get amount => real()();
   TextColumn get periodLabel => text()(); // e.g., "2020-2023" or "Oct-2023"
@@ -75,6 +87,10 @@ class PastOutstandingDues extends Table {
 
 class Donations extends Table {
   IntColumn get id => integer().autoIncrement()();
+  TextColumn get uuid => text().nullable()(); // Global ID (Firebase)
+  BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get lastUpdatedAt => dateTime().nullable()();
+  BoolColumn get deleted => boolean().withDefault(const Constant(false))();
   TextColumn get donorName => text()();
   TextColumn get donorType => text()(); // 'Member' or 'Non-Member'
   IntColumn get memberId => integer().nullable()(); // Link to Members table if member

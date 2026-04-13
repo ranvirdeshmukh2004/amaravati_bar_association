@@ -11,6 +11,7 @@ import '../receipt/receipt_service.dart';
 import '../subscription/export_service.dart'; // for receiptServiceProvider
 import '../settings/data_export_service.dart';
 import 'package:printing/printing.dart';
+import '../../core/widgets/responsive_split_view.dart';
 
 class DonationEntryScreen extends ConsumerStatefulWidget {
   const DonationEntryScreen({super.key});
@@ -134,6 +135,9 @@ class _DonationEntryScreenState extends ConsumerState<DonationEntryScreen> {
         donorEmail: drift.Value(!_isMemberDonation ? _nmEmailController.text : null),
         donorAddress: drift.Value(!_isMemberDonation ? _nmAddressController.text : null),
         organization: drift.Value(!_isMemberDonation ? _nmOrgController.text : null),
+        isSynced: const drift.Value(false), // New entries are unsynced initially
+        lastUpdatedAt: drift.Value(now),
+        deleted: const drift.Value(false),
       );
 
       await db.donationsDao.insertDonation(entry);
@@ -155,6 +159,9 @@ class _DonationEntryScreenState extends ConsumerState<DonationEntryScreen> {
         donorEmail: !_isMemberDonation ? _nmEmailController.text : null,
         donorAddress: !_isMemberDonation ? _nmAddressController.text : null,
         organization: !_isMemberDonation ? _nmOrgController.text : null,
+        isSynced: false,
+        lastUpdatedAt: now,
+        deleted: false,
       );
 
       _resetForm();
@@ -197,10 +204,14 @@ class _DonationEntryScreenState extends ConsumerState<DonationEntryScreen> {
                 Navigator.pop(context); // Close dialog
                 final receiptService = ref.read(receiptServiceProvider);
                 final pdfBytes = await receiptService.generateDonationReceipt(donation);
-                await Printing.layoutPdf(
-                  onLayout: (format) async => pdfBytes,
-                  name: 'Receipt_${donation.receiptNumber}',
-                );
+                
+                if (context.mounted) {
+                   await receiptService.saveToDownloads(
+                     context, 
+                     pdfBytes, 
+                     'ABA_Donation_Receipt_${donation.receiptNumber}.pdf'
+                   );
+                }
               },
               icon: const Icon(Icons.download),
               label: const Text('Download Receipt'),
@@ -291,306 +302,315 @@ class _DonationEntryScreenState extends ConsumerState<DonationEntryScreen> {
           ),
         ],
       ),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // LEFT PANEL: DONATION ENTRY
-          Expanded(
-            flex: 2,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Card(
-                elevation: 4,
-                child: Padding(
-                  padding: const EdgeInsets.all(24),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('New Donation Entry', style: Theme.of(context).textTheme.headlineSmall),
-                      const SizedBox(height: 24),
+      body: ResponsiveSplitView(
+        left: Card(
+          elevation: 4,
+          margin: EdgeInsets.zero, // Padding handled by view
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('New Donation Entry', style: Theme.of(context).textTheme.headlineSmall),
+                const SizedBox(height: 24),
 
-                      // Section 1: Donor Type
-                      SegmentedButton<bool>(
-                        segments: const [
-                          ButtonSegment(value: true, label: Text('Member Donation'), icon: Icon(Icons.person)),
-                          ButtonSegment(value: false, label: Text('Non-Member Donation'), icon: Icon(Icons.person_outline)),
-                        ],
-                        selected: {_isMemberDonation},
-                        onSelectionChanged: (Set<bool> newSelection) {
-                          setState(() {
-                            _isMemberDonation = newSelection.first;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 24),
+                // Section 1: Donor Type
+                SegmentedButton<bool>(
+                  segments: const [
+                    ButtonSegment(value: true, label: Text('Member Donation'), icon: Icon(Icons.person)),
+                    ButtonSegment(value: false, label: Text('Non-Member Donation'), icon: Icon(Icons.person_outline)),
+                  ],
+                  selected: {_isMemberDonation},
+                  onSelectionChanged: (Set<bool> newSelection) {
+                    setState(() {
+                      _isMemberDonation = newSelection.first;
+                    });
+                  },
+                ),
+                const SizedBox(height: 24),
 
-                      // Section 2: Donor Details
-                      if (_isMemberDonation) ...[
-                        MemberSearchAutocomplete(
-                          onMemberSelected: (m) => setState(() => _selectedMember = m),
-                        ),
-                        if (_selectedMember != null) ...[
-                          const SizedBox(height: 16),
-                          ListTile(
-                            tileColor: Colors.grey.shade100,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                            leading: ClipRRect(
-                              borderRadius: BorderRadius.circular(4),
-                              child: _selectedMember!.profilePhotoPath != null
-                                  ? Image.file(
-                                      File(_selectedMember!.profilePhotoPath!),
-                                      width: 40,
-                                      height: 40,
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Container(
-                                      width: 40,
-                                      height: 40,
-                                      color: Colors.grey[300],
-                                      child: const Icon(Icons.person, color: Colors.grey),
-                                    ),
-                            ),
-                            title: Text('${_selectedMember!.firstName} ${_selectedMember!.surname}'),
-                            subtitle: Text('Reg No: ${_selectedMember!.registrationNumber}\nMobile: ${_selectedMember!.mobileNumber}'),
-                          ),
-                        ],
-                      ] else ...[
-                        TextFormField(
-                          controller: _nmNameController,
-                          decoration: const InputDecoration(labelText: 'Donor Name *', border: OutlineInputBorder()),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          children: [
-                            Expanded(child: TextFormField(
-                              controller: _nmMobileController,
-                              decoration: const InputDecoration(labelText: 'Mobile Number', border: OutlineInputBorder()),
-                            )),
-                            const SizedBox(width: 16),
-                            Expanded(child: TextFormField(
-                              controller: _nmEmailController,
-                              decoration: const InputDecoration(labelText: 'Email (Optional)', border: OutlineInputBorder()),
-                            )),
-                          ],
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _nmAddressController,
-                          decoration: const InputDecoration(labelText: 'Address (Optional)', border: OutlineInputBorder()),
-                        ),
-                        const SizedBox(height: 16),
-                        TextFormField(
-                          controller: _nmOrgController,
-                          decoration: const InputDecoration(labelText: 'Organization / Firm (Optional)', border: OutlineInputBorder()),
-                        ),
-                      ],
-                      const Divider(height: 48),
-
-                      // Section 3: Donation Details
-                      Text('Transaction Details', style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _amountController,
-                              decoration: const InputDecoration(labelText: 'Amount (₹) *', border: OutlineInputBorder(), prefixText: '₹ '),
-                              keyboardType: TextInputType.number,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: _paymentMode,
-                              decoration: const InputDecoration(labelText: 'Payment Mode', border: OutlineInputBorder()),
-                              items: ['Cash', 'UPI', 'Cheque', 'Bank Transfer']
-                                  .map((e) => DropdownMenuItem(value: e, child: Text(e)))
-                                  .toList(),
-                              onChanged: (v) => setState(() => _paymentMode = v!),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _txnRefController,
-                        decoration: const InputDecoration(labelText: 'Transaction Reference (Optional)', border: OutlineInputBorder()),
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _purposeController,
-                        decoration: const InputDecoration(labelText: 'Purpose / Remarks (Optional)', border: OutlineInputBorder()),
-                        maxLines: 2,
-                      ),
-                      const SizedBox(height: 24),
-
-                       // Section 4: Actions
-                       Row(
-                         children: [
-                           Expanded(
-                             child: FilledButton.icon(
-                               onPressed: _isLoading ? null : _saveDonation,
-                               icon: const Icon(Icons.save),
-                               label: Text(_isLoading ? 'Saving...' : 'Save Donation'),
-                               style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                // Section 2: Donor Details
+                if (_isMemberDonation) ...[
+                  MemberSearchAutocomplete(
+                    onMemberSelected: (m) => setState(() => _selectedMember = m),
+                  ),
+                  if (_selectedMember != null) ...[
+                    const SizedBox(height: 16),
+                          Container(
+                             padding: const EdgeInsets.all(12),
+                             decoration: BoxDecoration(
+                               color: Theme.of(context).colorScheme.primaryContainer.withOpacity(0.3),
+                               borderRadius: BorderRadius.circular(8),
+                               border: Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
                              ),
-                           ),
-                         ],
-                       ),
+                             child: Row(
+                               children: [
+                                 Container(
+                                   width: 40,
+                                   height: 40,
+                                   decoration: BoxDecoration(
+                                     color: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                     borderRadius: BorderRadius.circular(4),
+                                   ),
+                                   child: _selectedMember!.profilePhotoPath != null
+                                          ? ClipRRect(
+                                              borderRadius: BorderRadius.circular(4),
+                                              child: Image.file(
+                                                File(_selectedMember!.profilePhotoPath!),
+                                                width: 40, height: 40, fit: BoxFit.cover,
+                                              ),
+                                            )
+                                          : Icon(Icons.person, color: Theme.of(context).colorScheme.primary),
+                                 ),
+                                 const SizedBox(width: 12),
+                                 Expanded(
+                                   child: Column(
+                                     crossAxisAlignment: CrossAxisAlignment.start,
+                                     children: [
+                                       Text(
+                                         '${_selectedMember!.firstName} ${_selectedMember!.surname}',
+                                         style: const TextStyle(fontWeight: FontWeight.bold),
+                                       ),
+                                       Text(
+                                          'Reg: ${_selectedMember!.registrationNumber}\nMobile: ${_selectedMember!.mobileNumber}',
+                                          style: Theme.of(context).textTheme.bodySmall,
+                                       ),
+                                     ],
+                                   ),
+                                 ),
+                                 IconButton(
+                                   icon: const Icon(Icons.close), 
+                                   onPressed: () => setState(() => _selectedMember = null)
+                                 ),
+                               ],
+                             ),
+                          ),
+                  ],
+                ] else ...[
+                  TextFormField(
+                    controller: _nmNameController,
+                    decoration: const InputDecoration(labelText: 'Donor Name *', border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(child: TextFormField(
+                        controller: _nmMobileController,
+                        decoration: const InputDecoration(labelText: 'Mobile Number', border: OutlineInputBorder()),
+                      )),
+                      const SizedBox(width: 16),
+                      Expanded(child: TextFormField(
+                        controller: _nmEmailController,
+                        decoration: const InputDecoration(labelText: 'Email (Optional)', border: OutlineInputBorder()),
+                      )),
                     ],
                   ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _nmAddressController,
+                    decoration: const InputDecoration(labelText: 'Address (Optional)', border: OutlineInputBorder()),
+                  ),
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _nmOrgController,
+                    decoration: const InputDecoration(labelText: 'Organization / Firm (Optional)', border: OutlineInputBorder()),
+                  ),
+                ],
+                const Divider(height: 48),
+
+                // Section 3: Donation Details
+                Text('Transaction Details', style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: _amountController,
+                        decoration: const InputDecoration(labelText: 'Amount (₹) *', border: OutlineInputBorder(), prefixText: '₹ '),
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: DropdownButtonFormField<String>(
+                        isExpanded: true,
+                        value: _paymentMode,
+                        decoration: const InputDecoration(labelText: 'Payment Mode', border: OutlineInputBorder()),
+                        items: ['Cash', 'UPI', 'Cheque', 'Bank Transfer']
+                            .map((e) => DropdownMenuItem(value: e, child: Text(e)))
+                            .toList(),
+                        onChanged: (v) => setState(() => _paymentMode = v!),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _txnRefController,
+                  decoration: const InputDecoration(labelText: 'Transaction Reference (Optional)', border: OutlineInputBorder()),
+                ),
+                const SizedBox(height: 16),
+                TextFormField(
+                  controller: _purposeController,
+                  decoration: const InputDecoration(labelText: 'Purpose / Remarks (Optional)', border: OutlineInputBorder()),
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 24),
+
+                 // Section 4: Actions
+                 Row(
+                   children: [
+                     Expanded(
+                       child: FilledButton.icon(
+                         onPressed: _isLoading ? null : _saveDonation,
+                         icon: const Icon(Icons.save),
+                         label: Text(_isLoading ? 'Saving...' : 'Save Donation'),
+                         style: FilledButton.styleFrom(padding: const EdgeInsets.symmetric(vertical: 16)),
+                       ),
+                     ),
+                   ],
+                 ),
+              ],
             ),
           ),
+        ),
+        right: Container(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+                 Text('Recent Donations', style: Theme.of(context).textTheme.titleMedium),
+               const SizedBox(height: 16),
+               // Search Bar
+               TextField(
+                 controller: _searchQueryController,
+                 decoration: const InputDecoration(
+                   labelText: 'Search Donations',
+                   hintText: 'Name, Amount, Receipt No...',
+                   prefixIcon: Icon(Icons.search),
+                   border: OutlineInputBorder(),
+                   isDense: true,
+                 ),
+                 onChanged: (val) => setState(() {}),
+               ),
+               const SizedBox(height: 16),
+               Expanded(
+                 child: Consumer(
+                   builder: (context, ref, child) {
+                     final db = ref.watch(databaseProvider);
+                     return StreamBuilder<List<Donation>>(
+                       stream: db.donationsDao.watchAllDonations(),
+                       builder: (context, snapshot) {
+                         if (snapshot.hasError) return Text('Error: ${snapshot.error}');
+                         if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
+                         
+                         final allDonations = snapshot.data!;
+                         final query = _searchQueryController.text.toLowerCase();
+                         
+                         final donations = allDonations.where((d) {
+                           return d.donorName.toLowerCase().contains(query) ||
+                                  d.receiptNumber.toLowerCase().contains(query) ||
+                                  d.amount.toString().contains(query) ||
+                                  d.paymentMode.toLowerCase().contains(query);
+                         }).toList();
 
-          // RIGHT PANEL: RECENT DONATIONS
-          Expanded(
-            flex: 3,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                     Text('Recent Donations', style: Theme.of(context).textTheme.titleMedium),
-                   const SizedBox(height: 16),
-                   // Search Bar
-                   TextField(
-                     controller: _searchQueryController,
-                     decoration: const InputDecoration(
-                       labelText: 'Search Donations',
-                       hintText: 'Name, Amount, Receipt No...',
-                       prefixIcon: Icon(Icons.search),
-                       border: OutlineInputBorder(),
-                       isDense: true,
-                     ),
-                     onChanged: (val) => setState(() {}),
-                   ),
-                   const SizedBox(height: 16),
-                   Expanded(
-                     child: Consumer(
-                       builder: (context, ref, child) {
-                         final db = ref.watch(databaseProvider);
-                         return StreamBuilder<List<Donation>>(
-                           stream: db.donationsDao.watchAllDonations(),
-                           builder: (context, snapshot) {
-                             if (snapshot.hasError) return Text('Error: ${snapshot.error}');
-                             if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
-                             
-                             final allDonations = snapshot.data!;
-                             final query = _searchQueryController.text.toLowerCase();
-                             
-                             final donations = allDonations.where((d) {
-                               return d.donorName.toLowerCase().contains(query) ||
-                                      d.receiptNumber.toLowerCase().contains(query) ||
-                                      d.amount.toString().contains(query) ||
-                                      d.paymentMode.toLowerCase().contains(query);
-                             }).toList();
+                         if (donations.isEmpty && allDonations.isNotEmpty) {
+                            return const Center(child: Text('No matching donations found.'));
+                         }
+                         if (allDonations.isEmpty) {
+                            return const Center(child: Text('No donations recorded yet.'));
+                         }
 
-                             if (donations.isEmpty && allDonations.isNotEmpty) {
-                                return const Center(child: Text('No matching donations found.'));
-                             }
-                             if (allDonations.isEmpty) {
-                                return const Center(child: Text('No donations recorded yet.'));
-                             }
-
-                             return Column(
-                               crossAxisAlignment: CrossAxisAlignment.start,
-                               children: [
-                                  Padding(
-                                    padding: const EdgeInsets.only(bottom: 8.0),
-                                    child: Text('Showing ${donations.length} result(s)', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
-                                  ),
-                                  Expanded(
-                                    child: ListView.builder(
-                                      itemCount: donations.length,
-                                      itemBuilder: (context, index) {
-                                        final d = donations[index];
-                                        return Card(
-                                          child: ListTile(
-                                            leading: Container(
-                                              width: 40,
-                                              height: 40,
-                                              decoration: BoxDecoration(
-                                                color: d.donorType == 'Member' 
-                                                   ? Theme.of(context).colorScheme.primaryContainer 
-                                                   : Theme.of(context).colorScheme.secondaryContainer,
-                                                borderRadius: BorderRadius.circular(4),
-                                              ),
-                                              child: Icon(
-                                                  d.donorType == 'Member' ? Icons.person : Icons.business, 
-                                                  color: d.donorType == 'Member' 
-                                                       ? Theme.of(context).colorScheme.onPrimaryContainer 
-                                                       : Theme.of(context).colorScheme.onSecondaryContainer
-                                              ),
-                                            ),
-                                            title: Text(d.donorName, style: const TextStyle(fontWeight: FontWeight.bold)),
-                                            subtitle: Text('${DateFormat('dd MMM yyyy').format(d.donationDate)} • ${d.paymentMode}'),
-                                            trailing: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                 Column(
-                                                   mainAxisAlignment: MainAxisAlignment.center,
-                                                   crossAxisAlignment: CrossAxisAlignment.end,
-                                                   children: [
-                                                     Text('₹ ${d.amount.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.green)),
-                                                     Container(
-                                                       constraints: const BoxConstraints(maxWidth: 120),
-                                                       child: Text(
-                                                         d.receiptNumber, 
-                                                         style: const TextStyle(fontSize: 12, color: Colors.grey),
-                                                         overflow: TextOverflow.ellipsis,
-                                                       ),
-                                                     ),
-                                                   ],
-                                                 ),
-                                                 const SizedBox(width: 8),
-                                                 // View Details (Eye) Button for Non-Members
-                                                 if (d.donorType != 'Member')
-                                                   IconButton(
-                                                     icon: const Icon(Icons.visibility, color: Colors.blueGrey),
-                                                     tooltip: 'View Donor Details',
-                                                     onPressed: () => _showDonorDetailsDialog(d),
-                                                   ),
-                                                 IconButton(
-                                                   icon: const Icon(Icons.download),
-                                                   tooltip: 'Download Receipt',
-                                                   onPressed: () async {
-                                                     final receiptService = ref.read(receiptServiceProvider);
-                                                     final pdfBytes = await receiptService.generateDonationReceipt(d);
-                                                     await Printing.layoutPdf(
-                                                       onLayout: (format) async => pdfBytes,
-                                                       name: 'Receipt_${d.receiptNumber}',
-                                                     );
-                                                   },
-                                                 ),
-                                              ],
-                                            ),
-                                            onTap: () async {
-                                               final receiptService = ref.read(receiptServiceProvider);
-                                               final pdfBytes = await receiptService.generateDonationReceipt(d);
-                                               await Printing.layoutPdf(
-                                                 onLayout: (format) async => pdfBytes,
-                                                 name: 'Receipt_${d.receiptNumber}',
-                                               );
-                                            },
+                         return Column(
+                           crossAxisAlignment: CrossAxisAlignment.start,
+                           children: [
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8.0),
+                                child: Text('Showing ${donations.length} result(s)', style: TextStyle(color: Colors.grey.shade600, fontSize: 13)),
+                              ),
+                              Expanded(
+                                child: ListView.builder(
+                                  itemCount: donations.length,
+                                  itemBuilder: (context, index) {
+                                    final d = donations[index];
+                                    return Card(
+                                      child: ListTile(
+                                        leading: Container(
+                                          width: 40,
+                                          height: 40,
+                                          decoration: BoxDecoration(
+                                            color: d.donorType == 'Member' 
+                                               ? Theme.of(context).colorScheme.primaryContainer 
+                                               : Theme.of(context).colorScheme.secondaryContainer,
+                                            borderRadius: BorderRadius.circular(4),
                                           ),
-                                        );
-                                      },
-                                    ),
-                                  ),
-                               ],
-                             );
-                           },
+                                          child: Icon(
+                                              d.donorType == 'Member' ? Icons.person : Icons.business, 
+                                              color: d.donorType == 'Member' 
+                                                   ? Theme.of(context).colorScheme.onPrimaryContainer 
+                                                   : Theme.of(context).colorScheme.onSecondaryContainer
+                                          ),
+                                        ),
+                                        title: Row(
+                                          children: [
+                                            Expanded(child: Text(d.donorName, style: const TextStyle(fontWeight: FontWeight.bold))),
+                                            const SizedBox(width: 8),
+                                            Text('₹ ${d.amount.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.green)),
+                                          ],
+                                        ),
+                                        subtitle: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text('${DateFormat('dd MMM yyyy').format(d.donationDate)} • ${d.paymentMode}'),
+                                            Text('Receipt: ${d.receiptNumber}', style: TextStyle(fontSize: 12, color: Colors.grey[600])),
+                                          ],
+                                        ),
+                                        trailing: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                             // View Details (Eye) Button for Non-Members
+                                             if (d.donorType != 'Member')
+                                               IconButton(
+                                                 icon: const Icon(Icons.visibility, color: Colors.blueGrey),
+                                                 tooltip: 'View Donor Details',
+                                                 onPressed: () => _showDonorDetailsDialog(d),
+                                               ),
+                                              IconButton(
+                                               icon: const Icon(Icons.download),
+                                               tooltip: 'Download Receipt',
+                                               onPressed: () async {
+                                                 final receiptService = ref.read(receiptServiceProvider);
+                                                 final pdfBytes = await receiptService.generateDonationReceipt(d);
+                                                 
+                                                 if (context.mounted) {
+                                                    await receiptService.saveToDownloads(context, pdfBytes, 'ABA_Donation_Receipt_${d.receiptNumber}.pdf');
+                                                 }
+                                               },
+                                             ),
+                                          ],
+                                        ),
+                                        onTap: () async {
+                                           final receiptService = ref.read(receiptServiceProvider);
+                                           final pdfBytes = await receiptService.generateDonationReceipt(d);
+                                           if (context.mounted) {
+                                              await receiptService.saveToDownloads(context, pdfBytes, 'ABA_Donation_Receipt_${d.receiptNumber}.pdf');
+                                           }
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                           ],
                          );
                        },
-                     ),
-                   ),
-                 ],
+                     );
+                   },
+                 ),
                ),
-             ),
+             ],
            ),
-        ],
+        ),
       ),
     );
   }

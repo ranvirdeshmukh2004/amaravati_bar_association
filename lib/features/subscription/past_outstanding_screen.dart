@@ -10,6 +10,7 @@ import '../database/database_provider.dart';
 import '../database/app_database.dart';
 import '../database/daos/past_outstanding_dao.dart';
 import '../receipt/receipt_service.dart';
+import '../../core/widgets/responsive_split_view.dart';
 
 class PastOutstandingScreen extends ConsumerStatefulWidget {
   const PastOutstandingScreen({super.key});
@@ -105,46 +106,29 @@ class _PastOutstandingScreenState extends ConsumerState<PastOutstandingScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Past Outstanding Management')),
-      body: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Left: Entry Form
-          Expanded(
-            flex: 2,
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                     _buildMemberSearchCard(),
-                     const SizedBox(height: 24),
-                     _buildDetailsCard(),
-                     const SizedBox(height: 24),
-                     SizedBox(
-                       height: 50,
-                       child: FilledButton.icon(
-                         icon: const Icon(Icons.add_task),
-                         label: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('ADD PAST OUTSTANDING'),
-                         style: FilledButton.styleFrom(backgroundColor: Colors.orange[800]),
-                         onPressed: _isLoading ? null : _submit,
-                       ),
-                     ),
-                  ],
-                ),
-              ),
-            ),
+      body: ResponsiveSplitView(
+        left: Form(
+          key: _formKey,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+               _buildMemberSearchCard(),
+               const SizedBox(height: 24),
+               _buildDetailsCard(),
+               const SizedBox(height: 24),
+               SizedBox(
+                 height: 50,
+                 child: FilledButton.icon(
+                   icon: const Icon(Icons.add_task),
+                   label: _isLoading ? const CircularProgressIndicator(color: Colors.white) : const Text('ADD PAST OUTSTANDING'),
+                   style: FilledButton.styleFrom(backgroundColor: Colors.orange[800]),
+                   onPressed: _isLoading ? null : _submit,
+                 ),
+               ),
+            ],
           ),
-          
-          const VerticalDivider(width: 1),
-
-          // Right: Recent List (Simple View)
-          Expanded(
-            flex: 3,
-            child: _buildRecentList(),
-          ),
-        ],
+        ),
+        right: _buildRecentList(),
       ),
     );
   }
@@ -263,6 +247,7 @@ class _PastOutstandingScreenState extends ConsumerState<PastOutstandingScreen> {
                children: [
                  Expanded(
                    child: DropdownButtonFormField<String>(
+                     isExpanded: true,
                      value: _type,
                      decoration: const InputDecoration(labelText: 'Type', border: OutlineInputBorder()),
                      items: const [
@@ -395,60 +380,65 @@ class _PastOutstandingScreenState extends ConsumerState<PastOutstandingScreen> {
                                ),
                                child: Icon(Icons.history_edu, color: Theme.of(context).colorScheme.onTertiaryContainer),
                             ),
-                            title: Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold)), 
-                            subtitle: Text('Reg: ${item.enrollmentNumber} • ${item.type} • ${item.periodLabel}'),
+                            title: Row(
+                              children: [
+                                Expanded(child: Text(displayName, style: const TextStyle(fontWeight: FontWeight.bold))),
+                              ],
+                            ), 
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('${item.type} • ${item.periodLabel}'),
+                                if (item.isCleared)
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: Row(
+                                      children: [
+                                        Container(
+                                           padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                           decoration: BoxDecoration(
+                                             color: Colors.green.withOpacity(0.1),
+                                             borderRadius: BorderRadius.circular(4),
+                                             border: Border.all(color: Colors.green.withOpacity(0.5)),
+                                           ),
+                                           child: const Text('CLEARED', style: TextStyle(color: Colors.green, fontSize: 10, fontWeight: FontWeight.bold)),
+                                        ),
+                                      ],
+                                    ),
+                                  )
+                                else
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 4),
+                                    child: const Text('PENDING', style: TextStyle(color: Colors.red, fontSize: 11, fontWeight: FontWeight.bold)),
+                                  ),
+                              ],
+                            ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                if (item.isCleared)
-                                  Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                         decoration: BoxDecoration(
-                                           color: Colors.green.withOpacity(0.1),
-                                           borderRadius: BorderRadius.circular(4),
-                                           border: Border.all(color: Colors.green.withOpacity(0.5)),
-                                         ),
-                                         child: const Text('CLEARED', style: TextStyle(color: Colors.green, fontSize: 12, fontWeight: FontWeight.bold)),
-                                      ),
-                                      if (item.clearedAt != null)
-                                        Padding(
-                                          padding: const EdgeInsets.only(top: 4.0),
-                                          child: Text(
-                                            DateFormat('dd MMM yy').format(item.clearedAt!),
-                                            style: TextStyle(fontSize: 10, color: Colors.grey[600]),
-                                          ),
-                                        ),
-                                    ],
-                                  )
-                                else
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                                     decoration: BoxDecoration(
-                                       color: Colors.red.withOpacity(0.1),
-                                       borderRadius: BorderRadius.circular(4),
-                                       border: Border.all(color: Colors.red.withOpacity(0.5)),
-                                     ),
-                                    child: const Text('PENDING', style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold)),
-                                  ),
+                                Text(
+                                  '₹${item.amount.toStringAsFixed(0)}', 
+                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 15)
+                                ),
+                                const SizedBox(width: 16),
                                 
-                                const SizedBox(width: 12),
-                                Text('₹${item.amount.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                                const SizedBox(width: 8),
-                                
+                                // ACTIONS ONLY
                                 if (item.isCleared && item.linkedPaymentId != null)
                                    IconButton(
                                      tooltip: 'Download Receipt',
                                      icon: const Icon(Icons.download, color: Colors.blue),
-                                     onPressed: () async {
+                                      onPressed: () async {
                                         // Fetch linked subscription
                                         final sub = await db.subscriptionsDao.getSubscriptionById(item.linkedPaymentId!);
                                         if (sub != null && context.mounted) {
                                            final pdfBytes = await ref.read(receiptServiceProvider).generateReceipt(sub, title: 'ARREARS RECEIPT');
-                                           await Printing.layoutPdf(onLayout: (format) => pdfBytes, name: 'Receipt_${sub.receiptNumber}');
+                                           
+                                           // Use direct download helper
+                                           await ref.read(receiptServiceProvider).saveToDownloads(
+                                             context, 
+                                             pdfBytes, 
+                                             'ABA_Arrears_Receipt_${sub.receiptNumber}.pdf'
+                                           );
                                         } else if (context.mounted) {
                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Linked receipt not found!')));
                                         }

@@ -4,15 +4,24 @@ import 'subscription_service.dart';
 
 class SubscriptionFilterState {
   final List<String> selectedStatuses; // ['Paid', 'Due', 'Overdue']
+  
+  // Due Amount
+  final bool isDueAmountRangeEnabled;
   final RangeValues dueAmountRange;
+  
+  // Overdue Duration
+  final bool isOverdueMonthsEnabled;
   final double overdueMonthsMin;
+  
   final String searchQuery;
   final bool showDefaultersOnly; 
-  final DateTime? calculationDate; // New field for custom "Expected" calculation date
+  final DateTime? calculationDate;
 
   const SubscriptionFilterState({
     this.selectedStatuses = const [],
-    this.dueAmountRange = const RangeValues(0, 10000), // Max arbitrary high
+    this.isDueAmountRangeEnabled = false,
+    this.dueAmountRange = const RangeValues(0, 10000),
+    this.isOverdueMonthsEnabled = false,
     this.overdueMonthsMin = 0,
     this.searchQuery = '',
     this.showDefaultersOnly = false,
@@ -21,7 +30,9 @@ class SubscriptionFilterState {
 
   SubscriptionFilterState copyWith({
     List<String>? selectedStatuses,
+    bool? isDueAmountRangeEnabled,
     RangeValues? dueAmountRange,
+    bool? isOverdueMonthsEnabled,
     double? overdueMonthsMin,
     String? searchQuery,
     bool? showDefaultersOnly,
@@ -29,7 +40,9 @@ class SubscriptionFilterState {
   }) {
     return SubscriptionFilterState(
       selectedStatuses: selectedStatuses ?? this.selectedStatuses,
+      isDueAmountRangeEnabled: isDueAmountRangeEnabled ?? this.isDueAmountRangeEnabled,
       dueAmountRange: dueAmountRange ?? this.dueAmountRange,
+      isOverdueMonthsEnabled: isOverdueMonthsEnabled ?? this.isOverdueMonthsEnabled,
       overdueMonthsMin: overdueMonthsMin ?? this.overdueMonthsMin,
       searchQuery: searchQuery ?? this.searchQuery,
       showDefaultersOnly: showDefaultersOnly ?? this.showDefaultersOnly,
@@ -56,8 +69,16 @@ class SubscriptionFilterNotifier
     state = state.copyWith(selectedStatuses: current);
   }
 
+  void toggleDueAmountRange(bool enabled) {
+    state = state.copyWith(isDueAmountRangeEnabled: enabled);
+  }
+
   void updateDueAmountRange(RangeValues range) {
     state = state.copyWith(dueAmountRange: range);
+  }
+
+  void toggleOverdueMonths(bool enabled) {
+    state = state.copyWith(isOverdueMonthsEnabled: enabled);
   }
 
   void updateOverdueMonthsMin(double months) {
@@ -136,24 +157,20 @@ final filteredSubscriptionStatusProvider = Provider.autoDispose<List<Subscriptio
           if (!statusMatch) return false;
         }
 
-        // 3. Due Amount Range
-        // Only apply if looking for Dues
-        if (status.balance > 0) {
+        // 3. Due Amount Range (Only if enabled)
+        if (filter.isDueAmountRangeEnabled) {
+          // If filtering by amount, we imply we only care about positive balances (or negative if range allows)
+          // Usually range filters imply "Between X and Y"
           if (status.balance < filter.dueAmountRange.start ||
               status.balance > filter.dueAmountRange.end) {
             return false;
           }
         }
 
-        // 4. Overdue Months
-        if (filter.overdueMonthsMin > 0) {
-          // Approximate months overdue logic: Balance / MonthlyAmount (assumed 100 or from config)
-          // For simplicity, we can use totalMonths if they paid 0,
-          // BUT better to rely on actual calc if we had per-month tracking.
-          // Fallback: If balance > (filter.months * 100), assume they are that many months overdue.
-          // Or strictly use the totalMonths field if that represents 'Active Months' vs 'Paid'.
-          // Let's use: (Balance / 100) >= filter.months
+        // 4. Overdue Months (Only if enabled)
+        if (filter.isOverdueMonthsEnabled && filter.overdueMonthsMin > 0) {
           final assumedMonthlyAnd = 100.0; // Simplification
+          // Protect against divide by zero if amount is 0, though normally expected shouldn't be 0
           final monthsPending = status.balance / assumedMonthlyAnd;
           if (monthsPending < filter.overdueMonthsMin) return false;
         }

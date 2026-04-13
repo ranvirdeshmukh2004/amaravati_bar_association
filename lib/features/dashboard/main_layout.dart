@@ -13,7 +13,10 @@ import '../donation/donation_entry_screen.dart'; // Added this import
 
 import '../subscription/subscription_dashboard_screen.dart';
 import '../subscription/past_outstanding_screen.dart';
+import '../sms/sms_dashboard.dart';
 import 'widgets/app_sidebar.dart';
+import '../../core/auth/app_session.dart';
+import '../auth/environment_selection_dialog.dart';
 
 import 'package:flutter/services.dart';
 
@@ -31,12 +34,40 @@ class OpenSubscriptionEntryIntent extends Intent {
   const OpenSubscriptionEntryIntent();
 }
 
-class MainLayout extends ConsumerWidget {
+
+
+// ... other imports ...
+
+class MainLayout extends ConsumerStatefulWidget {
   const MainLayout({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainLayout> createState() => _MainLayoutState();
+}
+
+class _MainLayoutState extends ConsumerState<MainLayout> {
+
+  @override
+  void initState() {
+    super.initState();
+    // Check if Viewer needs to select environment
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final session = ref.read(appSessionProvider);
+      if (session.role == UserRole.viewer) {
+        showDialog(
+          context: context,
+          barrierDismissible: false, // Force selection
+          builder: (_) => const EnvironmentSelectionDialog(),
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final curIndex = ref.watch(navigationProvider);
+    final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
+    final isDevEnv = ref.watch(appSessionProvider).environment == AppEnvironment.dev;
 
     return Shortcuts(
       shortcuts: <ShortcutActivator, Intent>{
@@ -49,6 +80,7 @@ class MainLayout extends ConsumerWidget {
         actions: <Type, Action<Intent>>{
           OpenAddMemberIntent: CallbackAction<OpenAddMemberIntent>(
             onInvoke: (OpenAddMemberIntent intent) {
+              if (isViewer) return null; // Disable shortcut for Viewer
               ref.read(navigationProvider.notifier).state = 4;
               return null;
             },
@@ -56,25 +88,51 @@ class MainLayout extends ConsumerWidget {
           OpenSubscriptionEntryIntent:
               CallbackAction<OpenSubscriptionEntryIntent>(
                 onInvoke: (OpenSubscriptionEntryIntent intent) {
-                  ref.read(navigationProvider.notifier).state = 2;
-                  return null;
+                   if (isViewer) return null; // Disable shortcut for Viewer
+                   ref.read(navigationProvider.notifier).state = 2;
+                   return null;
                 },
               ),
         },
         child: Focus(
-          // Add Focus scope to ensure shortcuts work
           autofocus: true,
           child: Scaffold(
-            body: Row(
+            body: Column(
               children: [
-                AppSidebar(
-                  selectedIndex: curIndex,
-                  onDestinationSelected: (value) {
-                    ref.read(navigationProvider.notifier).state = value;
-                  },
+                // Viewer / Environment Banner
+                if (isViewer)
+                  Container(
+                    width: double.infinity,
+                    color: isDevEnv ? Colors.orange : Colors.blueGrey,
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Text(
+                      isDevEnv 
+                        ? "⚠️ VIEWER MODE (DEBUG DATA) - READ ONLY" 
+                        : "👁️ VIEWER MODE (RELEASE DATA) - READ ONLY",
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
+                    ),
+                  ),
+                  
+                Expanded(
+                  child: Row(
+                    children: [
+                      AppSidebar(
+                        selectedIndex: curIndex,
+                        onDestinationSelected: (value) {
+                          ref.read(navigationProvider.notifier).state = value;
+                        },
+                      ),
+                      const VerticalDivider(thickness: 1, width: 1),
+                      Expanded(
+                        // Wrap body in permissions check or just let sidebar handle navigation
+                        // and inner screens handle read-only state.
+                        // We will start by letting them navigate inside.
+                        child: _buildBody(curIndex), 
+                      ),
+                    ],
+                  ),
                 ),
-                const VerticalDivider(thickness: 1, width: 1),
-                Expanded(child: _buildBody(curIndex)),
               ],
             ),
           ),
@@ -82,7 +140,6 @@ class MainLayout extends ConsumerWidget {
       ),
     );
   }
-  // ... existing code ...
 
   Widget _buildBody(int index) {
     switch (index) {
@@ -103,12 +160,13 @@ class MainLayout extends ConsumerWidget {
       case 7:
         return const PastOutstandingScreen();
       case 8:
-         return const ArrearsClearanceScreen();
+        return const ArrearsClearanceScreen();
       case 9:
         return const DonationEntryScreen();
+      case 10:
+        return const SmsDashboardScreen(); 
       default:
         return const DashboardScreen();
     }
   }
-
 }

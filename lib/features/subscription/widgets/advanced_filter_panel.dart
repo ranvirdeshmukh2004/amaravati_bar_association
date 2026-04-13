@@ -33,8 +33,12 @@ class _AdvancedFilterPanelState extends ConsumerState<AdvancedFilterPanel> {
           expandedHeaderPadding: EdgeInsets.zero,
           expansionCallback: (int index, bool isExpanded) {
             setState(() {
-              _isExpanded = !_isExpanded; // Toggle since we only have 1 panel
+              _isExpanded = !_isExpanded; 
             });
+            // Reset filters if closing
+            if (!_isExpanded) {
+               ref.read(subscriptionFilterProvider.notifier).reset();
+            }
           },
           children: [
             ExpansionPanel(
@@ -86,45 +90,65 @@ class _AdvancedFilterPanelState extends ConsumerState<AdvancedFilterPanel> {
                   const SizedBox(height: 16),
 
                   // 3. Due Amount Range
-                  const _SectionLabel('Due Amount Range'),
-                  RangeSlider(
-                    values: filterState.dueAmountRange,
-                    min: 0,
-                    max: 10000,
-                    divisions: 100, // Steps of 100
-                    labels: RangeLabels(
-                      '₹${filterState.dueAmountRange.start.round()}',
-                      '₹${filterState.dueAmountRange.end.round()}+',
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('Filter by Due Amount', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey)),
+                    value: filterState.isDueAmountRangeEnabled, 
+                    onChanged: (val) => notifier.toggleDueAmountRange(val),
+                  ),
+                  if (filterState.isDueAmountRangeEnabled) ...[
+                    RangeSlider(
+                      values: filterState.dueAmountRange,
+                      min: 0,
+                      max: 10000,
+                      divisions: 100,
+                      labels: RangeLabels(
+                        '₹${filterState.dueAmountRange.start.round()}',
+                        '₹${filterState.dueAmountRange.end.round()}+',
+                      ),
+                      onChanged: (RangeValues values) {
+                        notifier.updateDueAmountRange(values);
+                      },
                     ),
-                    onChanged: (RangeValues values) {
-                      notifier.updateDueAmountRange(values);
-                    },
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text('Min: ₹${filterState.dueAmountRange.start.round()}'),
-                      Text('Max: ₹${filterState.dueAmountRange.end.round()}'),
-                    ],
-                  ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Min: ₹${filterState.dueAmountRange.start.round()}'),
+                          Text('Max: ₹${filterState.dueAmountRange.end.round()}'),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 16),
 
                   // 4. Overdue Months Slider
-                  const _SectionLabel('Overdue Duration (Months)'),
-                  Slider(
-                    value: filterState.overdueMonthsMin,
-                    min: 0,
-                    max: 12,
-                    divisions: 12,
-                    label: '${filterState.overdueMonthsMin.round()}+ Months',
-                    onChanged: (double value) {
-                      notifier.updateOverdueMonthsMin(value);
-                    },
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                     title: const Text('Filter by Overdue Duration', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: Colors.grey)),
+                    value: filterState.isOverdueMonthsEnabled, 
+                    onChanged: (val) => notifier.toggleOverdueMonths(val),
                   ),
-                  Text(
-                    '${filterState.overdueMonthsMin.round()}+ Months Overdue',
-                  ),
-
+                  if (filterState.isOverdueMonthsEnabled) ...[
+                    Slider(
+                      value: filterState.overdueMonthsMin,
+                      min: 0,
+                      max: 12,
+                      divisions: 12,
+                      label: '${filterState.overdueMonthsMin.round()}+ Months',
+                      onChanged: (double value) {
+                        notifier.updateOverdueMonthsMin(value);
+                      },
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Text(
+                        '${filterState.overdueMonthsMin.round()}+ Months Overdue',
+                      ),
+                    ),
+                  ],
+                  
                   const SizedBox(height: 24),
 
                   // Actions

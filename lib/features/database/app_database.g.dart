@@ -22,6 +22,57 @@ class $SubscriptionsTable extends Subscriptions
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _lastUpdatedAtMeta = const VerificationMeta(
+    'lastUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'last_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedMeta = const VerificationMeta(
+    'deleted',
+  );
+  @override
+  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
+    'deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _firstNameMeta = const VerificationMeta(
     'firstName',
   );
@@ -176,6 +227,10 @@ class $SubscriptionsTable extends Subscriptions
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    uuid,
+    isSynced,
+    lastUpdatedAt,
+    deleted,
     firstName,
     lastName,
     address,
@@ -205,6 +260,33 @@ class $SubscriptionsTable extends Subscriptions
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('uuid')) {
+      context.handle(
+        _uuidMeta,
+        uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('last_updated_at')) {
+      context.handle(
+        _lastUpdatedAtMeta,
+        lastUpdatedAt.isAcceptableOrUnknown(
+          data['last_updated_at']!,
+          _lastUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted')) {
+      context.handle(
+        _deletedMeta,
+        deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta),
+      );
     }
     if (data.containsKey('first_name')) {
       context.handle(
@@ -345,6 +427,22 @@ class $SubscriptionsTable extends Subscriptions
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      uuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uuid'],
+      ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
+      lastUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_at'],
+      ),
+      deleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}deleted'],
+      )!,
       firstName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}first_name'],
@@ -412,6 +510,10 @@ class $SubscriptionsTable extends Subscriptions
 
 class Subscription extends DataClass implements Insertable<Subscription> {
   final int id;
+  final String? uuid;
+  final bool isSynced;
+  final DateTime? lastUpdatedAt;
+  final bool deleted;
   final String firstName;
   final String lastName;
   final String address;
@@ -428,6 +530,10 @@ class Subscription extends DataClass implements Insertable<Subscription> {
   final int dailySequence;
   const Subscription({
     required this.id,
+    this.uuid,
+    required this.isSynced,
+    this.lastUpdatedAt,
+    required this.deleted,
     required this.firstName,
     required this.lastName,
     required this.address,
@@ -447,6 +553,14 @@ class Subscription extends DataClass implements Insertable<Subscription> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || uuid != null) {
+      map['uuid'] = Variable<String>(uuid);
+    }
+    map['is_synced'] = Variable<bool>(isSynced);
+    if (!nullToAbsent || lastUpdatedAt != null) {
+      map['last_updated_at'] = Variable<DateTime>(lastUpdatedAt);
+    }
+    map['deleted'] = Variable<bool>(deleted);
     map['first_name'] = Variable<String>(firstName);
     map['last_name'] = Variable<String>(lastName);
     map['address'] = Variable<String>(address);
@@ -475,6 +589,12 @@ class Subscription extends DataClass implements Insertable<Subscription> {
   SubscriptionsCompanion toCompanion(bool nullToAbsent) {
     return SubscriptionsCompanion(
       id: Value(id),
+      uuid: uuid == null && nullToAbsent ? const Value.absent() : Value(uuid),
+      isSynced: Value(isSynced),
+      lastUpdatedAt: lastUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedAt),
+      deleted: Value(deleted),
       firstName: Value(firstName),
       lastName: Value(lastName),
       address: Value(address),
@@ -507,6 +627,10 @@ class Subscription extends DataClass implements Insertable<Subscription> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Subscription(
       id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String?>(json['uuid']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      lastUpdatedAt: serializer.fromJson<DateTime?>(json['lastUpdatedAt']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
       firstName: serializer.fromJson<String>(json['firstName']),
       lastName: serializer.fromJson<String>(json['lastName']),
       address: serializer.fromJson<String>(json['address']),
@@ -528,6 +652,10 @@ class Subscription extends DataClass implements Insertable<Subscription> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String?>(uuid),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'lastUpdatedAt': serializer.toJson<DateTime?>(lastUpdatedAt),
+      'deleted': serializer.toJson<bool>(deleted),
       'firstName': serializer.toJson<String>(firstName),
       'lastName': serializer.toJson<String>(lastName),
       'address': serializer.toJson<String>(address),
@@ -547,6 +675,10 @@ class Subscription extends DataClass implements Insertable<Subscription> {
 
   Subscription copyWith({
     int? id,
+    Value<String?> uuid = const Value.absent(),
+    bool? isSynced,
+    Value<DateTime?> lastUpdatedAt = const Value.absent(),
+    bool? deleted,
     String? firstName,
     String? lastName,
     String? address,
@@ -563,6 +695,12 @@ class Subscription extends DataClass implements Insertable<Subscription> {
     int? dailySequence,
   }) => Subscription(
     id: id ?? this.id,
+    uuid: uuid.present ? uuid.value : this.uuid,
+    isSynced: isSynced ?? this.isSynced,
+    lastUpdatedAt: lastUpdatedAt.present
+        ? lastUpdatedAt.value
+        : this.lastUpdatedAt,
+    deleted: deleted ?? this.deleted,
     firstName: firstName ?? this.firstName,
     lastName: lastName ?? this.lastName,
     address: address ?? this.address,
@@ -583,6 +721,12 @@ class Subscription extends DataClass implements Insertable<Subscription> {
   Subscription copyWithCompanion(SubscriptionsCompanion data) {
     return Subscription(
       id: data.id.present ? data.id.value : this.id,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      lastUpdatedAt: data.lastUpdatedAt.present
+          ? data.lastUpdatedAt.value
+          : this.lastUpdatedAt,
+      deleted: data.deleted.present ? data.deleted.value : this.deleted,
       firstName: data.firstName.present ? data.firstName.value : this.firstName,
       lastName: data.lastName.present ? data.lastName.value : this.lastName,
       address: data.address.present ? data.address.value : this.address,
@@ -620,6 +764,10 @@ class Subscription extends DataClass implements Insertable<Subscription> {
   String toString() {
     return (StringBuffer('Subscription(')
           ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('lastUpdatedAt: $lastUpdatedAt, ')
+          ..write('deleted: $deleted, ')
           ..write('firstName: $firstName, ')
           ..write('lastName: $lastName, ')
           ..write('address: $address, ')
@@ -641,6 +789,10 @@ class Subscription extends DataClass implements Insertable<Subscription> {
   @override
   int get hashCode => Object.hash(
     id,
+    uuid,
+    isSynced,
+    lastUpdatedAt,
+    deleted,
     firstName,
     lastName,
     address,
@@ -661,6 +813,10 @@ class Subscription extends DataClass implements Insertable<Subscription> {
       identical(this, other) ||
       (other is Subscription &&
           other.id == this.id &&
+          other.uuid == this.uuid &&
+          other.isSynced == this.isSynced &&
+          other.lastUpdatedAt == this.lastUpdatedAt &&
+          other.deleted == this.deleted &&
           other.firstName == this.firstName &&
           other.lastName == this.lastName &&
           other.address == this.address &&
@@ -679,6 +835,10 @@ class Subscription extends DataClass implements Insertable<Subscription> {
 
 class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
   final Value<int> id;
+  final Value<String?> uuid;
+  final Value<bool> isSynced;
+  final Value<DateTime?> lastUpdatedAt;
+  final Value<bool> deleted;
   final Value<String> firstName;
   final Value<String> lastName;
   final Value<String> address;
@@ -695,6 +855,10 @@ class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
   final Value<int> dailySequence;
   const SubscriptionsCompanion({
     this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.lastUpdatedAt = const Value.absent(),
+    this.deleted = const Value.absent(),
     this.firstName = const Value.absent(),
     this.lastName = const Value.absent(),
     this.address = const Value.absent(),
@@ -712,6 +876,10 @@ class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
   });
   SubscriptionsCompanion.insert({
     this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.lastUpdatedAt = const Value.absent(),
+    this.deleted = const Value.absent(),
     required String firstName,
     required String lastName,
     required String address,
@@ -737,6 +905,10 @@ class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
        receiptNumber = Value(receiptNumber);
   static Insertable<Subscription> custom({
     Expression<int>? id,
+    Expression<String>? uuid,
+    Expression<bool>? isSynced,
+    Expression<DateTime>? lastUpdatedAt,
+    Expression<bool>? deleted,
     Expression<String>? firstName,
     Expression<String>? lastName,
     Expression<String>? address,
@@ -754,6 +926,10 @@ class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (lastUpdatedAt != null) 'last_updated_at': lastUpdatedAt,
+      if (deleted != null) 'deleted': deleted,
       if (firstName != null) 'first_name': firstName,
       if (lastName != null) 'last_name': lastName,
       if (address != null) 'address': address,
@@ -773,6 +949,10 @@ class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
 
   SubscriptionsCompanion copyWith({
     Value<int>? id,
+    Value<String?>? uuid,
+    Value<bool>? isSynced,
+    Value<DateTime?>? lastUpdatedAt,
+    Value<bool>? deleted,
     Value<String>? firstName,
     Value<String>? lastName,
     Value<String>? address,
@@ -790,6 +970,10 @@ class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
   }) {
     return SubscriptionsCompanion(
       id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      isSynced: isSynced ?? this.isSynced,
+      lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
+      deleted: deleted ?? this.deleted,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
       address: address ?? this.address,
@@ -812,6 +996,18 @@ class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (lastUpdatedAt.present) {
+      map['last_updated_at'] = Variable<DateTime>(lastUpdatedAt.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
     }
     if (firstName.present) {
       map['first_name'] = Variable<String>(firstName.value);
@@ -862,6 +1058,10 @@ class SubscriptionsCompanion extends UpdateCompanion<Subscription> {
   String toString() {
     return (StringBuffer('SubscriptionsCompanion(')
           ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('lastUpdatedAt: $lastUpdatedAt, ')
+          ..write('deleted: $deleted, ')
           ..write('firstName: $firstName, ')
           ..write('lastName: $lastName, ')
           ..write('address: $address, ')
@@ -1107,6 +1307,57 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _lastUpdatedAtMeta = const VerificationMeta(
+    'lastUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'last_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedMeta = const VerificationMeta(
+    'deleted',
+  );
+  @override
+  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
+    'deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _surnameMeta = const VerificationMeta(
     'surname',
   );
@@ -1287,6 +1538,10 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    uuid,
+    isSynced,
+    lastUpdatedAt,
+    deleted,
     surname,
     firstName,
     middleName,
@@ -1318,6 +1573,33 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('uuid')) {
+      context.handle(
+        _uuidMeta,
+        uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('last_updated_at')) {
+      context.handle(
+        _lastUpdatedAtMeta,
+        lastUpdatedAt.isAcceptableOrUnknown(
+          data['last_updated_at']!,
+          _lastUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted')) {
+      context.handle(
+        _deletedMeta,
+        deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta),
+      );
     }
     if (data.containsKey('surname')) {
       context.handle(
@@ -1461,6 +1743,22 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      uuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uuid'],
+      ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
+      lastUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_at'],
+      ),
+      deleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}deleted'],
+      )!,
       surname: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}surname'],
@@ -1536,6 +1834,10 @@ class $MembersTable extends Members with TableInfo<$MembersTable, Member> {
 
 class Member extends DataClass implements Insertable<Member> {
   final int id;
+  final String? uuid;
+  final bool isSynced;
+  final DateTime? lastUpdatedAt;
+  final bool deleted;
   final String surname;
   final String firstName;
   final String? middleName;
@@ -1554,6 +1856,10 @@ class Member extends DataClass implements Insertable<Member> {
   final DateTime createdAt;
   const Member({
     required this.id,
+    this.uuid,
+    required this.isSynced,
+    this.lastUpdatedAt,
+    required this.deleted,
     required this.surname,
     required this.firstName,
     this.middleName,
@@ -1575,6 +1881,14 @@ class Member extends DataClass implements Insertable<Member> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || uuid != null) {
+      map['uuid'] = Variable<String>(uuid);
+    }
+    map['is_synced'] = Variable<bool>(isSynced);
+    if (!nullToAbsent || lastUpdatedAt != null) {
+      map['last_updated_at'] = Variable<DateTime>(lastUpdatedAt);
+    }
+    map['deleted'] = Variable<bool>(deleted);
     map['surname'] = Variable<String>(surname);
     map['first_name'] = Variable<String>(firstName);
     if (!nullToAbsent || middleName != null) {
@@ -1613,6 +1927,12 @@ class Member extends DataClass implements Insertable<Member> {
   MembersCompanion toCompanion(bool nullToAbsent) {
     return MembersCompanion(
       id: Value(id),
+      uuid: uuid == null && nullToAbsent ? const Value.absent() : Value(uuid),
+      isSynced: Value(isSynced),
+      lastUpdatedAt: lastUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedAt),
+      deleted: Value(deleted),
       surname: Value(surname),
       firstName: Value(firstName),
       middleName: middleName == null && nullToAbsent
@@ -1655,6 +1975,10 @@ class Member extends DataClass implements Insertable<Member> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Member(
       id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String?>(json['uuid']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      lastUpdatedAt: serializer.fromJson<DateTime?>(json['lastUpdatedAt']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
       surname: serializer.fromJson<String>(json['surname']),
       firstName: serializer.fromJson<String>(json['firstName']),
       middleName: serializer.fromJson<String?>(json['middleName']),
@@ -1684,6 +2008,10 @@ class Member extends DataClass implements Insertable<Member> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String?>(uuid),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'lastUpdatedAt': serializer.toJson<DateTime?>(lastUpdatedAt),
+      'deleted': serializer.toJson<bool>(deleted),
       'surname': serializer.toJson<String>(surname),
       'firstName': serializer.toJson<String>(firstName),
       'middleName': serializer.toJson<String?>(middleName),
@@ -1705,6 +2033,10 @@ class Member extends DataClass implements Insertable<Member> {
 
   Member copyWith({
     int? id,
+    Value<String?> uuid = const Value.absent(),
+    bool? isSynced,
+    Value<DateTime?> lastUpdatedAt = const Value.absent(),
+    bool? deleted,
     String? surname,
     String? firstName,
     Value<String?> middleName = const Value.absent(),
@@ -1723,6 +2055,12 @@ class Member extends DataClass implements Insertable<Member> {
     DateTime? createdAt,
   }) => Member(
     id: id ?? this.id,
+    uuid: uuid.present ? uuid.value : this.uuid,
+    isSynced: isSynced ?? this.isSynced,
+    lastUpdatedAt: lastUpdatedAt.present
+        ? lastUpdatedAt.value
+        : this.lastUpdatedAt,
+    deleted: deleted ?? this.deleted,
     surname: surname ?? this.surname,
     firstName: firstName ?? this.firstName,
     middleName: middleName.present ? middleName.value : this.middleName,
@@ -1749,6 +2087,12 @@ class Member extends DataClass implements Insertable<Member> {
   Member copyWithCompanion(MembersCompanion data) {
     return Member(
       id: data.id.present ? data.id.value : this.id,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      lastUpdatedAt: data.lastUpdatedAt.present
+          ? data.lastUpdatedAt.value
+          : this.lastUpdatedAt,
+      deleted: data.deleted.present ? data.deleted.value : this.deleted,
       surname: data.surname.present ? data.surname.value : this.surname,
       firstName: data.firstName.present ? data.firstName.value : this.firstName,
       middleName: data.middleName.present
@@ -1790,6 +2134,10 @@ class Member extends DataClass implements Insertable<Member> {
   String toString() {
     return (StringBuffer('Member(')
           ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('lastUpdatedAt: $lastUpdatedAt, ')
+          ..write('deleted: $deleted, ')
           ..write('surname: $surname, ')
           ..write('firstName: $firstName, ')
           ..write('middleName: $middleName, ')
@@ -1811,8 +2159,12 @@ class Member extends DataClass implements Insertable<Member> {
   }
 
   @override
-  int get hashCode => Object.hash(
+  int get hashCode => Object.hashAll([
     id,
+    uuid,
+    isSynced,
+    lastUpdatedAt,
+    deleted,
     surname,
     firstName,
     middleName,
@@ -1829,12 +2181,16 @@ class Member extends DataClass implements Insertable<Member> {
     remarks,
     profilePhotoPath,
     createdAt,
-  );
+  ]);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Member &&
           other.id == this.id &&
+          other.uuid == this.uuid &&
+          other.isSynced == this.isSynced &&
+          other.lastUpdatedAt == this.lastUpdatedAt &&
+          other.deleted == this.deleted &&
           other.surname == this.surname &&
           other.firstName == this.firstName &&
           other.middleName == this.middleName &&
@@ -1855,6 +2211,10 @@ class Member extends DataClass implements Insertable<Member> {
 
 class MembersCompanion extends UpdateCompanion<Member> {
   final Value<int> id;
+  final Value<String?> uuid;
+  final Value<bool> isSynced;
+  final Value<DateTime?> lastUpdatedAt;
+  final Value<bool> deleted;
   final Value<String> surname;
   final Value<String> firstName;
   final Value<String?> middleName;
@@ -1873,6 +2233,10 @@ class MembersCompanion extends UpdateCompanion<Member> {
   final Value<DateTime> createdAt;
   const MembersCompanion({
     this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.lastUpdatedAt = const Value.absent(),
+    this.deleted = const Value.absent(),
     this.surname = const Value.absent(),
     this.firstName = const Value.absent(),
     this.middleName = const Value.absent(),
@@ -1892,6 +2256,10 @@ class MembersCompanion extends UpdateCompanion<Member> {
   });
   MembersCompanion.insert({
     this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.lastUpdatedAt = const Value.absent(),
+    this.deleted = const Value.absent(),
     required String surname,
     required String firstName,
     this.middleName = const Value.absent(),
@@ -1916,6 +2284,10 @@ class MembersCompanion extends UpdateCompanion<Member> {
        mobileNumber = Value(mobileNumber);
   static Insertable<Member> custom({
     Expression<int>? id,
+    Expression<String>? uuid,
+    Expression<bool>? isSynced,
+    Expression<DateTime>? lastUpdatedAt,
+    Expression<bool>? deleted,
     Expression<String>? surname,
     Expression<String>? firstName,
     Expression<String>? middleName,
@@ -1935,6 +2307,10 @@ class MembersCompanion extends UpdateCompanion<Member> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (lastUpdatedAt != null) 'last_updated_at': lastUpdatedAt,
+      if (deleted != null) 'deleted': deleted,
       if (surname != null) 'surname': surname,
       if (firstName != null) 'first_name': firstName,
       if (middleName != null) 'middle_name': middleName,
@@ -1956,6 +2332,10 @@ class MembersCompanion extends UpdateCompanion<Member> {
 
   MembersCompanion copyWith({
     Value<int>? id,
+    Value<String?>? uuid,
+    Value<bool>? isSynced,
+    Value<DateTime?>? lastUpdatedAt,
+    Value<bool>? deleted,
     Value<String>? surname,
     Value<String>? firstName,
     Value<String?>? middleName,
@@ -1975,6 +2355,10 @@ class MembersCompanion extends UpdateCompanion<Member> {
   }) {
     return MembersCompanion(
       id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      isSynced: isSynced ?? this.isSynced,
+      lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
+      deleted: deleted ?? this.deleted,
       surname: surname ?? this.surname,
       firstName: firstName ?? this.firstName,
       middleName: middleName ?? this.middleName,
@@ -1999,6 +2383,18 @@ class MembersCompanion extends UpdateCompanion<Member> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (lastUpdatedAt.present) {
+      map['last_updated_at'] = Variable<DateTime>(lastUpdatedAt.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
     }
     if (surname.present) {
       map['surname'] = Variable<String>(surname.value);
@@ -2055,6 +2451,10 @@ class MembersCompanion extends UpdateCompanion<Member> {
   String toString() {
     return (StringBuffer('MembersCompanion(')
           ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('lastUpdatedAt: $lastUpdatedAt, ')
+          ..write('deleted: $deleted, ')
           ..write('surname: $surname, ')
           ..write('firstName: $firstName, ')
           ..write('middleName: $middleName, ')
@@ -2130,12 +2530,54 @@ class $SubscriptionConfigTable extends SubscriptionConfig
     requiredDuringInsert: false,
     defaultValue: currentDateAndTime,
   );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _deletedMeta = const VerificationMeta(
+    'deleted',
+  );
+  @override
+  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
+    'deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     monthlyAmount,
     subscriptionStartDate,
     lastUpdated,
+    uuid,
+    isSynced,
+    deleted,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -2179,6 +2621,24 @@ class $SubscriptionConfigTable extends SubscriptionConfig
         ),
       );
     }
+    if (data.containsKey('uuid')) {
+      context.handle(
+        _uuidMeta,
+        uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('deleted')) {
+      context.handle(
+        _deletedMeta,
+        deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta),
+      );
+    }
     return context;
   }
 
@@ -2204,6 +2664,18 @@ class $SubscriptionConfigTable extends SubscriptionConfig
         DriftSqlType.dateTime,
         data['${effectivePrefix}last_updated'],
       )!,
+      uuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uuid'],
+      ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
+      deleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}deleted'],
+      )!,
     );
   }
 
@@ -2219,11 +2691,17 @@ class SubscriptionConfigData extends DataClass
   final double monthlyAmount;
   final DateTime? subscriptionStartDate;
   final DateTime lastUpdated;
+  final String? uuid;
+  final bool isSynced;
+  final bool deleted;
   const SubscriptionConfigData({
     required this.id,
     required this.monthlyAmount,
     this.subscriptionStartDate,
     required this.lastUpdated,
+    this.uuid,
+    required this.isSynced,
+    required this.deleted,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2236,6 +2714,11 @@ class SubscriptionConfigData extends DataClass
       );
     }
     map['last_updated'] = Variable<DateTime>(lastUpdated);
+    if (!nullToAbsent || uuid != null) {
+      map['uuid'] = Variable<String>(uuid);
+    }
+    map['is_synced'] = Variable<bool>(isSynced);
+    map['deleted'] = Variable<bool>(deleted);
     return map;
   }
 
@@ -2247,6 +2730,9 @@ class SubscriptionConfigData extends DataClass
           ? const Value.absent()
           : Value(subscriptionStartDate),
       lastUpdated: Value(lastUpdated),
+      uuid: uuid == null && nullToAbsent ? const Value.absent() : Value(uuid),
+      isSynced: Value(isSynced),
+      deleted: Value(deleted),
     );
   }
 
@@ -2262,6 +2748,9 @@ class SubscriptionConfigData extends DataClass
         json['subscriptionStartDate'],
       ),
       lastUpdated: serializer.fromJson<DateTime>(json['lastUpdated']),
+      uuid: serializer.fromJson<String?>(json['uuid']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
     );
   }
   @override
@@ -2274,6 +2763,9 @@ class SubscriptionConfigData extends DataClass
         subscriptionStartDate,
       ),
       'lastUpdated': serializer.toJson<DateTime>(lastUpdated),
+      'uuid': serializer.toJson<String?>(uuid),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'deleted': serializer.toJson<bool>(deleted),
     };
   }
 
@@ -2282,6 +2774,9 @@ class SubscriptionConfigData extends DataClass
     double? monthlyAmount,
     Value<DateTime?> subscriptionStartDate = const Value.absent(),
     DateTime? lastUpdated,
+    Value<String?> uuid = const Value.absent(),
+    bool? isSynced,
+    bool? deleted,
   }) => SubscriptionConfigData(
     id: id ?? this.id,
     monthlyAmount: monthlyAmount ?? this.monthlyAmount,
@@ -2289,6 +2784,9 @@ class SubscriptionConfigData extends DataClass
         ? subscriptionStartDate.value
         : this.subscriptionStartDate,
     lastUpdated: lastUpdated ?? this.lastUpdated,
+    uuid: uuid.present ? uuid.value : this.uuid,
+    isSynced: isSynced ?? this.isSynced,
+    deleted: deleted ?? this.deleted,
   );
   SubscriptionConfigData copyWithCompanion(SubscriptionConfigCompanion data) {
     return SubscriptionConfigData(
@@ -2302,6 +2800,9 @@ class SubscriptionConfigData extends DataClass
       lastUpdated: data.lastUpdated.present
           ? data.lastUpdated.value
           : this.lastUpdated,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      deleted: data.deleted.present ? data.deleted.value : this.deleted,
     );
   }
 
@@ -2311,14 +2812,24 @@ class SubscriptionConfigData extends DataClass
           ..write('id: $id, ')
           ..write('monthlyAmount: $monthlyAmount, ')
           ..write('subscriptionStartDate: $subscriptionStartDate, ')
-          ..write('lastUpdated: $lastUpdated')
+          ..write('lastUpdated: $lastUpdated, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('deleted: $deleted')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, monthlyAmount, subscriptionStartDate, lastUpdated);
+  int get hashCode => Object.hash(
+    id,
+    monthlyAmount,
+    subscriptionStartDate,
+    lastUpdated,
+    uuid,
+    isSynced,
+    deleted,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -2326,7 +2837,10 @@ class SubscriptionConfigData extends DataClass
           other.id == this.id &&
           other.monthlyAmount == this.monthlyAmount &&
           other.subscriptionStartDate == this.subscriptionStartDate &&
-          other.lastUpdated == this.lastUpdated);
+          other.lastUpdated == this.lastUpdated &&
+          other.uuid == this.uuid &&
+          other.isSynced == this.isSynced &&
+          other.deleted == this.deleted);
 }
 
 class SubscriptionConfigCompanion
@@ -2335,23 +2849,35 @@ class SubscriptionConfigCompanion
   final Value<double> monthlyAmount;
   final Value<DateTime?> subscriptionStartDate;
   final Value<DateTime> lastUpdated;
+  final Value<String?> uuid;
+  final Value<bool> isSynced;
+  final Value<bool> deleted;
   const SubscriptionConfigCompanion({
     this.id = const Value.absent(),
     this.monthlyAmount = const Value.absent(),
     this.subscriptionStartDate = const Value.absent(),
     this.lastUpdated = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.deleted = const Value.absent(),
   });
   SubscriptionConfigCompanion.insert({
     this.id = const Value.absent(),
     this.monthlyAmount = const Value.absent(),
     this.subscriptionStartDate = const Value.absent(),
     this.lastUpdated = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.deleted = const Value.absent(),
   });
   static Insertable<SubscriptionConfigData> custom({
     Expression<int>? id,
     Expression<double>? monthlyAmount,
     Expression<DateTime>? subscriptionStartDate,
     Expression<DateTime>? lastUpdated,
+    Expression<String>? uuid,
+    Expression<bool>? isSynced,
+    Expression<bool>? deleted,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -2359,6 +2885,9 @@ class SubscriptionConfigCompanion
       if (subscriptionStartDate != null)
         'subscription_start_date': subscriptionStartDate,
       if (lastUpdated != null) 'last_updated': lastUpdated,
+      if (uuid != null) 'uuid': uuid,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (deleted != null) 'deleted': deleted,
     });
   }
 
@@ -2367,6 +2896,9 @@ class SubscriptionConfigCompanion
     Value<double>? monthlyAmount,
     Value<DateTime?>? subscriptionStartDate,
     Value<DateTime>? lastUpdated,
+    Value<String?>? uuid,
+    Value<bool>? isSynced,
+    Value<bool>? deleted,
   }) {
     return SubscriptionConfigCompanion(
       id: id ?? this.id,
@@ -2374,6 +2906,9 @@ class SubscriptionConfigCompanion
       subscriptionStartDate:
           subscriptionStartDate ?? this.subscriptionStartDate,
       lastUpdated: lastUpdated ?? this.lastUpdated,
+      uuid: uuid ?? this.uuid,
+      isSynced: isSynced ?? this.isSynced,
+      deleted: deleted ?? this.deleted,
     );
   }
 
@@ -2394,6 +2929,15 @@ class SubscriptionConfigCompanion
     if (lastUpdated.present) {
       map['last_updated'] = Variable<DateTime>(lastUpdated.value);
     }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
+    }
     return map;
   }
 
@@ -2403,7 +2947,10 @@ class SubscriptionConfigCompanion
           ..write('id: $id, ')
           ..write('monthlyAmount: $monthlyAmount, ')
           ..write('subscriptionStartDate: $subscriptionStartDate, ')
-          ..write('lastUpdated: $lastUpdated')
+          ..write('lastUpdated: $lastUpdated, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('deleted: $deleted')
           ..write(')'))
         .toString();
   }
@@ -2941,6 +3488,57 @@ class $PastOutstandingDuesTable extends PastOutstandingDues
       'PRIMARY KEY AUTOINCREMENT',
     ),
   );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _lastUpdatedAtMeta = const VerificationMeta(
+    'lastUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'last_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedMeta = const VerificationMeta(
+    'deleted',
+  );
+  @override
+  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
+    'deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _enrollmentNumberMeta = const VerificationMeta(
     'enrollmentNumber',
   );
@@ -3042,6 +3640,10 @@ class $PastOutstandingDuesTable extends PastOutstandingDues
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    uuid,
+    isSynced,
+    lastUpdatedAt,
+    deleted,
     enrollmentNumber,
     amount,
     periodLabel,
@@ -3066,6 +3668,33 @@ class $PastOutstandingDuesTable extends PastOutstandingDues
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('uuid')) {
+      context.handle(
+        _uuidMeta,
+        uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('last_updated_at')) {
+      context.handle(
+        _lastUpdatedAtMeta,
+        lastUpdatedAt.isAcceptableOrUnknown(
+          data['last_updated_at']!,
+          _lastUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted')) {
+      context.handle(
+        _deletedMeta,
+        deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta),
+      );
     }
     if (data.containsKey('enrollment_number')) {
       context.handle(
@@ -3151,6 +3780,22 @@ class $PastOutstandingDuesTable extends PastOutstandingDues
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      uuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uuid'],
+      ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
+      lastUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_at'],
+      ),
+      deleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}deleted'],
+      )!,
       enrollmentNumber: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}enrollment_number'],
@@ -3199,6 +3844,10 @@ class $PastOutstandingDuesTable extends PastOutstandingDues
 class PastOutstandingDue extends DataClass
     implements Insertable<PastOutstandingDue> {
   final int id;
+  final String? uuid;
+  final bool isSynced;
+  final DateTime? lastUpdatedAt;
+  final bool deleted;
   final String enrollmentNumber;
   final double amount;
   final String periodLabel;
@@ -3210,6 +3859,10 @@ class PastOutstandingDue extends DataClass
   final int? linkedPaymentId;
   const PastOutstandingDue({
     required this.id,
+    this.uuid,
+    required this.isSynced,
+    this.lastUpdatedAt,
+    required this.deleted,
     required this.enrollmentNumber,
     required this.amount,
     required this.periodLabel,
@@ -3224,6 +3877,14 @@ class PastOutstandingDue extends DataClass
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || uuid != null) {
+      map['uuid'] = Variable<String>(uuid);
+    }
+    map['is_synced'] = Variable<bool>(isSynced);
+    if (!nullToAbsent || lastUpdatedAt != null) {
+      map['last_updated_at'] = Variable<DateTime>(lastUpdatedAt);
+    }
+    map['deleted'] = Variable<bool>(deleted);
     map['enrollment_number'] = Variable<String>(enrollmentNumber);
     map['amount'] = Variable<double>(amount);
     map['period_label'] = Variable<String>(periodLabel);
@@ -3245,6 +3906,12 @@ class PastOutstandingDue extends DataClass
   PastOutstandingDuesCompanion toCompanion(bool nullToAbsent) {
     return PastOutstandingDuesCompanion(
       id: Value(id),
+      uuid: uuid == null && nullToAbsent ? const Value.absent() : Value(uuid),
+      isSynced: Value(isSynced),
+      lastUpdatedAt: lastUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedAt),
+      deleted: Value(deleted),
       enrollmentNumber: Value(enrollmentNumber),
       amount: Value(amount),
       periodLabel: Value(periodLabel),
@@ -3270,6 +3937,10 @@ class PastOutstandingDue extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return PastOutstandingDue(
       id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String?>(json['uuid']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      lastUpdatedAt: serializer.fromJson<DateTime?>(json['lastUpdatedAt']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
       enrollmentNumber: serializer.fromJson<String>(json['enrollmentNumber']),
       amount: serializer.fromJson<double>(json['amount']),
       periodLabel: serializer.fromJson<String>(json['periodLabel']),
@@ -3286,6 +3957,10 @@ class PastOutstandingDue extends DataClass
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String?>(uuid),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'lastUpdatedAt': serializer.toJson<DateTime?>(lastUpdatedAt),
+      'deleted': serializer.toJson<bool>(deleted),
       'enrollmentNumber': serializer.toJson<String>(enrollmentNumber),
       'amount': serializer.toJson<double>(amount),
       'periodLabel': serializer.toJson<String>(periodLabel),
@@ -3300,6 +3975,10 @@ class PastOutstandingDue extends DataClass
 
   PastOutstandingDue copyWith({
     int? id,
+    Value<String?> uuid = const Value.absent(),
+    bool? isSynced,
+    Value<DateTime?> lastUpdatedAt = const Value.absent(),
+    bool? deleted,
     String? enrollmentNumber,
     double? amount,
     String? periodLabel,
@@ -3311,6 +3990,12 @@ class PastOutstandingDue extends DataClass
     Value<int?> linkedPaymentId = const Value.absent(),
   }) => PastOutstandingDue(
     id: id ?? this.id,
+    uuid: uuid.present ? uuid.value : this.uuid,
+    isSynced: isSynced ?? this.isSynced,
+    lastUpdatedAt: lastUpdatedAt.present
+        ? lastUpdatedAt.value
+        : this.lastUpdatedAt,
+    deleted: deleted ?? this.deleted,
     enrollmentNumber: enrollmentNumber ?? this.enrollmentNumber,
     amount: amount ?? this.amount,
     periodLabel: periodLabel ?? this.periodLabel,
@@ -3326,6 +4011,12 @@ class PastOutstandingDue extends DataClass
   PastOutstandingDue copyWithCompanion(PastOutstandingDuesCompanion data) {
     return PastOutstandingDue(
       id: data.id.present ? data.id.value : this.id,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      lastUpdatedAt: data.lastUpdatedAt.present
+          ? data.lastUpdatedAt.value
+          : this.lastUpdatedAt,
+      deleted: data.deleted.present ? data.deleted.value : this.deleted,
       enrollmentNumber: data.enrollmentNumber.present
           ? data.enrollmentNumber.value
           : this.enrollmentNumber,
@@ -3348,6 +4039,10 @@ class PastOutstandingDue extends DataClass
   String toString() {
     return (StringBuffer('PastOutstandingDue(')
           ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('lastUpdatedAt: $lastUpdatedAt, ')
+          ..write('deleted: $deleted, ')
           ..write('enrollmentNumber: $enrollmentNumber, ')
           ..write('amount: $amount, ')
           ..write('periodLabel: $periodLabel, ')
@@ -3364,6 +4059,10 @@ class PastOutstandingDue extends DataClass
   @override
   int get hashCode => Object.hash(
     id,
+    uuid,
+    isSynced,
+    lastUpdatedAt,
+    deleted,
     enrollmentNumber,
     amount,
     periodLabel,
@@ -3379,6 +4078,10 @@ class PastOutstandingDue extends DataClass
       identical(this, other) ||
       (other is PastOutstandingDue &&
           other.id == this.id &&
+          other.uuid == this.uuid &&
+          other.isSynced == this.isSynced &&
+          other.lastUpdatedAt == this.lastUpdatedAt &&
+          other.deleted == this.deleted &&
           other.enrollmentNumber == this.enrollmentNumber &&
           other.amount == this.amount &&
           other.periodLabel == this.periodLabel &&
@@ -3392,6 +4095,10 @@ class PastOutstandingDue extends DataClass
 
 class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
   final Value<int> id;
+  final Value<String?> uuid;
+  final Value<bool> isSynced;
+  final Value<DateTime?> lastUpdatedAt;
+  final Value<bool> deleted;
   final Value<String> enrollmentNumber;
   final Value<double> amount;
   final Value<String> periodLabel;
@@ -3403,6 +4110,10 @@ class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
   final Value<int?> linkedPaymentId;
   const PastOutstandingDuesCompanion({
     this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.lastUpdatedAt = const Value.absent(),
+    this.deleted = const Value.absent(),
     this.enrollmentNumber = const Value.absent(),
     this.amount = const Value.absent(),
     this.periodLabel = const Value.absent(),
@@ -3415,6 +4126,10 @@ class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
   });
   PastOutstandingDuesCompanion.insert({
     this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.lastUpdatedAt = const Value.absent(),
+    this.deleted = const Value.absent(),
     required String enrollmentNumber,
     required double amount,
     required String periodLabel,
@@ -3430,6 +4145,10 @@ class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
        type = Value(type);
   static Insertable<PastOutstandingDue> custom({
     Expression<int>? id,
+    Expression<String>? uuid,
+    Expression<bool>? isSynced,
+    Expression<DateTime>? lastUpdatedAt,
+    Expression<bool>? deleted,
     Expression<String>? enrollmentNumber,
     Expression<double>? amount,
     Expression<String>? periodLabel,
@@ -3442,6 +4161,10 @@ class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (lastUpdatedAt != null) 'last_updated_at': lastUpdatedAt,
+      if (deleted != null) 'deleted': deleted,
       if (enrollmentNumber != null) 'enrollment_number': enrollmentNumber,
       if (amount != null) 'amount': amount,
       if (periodLabel != null) 'period_label': periodLabel,
@@ -3456,6 +4179,10 @@ class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
 
   PastOutstandingDuesCompanion copyWith({
     Value<int>? id,
+    Value<String?>? uuid,
+    Value<bool>? isSynced,
+    Value<DateTime?>? lastUpdatedAt,
+    Value<bool>? deleted,
     Value<String>? enrollmentNumber,
     Value<double>? amount,
     Value<String>? periodLabel,
@@ -3468,6 +4195,10 @@ class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
   }) {
     return PastOutstandingDuesCompanion(
       id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      isSynced: isSynced ?? this.isSynced,
+      lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
+      deleted: deleted ?? this.deleted,
       enrollmentNumber: enrollmentNumber ?? this.enrollmentNumber,
       amount: amount ?? this.amount,
       periodLabel: periodLabel ?? this.periodLabel,
@@ -3485,6 +4216,18 @@ class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (lastUpdatedAt.present) {
+      map['last_updated_at'] = Variable<DateTime>(lastUpdatedAt.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
     }
     if (enrollmentNumber.present) {
       map['enrollment_number'] = Variable<String>(enrollmentNumber.value);
@@ -3520,6 +4263,10 @@ class PastOutstandingDuesCompanion extends UpdateCompanion<PastOutstandingDue> {
   String toString() {
     return (StringBuffer('PastOutstandingDuesCompanion(')
           ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('lastUpdatedAt: $lastUpdatedAt, ')
+          ..write('deleted: $deleted, ')
           ..write('enrollmentNumber: $enrollmentNumber, ')
           ..write('amount: $amount, ')
           ..write('periodLabel: $periodLabel, ')
@@ -3552,6 +4299,57 @@ class $DonationsTable extends Donations
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'PRIMARY KEY AUTOINCREMENT',
     ),
+  );
+  static const VerificationMeta _uuidMeta = const VerificationMeta('uuid');
+  @override
+  late final GeneratedColumn<String> uuid = GeneratedColumn<String>(
+    'uuid',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _isSyncedMeta = const VerificationMeta(
+    'isSynced',
+  );
+  @override
+  late final GeneratedColumn<bool> isSynced = GeneratedColumn<bool>(
+    'is_synced',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_synced" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _lastUpdatedAtMeta = const VerificationMeta(
+    'lastUpdatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastUpdatedAt =
+      GeneratedColumn<DateTime>(
+        'last_updated_at',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _deletedMeta = const VerificationMeta(
+    'deleted',
+  );
+  @override
+  late final GeneratedColumn<bool> deleted = GeneratedColumn<bool>(
+    'deleted',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("deleted" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
   );
   static const VerificationMeta _donorNameMeta = const VerificationMeta(
     'donorName',
@@ -3722,6 +4520,10 @@ class $DonationsTable extends Donations
   @override
   List<GeneratedColumn> get $columns => [
     id,
+    uuid,
+    isSynced,
+    lastUpdatedAt,
+    deleted,
     donorName,
     donorType,
     memberId,
@@ -3752,6 +4554,33 @@ class $DonationsTable extends Donations
     final data = instance.toColumns(true);
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('uuid')) {
+      context.handle(
+        _uuidMeta,
+        uuid.isAcceptableOrUnknown(data['uuid']!, _uuidMeta),
+      );
+    }
+    if (data.containsKey('is_synced')) {
+      context.handle(
+        _isSyncedMeta,
+        isSynced.isAcceptableOrUnknown(data['is_synced']!, _isSyncedMeta),
+      );
+    }
+    if (data.containsKey('last_updated_at')) {
+      context.handle(
+        _lastUpdatedAtMeta,
+        lastUpdatedAt.isAcceptableOrUnknown(
+          data['last_updated_at']!,
+          _lastUpdatedAtMeta,
+        ),
+      );
+    }
+    if (data.containsKey('deleted')) {
+      context.handle(
+        _deletedMeta,
+        deleted.isAcceptableOrUnknown(data['deleted']!, _deletedMeta),
+      );
     }
     if (data.containsKey('donor_name')) {
       context.handle(
@@ -3892,6 +4721,22 @@ class $DonationsTable extends Donations
         DriftSqlType.int,
         data['${effectivePrefix}id'],
       )!,
+      uuid: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}uuid'],
+      ),
+      isSynced: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_synced'],
+      )!,
+      lastUpdatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_updated_at'],
+      ),
+      deleted: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}deleted'],
+      )!,
       donorName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}donor_name'],
@@ -3963,6 +4808,10 @@ class $DonationsTable extends Donations
 
 class Donation extends DataClass implements Insertable<Donation> {
   final int id;
+  final String? uuid;
+  final bool isSynced;
+  final DateTime? lastUpdatedAt;
+  final bool deleted;
   final String donorName;
   final String donorType;
   final int? memberId;
@@ -3980,6 +4829,10 @@ class Donation extends DataClass implements Insertable<Donation> {
   final DateTime createdAt;
   const Donation({
     required this.id,
+    this.uuid,
+    required this.isSynced,
+    this.lastUpdatedAt,
+    required this.deleted,
     required this.donorName,
     required this.donorType,
     this.memberId,
@@ -4000,6 +4853,14 @@ class Donation extends DataClass implements Insertable<Donation> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
+    if (!nullToAbsent || uuid != null) {
+      map['uuid'] = Variable<String>(uuid);
+    }
+    map['is_synced'] = Variable<bool>(isSynced);
+    if (!nullToAbsent || lastUpdatedAt != null) {
+      map['last_updated_at'] = Variable<DateTime>(lastUpdatedAt);
+    }
+    map['deleted'] = Variable<bool>(deleted);
     map['donor_name'] = Variable<String>(donorName);
     map['donor_type'] = Variable<String>(donorType);
     if (!nullToAbsent || memberId != null) {
@@ -4035,6 +4896,12 @@ class Donation extends DataClass implements Insertable<Donation> {
   DonationsCompanion toCompanion(bool nullToAbsent) {
     return DonationsCompanion(
       id: Value(id),
+      uuid: uuid == null && nullToAbsent ? const Value.absent() : Value(uuid),
+      isSynced: Value(isSynced),
+      lastUpdatedAt: lastUpdatedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastUpdatedAt),
+      deleted: Value(deleted),
       donorName: Value(donorName),
       donorType: Value(donorType),
       memberId: memberId == null && nullToAbsent
@@ -4074,6 +4941,10 @@ class Donation extends DataClass implements Insertable<Donation> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Donation(
       id: serializer.fromJson<int>(json['id']),
+      uuid: serializer.fromJson<String?>(json['uuid']),
+      isSynced: serializer.fromJson<bool>(json['isSynced']),
+      lastUpdatedAt: serializer.fromJson<DateTime?>(json['lastUpdatedAt']),
+      deleted: serializer.fromJson<bool>(json['deleted']),
       donorName: serializer.fromJson<String>(json['donorName']),
       donorType: serializer.fromJson<String>(json['donorType']),
       memberId: serializer.fromJson<int?>(json['memberId']),
@@ -4096,6 +4967,10 @@ class Donation extends DataClass implements Insertable<Donation> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
+      'uuid': serializer.toJson<String?>(uuid),
+      'isSynced': serializer.toJson<bool>(isSynced),
+      'lastUpdatedAt': serializer.toJson<DateTime?>(lastUpdatedAt),
+      'deleted': serializer.toJson<bool>(deleted),
       'donorName': serializer.toJson<String>(donorName),
       'donorType': serializer.toJson<String>(donorType),
       'memberId': serializer.toJson<int?>(memberId),
@@ -4116,6 +4991,10 @@ class Donation extends DataClass implements Insertable<Donation> {
 
   Donation copyWith({
     int? id,
+    Value<String?> uuid = const Value.absent(),
+    bool? isSynced,
+    Value<DateTime?> lastUpdatedAt = const Value.absent(),
+    bool? deleted,
     String? donorName,
     String? donorType,
     Value<int?> memberId = const Value.absent(),
@@ -4133,6 +5012,12 @@ class Donation extends DataClass implements Insertable<Donation> {
     DateTime? createdAt,
   }) => Donation(
     id: id ?? this.id,
+    uuid: uuid.present ? uuid.value : this.uuid,
+    isSynced: isSynced ?? this.isSynced,
+    lastUpdatedAt: lastUpdatedAt.present
+        ? lastUpdatedAt.value
+        : this.lastUpdatedAt,
+    deleted: deleted ?? this.deleted,
     donorName: donorName ?? this.donorName,
     donorType: donorType ?? this.donorType,
     memberId: memberId.present ? memberId.value : this.memberId,
@@ -4154,6 +5039,12 @@ class Donation extends DataClass implements Insertable<Donation> {
   Donation copyWithCompanion(DonationsCompanion data) {
     return Donation(
       id: data.id.present ? data.id.value : this.id,
+      uuid: data.uuid.present ? data.uuid.value : this.uuid,
+      isSynced: data.isSynced.present ? data.isSynced.value : this.isSynced,
+      lastUpdatedAt: data.lastUpdatedAt.present
+          ? data.lastUpdatedAt.value
+          : this.lastUpdatedAt,
+      deleted: data.deleted.present ? data.deleted.value : this.deleted,
       donorName: data.donorName.present ? data.donorName.value : this.donorName,
       donorType: data.donorType.present ? data.donorType.value : this.donorType,
       memberId: data.memberId.present ? data.memberId.value : this.memberId,
@@ -4194,6 +5085,10 @@ class Donation extends DataClass implements Insertable<Donation> {
   String toString() {
     return (StringBuffer('Donation(')
           ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('lastUpdatedAt: $lastUpdatedAt, ')
+          ..write('deleted: $deleted, ')
           ..write('donorName: $donorName, ')
           ..write('donorType: $donorType, ')
           ..write('memberId: $memberId, ')
@@ -4216,6 +5111,10 @@ class Donation extends DataClass implements Insertable<Donation> {
   @override
   int get hashCode => Object.hash(
     id,
+    uuid,
+    isSynced,
+    lastUpdatedAt,
+    deleted,
     donorName,
     donorType,
     memberId,
@@ -4237,6 +5136,10 @@ class Donation extends DataClass implements Insertable<Donation> {
       identical(this, other) ||
       (other is Donation &&
           other.id == this.id &&
+          other.uuid == this.uuid &&
+          other.isSynced == this.isSynced &&
+          other.lastUpdatedAt == this.lastUpdatedAt &&
+          other.deleted == this.deleted &&
           other.donorName == this.donorName &&
           other.donorType == this.donorType &&
           other.memberId == this.memberId &&
@@ -4256,6 +5159,10 @@ class Donation extends DataClass implements Insertable<Donation> {
 
 class DonationsCompanion extends UpdateCompanion<Donation> {
   final Value<int> id;
+  final Value<String?> uuid;
+  final Value<bool> isSynced;
+  final Value<DateTime?> lastUpdatedAt;
+  final Value<bool> deleted;
   final Value<String> donorName;
   final Value<String> donorType;
   final Value<int?> memberId;
@@ -4273,6 +5180,10 @@ class DonationsCompanion extends UpdateCompanion<Donation> {
   final Value<DateTime> createdAt;
   const DonationsCompanion({
     this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.lastUpdatedAt = const Value.absent(),
+    this.deleted = const Value.absent(),
     this.donorName = const Value.absent(),
     this.donorType = const Value.absent(),
     this.memberId = const Value.absent(),
@@ -4291,6 +5202,10 @@ class DonationsCompanion extends UpdateCompanion<Donation> {
   });
   DonationsCompanion.insert({
     this.id = const Value.absent(),
+    this.uuid = const Value.absent(),
+    this.isSynced = const Value.absent(),
+    this.lastUpdatedAt = const Value.absent(),
+    this.deleted = const Value.absent(),
     required String donorName,
     required String donorType,
     this.memberId = const Value.absent(),
@@ -4314,6 +5229,10 @@ class DonationsCompanion extends UpdateCompanion<Donation> {
        receiptNumber = Value(receiptNumber);
   static Insertable<Donation> custom({
     Expression<int>? id,
+    Expression<String>? uuid,
+    Expression<bool>? isSynced,
+    Expression<DateTime>? lastUpdatedAt,
+    Expression<bool>? deleted,
     Expression<String>? donorName,
     Expression<String>? donorType,
     Expression<int>? memberId,
@@ -4332,6 +5251,10 @@ class DonationsCompanion extends UpdateCompanion<Donation> {
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
+      if (uuid != null) 'uuid': uuid,
+      if (isSynced != null) 'is_synced': isSynced,
+      if (lastUpdatedAt != null) 'last_updated_at': lastUpdatedAt,
+      if (deleted != null) 'deleted': deleted,
       if (donorName != null) 'donor_name': donorName,
       if (donorType != null) 'donor_type': donorType,
       if (memberId != null) 'member_id': memberId,
@@ -4352,6 +5275,10 @@ class DonationsCompanion extends UpdateCompanion<Donation> {
 
   DonationsCompanion copyWith({
     Value<int>? id,
+    Value<String?>? uuid,
+    Value<bool>? isSynced,
+    Value<DateTime?>? lastUpdatedAt,
+    Value<bool>? deleted,
     Value<String>? donorName,
     Value<String>? donorType,
     Value<int?>? memberId,
@@ -4370,6 +5297,10 @@ class DonationsCompanion extends UpdateCompanion<Donation> {
   }) {
     return DonationsCompanion(
       id: id ?? this.id,
+      uuid: uuid ?? this.uuid,
+      isSynced: isSynced ?? this.isSynced,
+      lastUpdatedAt: lastUpdatedAt ?? this.lastUpdatedAt,
+      deleted: deleted ?? this.deleted,
       donorName: donorName ?? this.donorName,
       donorType: donorType ?? this.donorType,
       memberId: memberId ?? this.memberId,
@@ -4393,6 +5324,18 @@ class DonationsCompanion extends UpdateCompanion<Donation> {
     final map = <String, Expression>{};
     if (id.present) {
       map['id'] = Variable<int>(id.value);
+    }
+    if (uuid.present) {
+      map['uuid'] = Variable<String>(uuid.value);
+    }
+    if (isSynced.present) {
+      map['is_synced'] = Variable<bool>(isSynced.value);
+    }
+    if (lastUpdatedAt.present) {
+      map['last_updated_at'] = Variable<DateTime>(lastUpdatedAt.value);
+    }
+    if (deleted.present) {
+      map['deleted'] = Variable<bool>(deleted.value);
     }
     if (donorName.present) {
       map['donor_name'] = Variable<String>(donorName.value);
@@ -4446,6 +5389,10 @@ class DonationsCompanion extends UpdateCompanion<Donation> {
   String toString() {
     return (StringBuffer('DonationsCompanion(')
           ..write('id: $id, ')
+          ..write('uuid: $uuid, ')
+          ..write('isSynced: $isSynced, ')
+          ..write('lastUpdatedAt: $lastUpdatedAt, ')
+          ..write('deleted: $deleted, ')
           ..write('donorName: $donorName, ')
           ..write('donorType: $donorType, ')
           ..write('memberId: $memberId, ')
@@ -4511,6 +5458,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$SubscriptionsTableCreateCompanionBuilder =
     SubscriptionsCompanion Function({
       Value<int> id,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<DateTime?> lastUpdatedAt,
+      Value<bool> deleted,
       required String firstName,
       required String lastName,
       required String address,
@@ -4529,6 +5480,10 @@ typedef $$SubscriptionsTableCreateCompanionBuilder =
 typedef $$SubscriptionsTableUpdateCompanionBuilder =
     SubscriptionsCompanion Function({
       Value<int> id,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<DateTime?> lastUpdatedAt,
+      Value<bool> deleted,
       Value<String> firstName,
       Value<String> lastName,
       Value<String> address,
@@ -4556,6 +5511,26 @@ class $$SubscriptionsTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4644,6 +5619,26 @@ class $$SubscriptionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get firstName => $composableBuilder(
     column: $table.firstName,
     builder: (column) => ColumnOrderings(column),
@@ -4726,6 +5721,20 @@ class $$SubscriptionsTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get deleted =>
+      $composableBuilder(column: $table.deleted, builder: (column) => column);
 
   GeneratedColumn<String> get firstName =>
       $composableBuilder(column: $table.firstName, builder: (column) => column);
@@ -4818,6 +5827,10 @@ class $$SubscriptionsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime?> lastUpdatedAt = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
                 Value<String> firstName = const Value.absent(),
                 Value<String> lastName = const Value.absent(),
                 Value<String> address = const Value.absent(),
@@ -4834,6 +5847,10 @@ class $$SubscriptionsTableTableManager
                 Value<int> dailySequence = const Value.absent(),
               }) => SubscriptionsCompanion(
                 id: id,
+                uuid: uuid,
+                isSynced: isSynced,
+                lastUpdatedAt: lastUpdatedAt,
+                deleted: deleted,
                 firstName: firstName,
                 lastName: lastName,
                 address: address,
@@ -4852,6 +5869,10 @@ class $$SubscriptionsTableTableManager
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime?> lastUpdatedAt = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
                 required String firstName,
                 required String lastName,
                 required String address,
@@ -4868,6 +5889,10 @@ class $$SubscriptionsTableTableManager
                 Value<int> dailySequence = const Value.absent(),
               }) => SubscriptionsCompanion.insert(
                 id: id,
+                uuid: uuid,
+                isSynced: isSynced,
+                lastUpdatedAt: lastUpdatedAt,
+                deleted: deleted,
                 firstName: firstName,
                 lastName: lastName,
                 address: address,
@@ -5051,6 +6076,10 @@ typedef $$AdminSettingsTableProcessedTableManager =
 typedef $$MembersTableCreateCompanionBuilder =
     MembersCompanion Function({
       Value<int> id,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<DateTime?> lastUpdatedAt,
+      Value<bool> deleted,
       required String surname,
       required String firstName,
       Value<String?> middleName,
@@ -5071,6 +6100,10 @@ typedef $$MembersTableCreateCompanionBuilder =
 typedef $$MembersTableUpdateCompanionBuilder =
     MembersCompanion Function({
       Value<int> id,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<DateTime?> lastUpdatedAt,
+      Value<bool> deleted,
       Value<String> surname,
       Value<String> firstName,
       Value<String?> middleName,
@@ -5100,6 +6133,26 @@ class $$MembersTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5198,6 +6251,26 @@ class $$MembersTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get surname => $composableBuilder(
     column: $table.surname,
     builder: (column) => ColumnOrderings(column),
@@ -5290,6 +6363,20 @@ class $$MembersTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get deleted =>
+      $composableBuilder(column: $table.deleted, builder: (column) => column);
 
   GeneratedColumn<String> get surname =>
       $composableBuilder(column: $table.surname, builder: (column) => column);
@@ -5387,6 +6474,10 @@ class $$MembersTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime?> lastUpdatedAt = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
                 Value<String> surname = const Value.absent(),
                 Value<String> firstName = const Value.absent(),
                 Value<String?> middleName = const Value.absent(),
@@ -5405,6 +6496,10 @@ class $$MembersTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
               }) => MembersCompanion(
                 id: id,
+                uuid: uuid,
+                isSynced: isSynced,
+                lastUpdatedAt: lastUpdatedAt,
+                deleted: deleted,
                 surname: surname,
                 firstName: firstName,
                 middleName: middleName,
@@ -5425,6 +6520,10 @@ class $$MembersTableTableManager
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime?> lastUpdatedAt = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
                 required String surname,
                 required String firstName,
                 Value<String?> middleName = const Value.absent(),
@@ -5443,6 +6542,10 @@ class $$MembersTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
               }) => MembersCompanion.insert(
                 id: id,
+                uuid: uuid,
+                isSynced: isSynced,
+                lastUpdatedAt: lastUpdatedAt,
+                deleted: deleted,
                 surname: surname,
                 firstName: firstName,
                 middleName: middleName,
@@ -5488,6 +6591,9 @@ typedef $$SubscriptionConfigTableCreateCompanionBuilder =
       Value<double> monthlyAmount,
       Value<DateTime?> subscriptionStartDate,
       Value<DateTime> lastUpdated,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<bool> deleted,
     });
 typedef $$SubscriptionConfigTableUpdateCompanionBuilder =
     SubscriptionConfigCompanion Function({
@@ -5495,6 +6601,9 @@ typedef $$SubscriptionConfigTableUpdateCompanionBuilder =
       Value<double> monthlyAmount,
       Value<DateTime?> subscriptionStartDate,
       Value<DateTime> lastUpdated,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<bool> deleted,
     });
 
 class $$SubscriptionConfigTableFilterComposer
@@ -5523,6 +6632,21 @@ class $$SubscriptionConfigTableFilterComposer
 
   ColumnFilters<DateTime> get lastUpdated => $composableBuilder(
     column: $table.lastUpdated,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -5555,6 +6679,21 @@ class $$SubscriptionConfigTableOrderingComposer
     column: $table.lastUpdated,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SubscriptionConfigTableAnnotationComposer
@@ -5583,6 +6722,15 @@ class $$SubscriptionConfigTableAnnotationComposer
     column: $table.lastUpdated,
     builder: (column) => column,
   );
+
+  GeneratedColumn<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<bool> get deleted =>
+      $composableBuilder(column: $table.deleted, builder: (column) => column);
 }
 
 class $$SubscriptionConfigTableTableManager
@@ -5629,11 +6777,17 @@ class $$SubscriptionConfigTableTableManager
                 Value<double> monthlyAmount = const Value.absent(),
                 Value<DateTime?> subscriptionStartDate = const Value.absent(),
                 Value<DateTime> lastUpdated = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
               }) => SubscriptionConfigCompanion(
                 id: id,
                 monthlyAmount: monthlyAmount,
                 subscriptionStartDate: subscriptionStartDate,
                 lastUpdated: lastUpdated,
+                uuid: uuid,
+                isSynced: isSynced,
+                deleted: deleted,
               ),
           createCompanionCallback:
               ({
@@ -5641,11 +6795,17 @@ class $$SubscriptionConfigTableTableManager
                 Value<double> monthlyAmount = const Value.absent(),
                 Value<DateTime?> subscriptionStartDate = const Value.absent(),
                 Value<DateTime> lastUpdated = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
               }) => SubscriptionConfigCompanion.insert(
                 id: id,
                 monthlyAmount: monthlyAmount,
                 subscriptionStartDate: subscriptionStartDate,
                 lastUpdated: lastUpdated,
+                uuid: uuid,
+                isSynced: isSynced,
+                deleted: deleted,
               ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -5938,6 +7098,10 @@ typedef $$YearlySummariesTableProcessedTableManager =
 typedef $$PastOutstandingDuesTableCreateCompanionBuilder =
     PastOutstandingDuesCompanion Function({
       Value<int> id,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<DateTime?> lastUpdatedAt,
+      Value<bool> deleted,
       required String enrollmentNumber,
       required double amount,
       required String periodLabel,
@@ -5951,6 +7115,10 @@ typedef $$PastOutstandingDuesTableCreateCompanionBuilder =
 typedef $$PastOutstandingDuesTableUpdateCompanionBuilder =
     PastOutstandingDuesCompanion Function({
       Value<int> id,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<DateTime?> lastUpdatedAt,
+      Value<bool> deleted,
       Value<String> enrollmentNumber,
       Value<double> amount,
       Value<String> periodLabel,
@@ -5973,6 +7141,26 @@ class $$PastOutstandingDuesTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6036,6 +7224,26 @@ class $$PastOutstandingDuesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get enrollmentNumber => $composableBuilder(
     column: $table.enrollmentNumber,
     builder: (column) => ColumnOrderings(column),
@@ -6093,6 +7301,20 @@ class $$PastOutstandingDuesTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get deleted =>
+      $composableBuilder(column: $table.deleted, builder: (column) => column);
 
   GeneratedColumn<String> get enrollmentNumber => $composableBuilder(
     column: $table.enrollmentNumber,
@@ -6172,6 +7394,10 @@ class $$PastOutstandingDuesTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime?> lastUpdatedAt = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
                 Value<String> enrollmentNumber = const Value.absent(),
                 Value<double> amount = const Value.absent(),
                 Value<String> periodLabel = const Value.absent(),
@@ -6183,6 +7409,10 @@ class $$PastOutstandingDuesTableTableManager
                 Value<int?> linkedPaymentId = const Value.absent(),
               }) => PastOutstandingDuesCompanion(
                 id: id,
+                uuid: uuid,
+                isSynced: isSynced,
+                lastUpdatedAt: lastUpdatedAt,
+                deleted: deleted,
                 enrollmentNumber: enrollmentNumber,
                 amount: amount,
                 periodLabel: periodLabel,
@@ -6196,6 +7426,10 @@ class $$PastOutstandingDuesTableTableManager
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime?> lastUpdatedAt = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
                 required String enrollmentNumber,
                 required double amount,
                 required String periodLabel,
@@ -6207,6 +7441,10 @@ class $$PastOutstandingDuesTableTableManager
                 Value<int?> linkedPaymentId = const Value.absent(),
               }) => PastOutstandingDuesCompanion.insert(
                 id: id,
+                uuid: uuid,
+                isSynced: isSynced,
+                lastUpdatedAt: lastUpdatedAt,
+                deleted: deleted,
                 enrollmentNumber: enrollmentNumber,
                 amount: amount,
                 periodLabel: periodLabel,
@@ -6249,6 +7487,10 @@ typedef $$PastOutstandingDuesTableProcessedTableManager =
 typedef $$DonationsTableCreateCompanionBuilder =
     DonationsCompanion Function({
       Value<int> id,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<DateTime?> lastUpdatedAt,
+      Value<bool> deleted,
       required String donorName,
       required String donorType,
       Value<int?> memberId,
@@ -6268,6 +7510,10 @@ typedef $$DonationsTableCreateCompanionBuilder =
 typedef $$DonationsTableUpdateCompanionBuilder =
     DonationsCompanion Function({
       Value<int> id,
+      Value<String?> uuid,
+      Value<bool> isSynced,
+      Value<DateTime?> lastUpdatedAt,
+      Value<bool> deleted,
       Value<String> donorName,
       Value<String> donorType,
       Value<int?> memberId,
@@ -6296,6 +7542,26 @@ class $$DonationsTableFilterComposer
   });
   ColumnFilters<int> get id => $composableBuilder(
     column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -6389,6 +7655,26 @@ class $$DonationsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get uuid => $composableBuilder(
+    column: $table.uuid,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isSynced => $composableBuilder(
+    column: $table.isSynced,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get deleted => $composableBuilder(
+    column: $table.deleted,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get donorName => $composableBuilder(
     column: $table.donorName,
     builder: (column) => ColumnOrderings(column),
@@ -6476,6 +7762,20 @@ class $$DonationsTableAnnotationComposer
   });
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get uuid =>
+      $composableBuilder(column: $table.uuid, builder: (column) => column);
+
+  GeneratedColumn<bool> get isSynced =>
+      $composableBuilder(column: $table.isSynced, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastUpdatedAt => $composableBuilder(
+    column: $table.lastUpdatedAt,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get deleted =>
+      $composableBuilder(column: $table.deleted, builder: (column) => column);
 
   GeneratedColumn<String> get donorName =>
       $composableBuilder(column: $table.donorName, builder: (column) => column);
@@ -6570,6 +7870,10 @@ class $$DonationsTableTableManager
           updateCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime?> lastUpdatedAt = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
                 Value<String> donorName = const Value.absent(),
                 Value<String> donorType = const Value.absent(),
                 Value<int?> memberId = const Value.absent(),
@@ -6587,6 +7891,10 @@ class $$DonationsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
               }) => DonationsCompanion(
                 id: id,
+                uuid: uuid,
+                isSynced: isSynced,
+                lastUpdatedAt: lastUpdatedAt,
+                deleted: deleted,
                 donorName: donorName,
                 donorType: donorType,
                 memberId: memberId,
@@ -6606,6 +7914,10 @@ class $$DonationsTableTableManager
           createCompanionCallback:
               ({
                 Value<int> id = const Value.absent(),
+                Value<String?> uuid = const Value.absent(),
+                Value<bool> isSynced = const Value.absent(),
+                Value<DateTime?> lastUpdatedAt = const Value.absent(),
+                Value<bool> deleted = const Value.absent(),
                 required String donorName,
                 required String donorType,
                 Value<int?> memberId = const Value.absent(),
@@ -6623,6 +7935,10 @@ class $$DonationsTableTableManager
                 Value<DateTime> createdAt = const Value.absent(),
               }) => DonationsCompanion.insert(
                 id: id,
+                uuid: uuid,
+                isSynced: isSynced,
+                lastUpdatedAt: lastUpdatedAt,
+                deleted: deleted,
                 donorName: donorName,
                 donorType: donorType,
                 memberId: memberId,

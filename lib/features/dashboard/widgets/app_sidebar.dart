@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants.dart';
 import '../../../core/app_gradients.dart';
 import '../../auth/auth_controller.dart';
+import '../../../core/auth/app_session.dart';
 
 class AppSidebar extends ConsumerStatefulWidget {
   final int selectedIndex;
@@ -154,18 +155,19 @@ class _AppSidebarState extends ConsumerState<AppSidebar> {
                     ),
                   ],
                 ),
+
                 _buildGroup(
-                  title: 'System',
+                  title: 'Notifications',
                   items: [
-                    _SidebarItem(
-                      icon: Icons.settings_outlined,
-                      activeIcon: Icons.settings,
-                      label: 'Settings',
-                      index: 6,
+                     _SidebarItem(
+                      icon: Icons.sms_outlined,
+                      activeIcon: Icons.sms_failed, // or Icons.sms
+                      label: 'SMS Panel',
+                      index: 10,
                       selectedIndex: widget.selectedIndex,
                       isCollapsed: _isCollapsed,
-                      onTap: () => widget.onDestinationSelected(6),
-                    ),
+                      onTap: () => widget.onDestinationSelected(10),
+                     ),
                   ],
                 ),
               ],
@@ -176,6 +178,7 @@ class _AppSidebarState extends ConsumerState<AppSidebar> {
           _SidebarFooter(
             isCollapsed: _isCollapsed,
             onLogout: () => _showLogoutDialog(context, ref),
+            onSettings: () => widget.onDestinationSelected(6), // Index 6 is Settings
           ),
         ],
       ),
@@ -217,9 +220,9 @@ class _AppSidebarState extends ConsumerState<AppSidebar> {
             child: const Text('Cancel'),
           ),
           FilledButton(
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
-              ref.read(authProvider.notifier).logout();
+              await ref.read(authProvider.notifier).logout();
             },
             child: const Text('Logout'),
           ),
@@ -363,14 +366,37 @@ class _SidebarItem extends StatelessWidget {
   }
 }
 
-class _SidebarFooter extends StatelessWidget {
+class _SidebarFooter extends ConsumerWidget {
   final bool isCollapsed;
   final VoidCallback onLogout;
+  final VoidCallback onSettings;
 
-  const _SidebarFooter({required this.isCollapsed, required this.onLogout});
+  const _SidebarFooter({
+    required this.isCollapsed, 
+    required this.onLogout,
+    required this.onSettings,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final authState = ref.watch(authProvider);
+    final session = ref.watch(appSessionProvider);
+    
+    // Determine Display Name/Email
+    final String displayName;
+    final String subText = authState.firebaseUser?.email ?? 'Unknown';
+    
+    if (session.role == UserRole.viewer) {
+      displayName = 'Viewer User';
+    } else {
+      // Admin Role (Default)
+      if (subText == 'admin@adba.com') {
+        displayName = 'Admin User';
+      } else {
+        displayName = 'User';
+      }
+    }
+
     return Container(
       decoration: BoxDecoration(
         gradient: AppGradients.logoutArea(context),
@@ -379,9 +405,9 @@ class _SidebarFooter extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
         children: [
-          // User Info (Placeholder)
+          // User Info
           InkWell(
-             onTap: () {}, // Optional profile action
+             onTap: () {}, 
              borderRadius: BorderRadius.circular(4),
              child: Padding(
                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -393,28 +419,31 @@ class _SidebarFooter extends StatelessWidget {
                       backgroundColor: Colors.grey[200],
                       child: const Icon(Icons.person, color: Colors.grey, size: 20),
                     ),
-                    if (!isCollapsed) 
+                    if (!isCollapsed) ... [
                       Expanded(
                         child: Padding(
                           padding: const EdgeInsets.only(left: 12),
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
-                            children: const [
-                               Text('Admin User', style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis),
-                               Text('admin@adba.com', style: TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                            children: [
+                               Text(displayName, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500), overflow: TextOverflow.ellipsis),
+                               Text(subText, style: const TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
                             ],
                           ),
                         ),
-                      )
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.settings, size: 20, color: Colors.grey),
+                        tooltip: 'Settings',
+                        onPressed: onSettings,
+                      ),
+                    ]
                  ],
                ),
              ),
           ),
           
           const SizedBox(height: 8),
-
-          
-          // Logout Button
 
           // Logout Button
           Padding(
@@ -430,7 +459,7 @@ class _SidebarFooter extends StatelessWidget {
                     child: Row(
                        mainAxisAlignment: isCollapsed ? MainAxisAlignment.center : MainAxisAlignment.start,
                        children: [
-                          const SizedBox(width: 4), // Align with item icons
+                          const SizedBox(width: 4), 
                           const Icon(Icons.logout, color: Colors.red, size: 24),
                           Expanded(
                             child: AnimatedOpacity(

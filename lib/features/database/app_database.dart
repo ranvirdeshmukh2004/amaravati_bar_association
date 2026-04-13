@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
+import 'package:uuid/uuid.dart';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
@@ -27,7 +28,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
   @override
-  int get schemaVersion => 13;
+  int get schemaVersion => 15;
 
   @override
   MigrationStrategy get migration {
@@ -112,48 +113,188 @@ class AppDatabase extends _$AppDatabase {
               await safeAddColumn(donations, donations.organization);
            }
         }
+        if (from < 14) {
+           // V14: Add Sync Columns (uuid, isSynced, lastUpdatedAt, deleted)
+           // Members
+           await safeAddColumn(members, members.uuid);
+           await safeAddColumn(members, members.isSynced);
+           await safeAddColumn(members, members.lastUpdatedAt);
+           await safeAddColumn(members, members.deleted);
+           
+           // Subscriptions
+           await safeAddColumn(subscriptions, subscriptions.uuid);
+           await safeAddColumn(subscriptions, subscriptions.isSynced);
+           await safeAddColumn(subscriptions, subscriptions.lastUpdatedAt);
+           await safeAddColumn(subscriptions, subscriptions.deleted);
+
+           // PastOutstandingDues
+           await safeAddColumn(pastOutstandingDues, pastOutstandingDues.uuid);
+           await safeAddColumn(pastOutstandingDues, pastOutstandingDues.isSynced);
+           await safeAddColumn(pastOutstandingDues, pastOutstandingDues.lastUpdatedAt);
+           await safeAddColumn(pastOutstandingDues, pastOutstandingDues.deleted);
+
+           // Donations
+           await safeAddColumn(donations, donations.uuid);
+           await safeAddColumn(donations, donations.isSynced);
+           await safeAddColumn(donations, donations.lastUpdatedAt);
+           await safeAddColumn(donations, donations.deleted);
+
+           // Post-Migration: Generate UUIDs for existing records
+           // Note: We cannot run raw UPDATE queries easily inside onUpgrade with type safety,
+           // but we can execute custom SQL.
+        }
+        if (from < 15) {
+           await safeAddColumn(subscriptionConfig, subscriptionConfig.uuid);
+           await safeAddColumn(subscriptionConfig, subscriptionConfig.isSynced);
+           await safeAddColumn(subscriptionConfig, subscriptionConfig.deleted);
+           
+           // Enable sync for config
+
+        }
+      },
+      beforeOpen: (details) async {
+        // Run UUID Backfill if needed (Safe to run every time, low cost)
+        // If we are on v14 or higher, ensure UUIDs exist.
+        if (details.versionNow >= 14) {
+             await _backfillUuids(details);
+        }
+        if (details.versionNow >= 15) {
+             // specific check for config if needed, but _backfillUuids covers generic tables if added.
+             await _backfillUuids(details); 
+        }
       },
     );
   }
 
-  Future<void> deleteSubscriptions() => delete(subscriptions).go();
 
-  Future<void> deleteMembers() => delete(members).go();
 
-  Future<void> deleteDonations() => delete(donations).go();
+  Future<void> _backfillUuids(OpeningDetails details) async {
+     const uuid = Uuid();
+     
+     // Helper to backfill a specific table
+     Future<void> backfillTable(String tableName) async {
+       try {
+         final rows = await customSelect('SELECT id FROM $tableName WHERE uuid IS NULL').get();
+         if (rows.isNotEmpty) {
+           print('Backfilling UUIDs for $tableName: ${rows.length} records...');
+           for (final row in rows) {
+              final id = row.read<int>('id');
+              final newUuid = uuid.v4();
+              await customUpdate(
+                'UPDATE $tableName SET uuid = ? WHERE id = ?',
+                variables: [Variable.withString(newUuid), Variable.withInt(id)],
+              );
+           }
+         }
+       } catch (e) {
+         print('Error backfilling $tableName: $e');
+       }
+     }
 
-  Future<void> deletePastOutstanding() => delete(pastOutstandingDues).go();
+     await backfillTable('members');
+     await backfillTable('subscriptions');
+     await backfillTable('past_outstanding_dues');
+     await backfillTable('donations');
+     await backfillTable('subscription_config');
+  }
+
+  Future<void> deleteSubscriptions() {
+    return (update(subscriptions)
+      ..where((t) => t.deleted.equals(false))
+    ).write(const SubscriptionsCompanion(
+      deleted: Value(true),
+      isSynced: Value(false),
+    ));
+  }
+
+  Future<void> deleteMembers() {
+    return (update(members)
+      ..where((t) => t.deleted.equals(false))
+    ).write(const MembersCompanion(
+      deleted: Value(true),
+      isSynced: Value(false),
+    ));
+  }
+
+  Future<void> deleteDonations() {
+    return (update(donations)
+      ..where((t) => t.deleted.equals(false))
+    ).write(const DonationsCompanion(
+      deleted: Value(true),
+      isSynced: Value(false),
+    ));
+  }
+
+  Future<void> deletePastOutstanding() {
+    return (update(pastOutstandingDues)
+      ..where((t) => t.deleted.equals(false))
+    ).write(const PastOutstandingDuesCompanion(
+      deleted: Value(true),
+      isSynced: Value(false),
+    ));
+  }
+
+  Future<void> deleteSubscriptionConfig() {
+    return (update(subscriptionConfig)
+      ..where((t) => t.deleted.equals(false))
+    ).write(const SubscriptionConfigCompanion(
+      deleted: Value(true),
+      isSynced: Value(false),
+    ));
+  }
 
   Future<void> deleteAllData() async {
+    // Soft Delete All
     await deleteSubscriptions();
     await deleteMembers();
+    await deleteDonations();
+    await deletePastOutstanding();
+    await deleteSubscriptionConfig();
+  }
+
+  /// Hard Delete All Local Data context.
+  /// Used when switching environments (Dev <-> Prod) to prevent data mixing.
+  /// This does NOT propagate to Cloud (as rows are gone).
+  Future<void> wipeLocalDatabase() async {
+    await delete(subscriptions).go();
+    await delete(members).go();
+    await delete(donations).go();
+    await delete(pastOutstandingDues).go();
+    await delete(subscriptionConfig).go();
   }
 }
 
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-    final File file;
+      File file;
     if (kReleaseMode) {
-      // In Release mode, store the DB in a hidden folder at the DRIVE ROOT
-      // e.g., if App is at H:\MyApp\app.exe, DB is at H:\.aba_data\aba_donation.sqlite
-      final exePath = Platform.resolvedExecutable;
-      final driveRoot = p.rootPrefix(exePath); // Returns "H:\" on Windows
-      final dataDir = Directory(p.join(driveRoot, '.aba_data'));
+      // Release: Try [DriveRoot]:\.aba_data (Hidden)
+      // Fallback: Documents Folder
+      try {
+        final exePath = Platform.resolvedExecutable;
+        final driveRoot = p.rootPrefix(exePath); 
+        final dataDir = Directory(p.join(driveRoot, '.aba_data'));
 
-      if (!await dataDir.exists()) {
-        await dataDir.create();
-        // Hide the directory on Windows
-        if (Platform.isWindows) {
-          try {
-             await Process.run('attrib', ['+h', dataDir.path]);
-          } catch (_) {} // Ignore if fails
+        if (!await dataDir.exists()) {
+          await dataDir.create();
+          if (Platform.isWindows) {
+            try {
+               await Process.run('attrib', ['+h', dataDir.path]);
+            } catch (_) {} 
+          }
         }
+        file = File(p.join(dataDir.path, 'aba_donation.sqlite'));
+        // Test write permission
+        await file.parent.create(recursive: true); // Ensure exists
+      } catch (e) {
+        // Fallback to Documents if permission denied
+        debugPrint("⚠️ Failed to use Database Root. Falling back to Documents. Error: $e");
+        final dbFolder = await getApplicationDocumentsDirectory();
+        file = File(p.join(dbFolder.path, 'aba_donation.sqlite'));
       }
-
-      file = File(p.join(dataDir.path, 'aba_donation.sqlite'));
     } else {
-      // In Debug mode, keep using Documents folder
+      // Debug
       final dbFolder = await getApplicationDocumentsDirectory();
       file = File(p.join(dbFolder.path, 'aba_donation.sqlite'));
     }

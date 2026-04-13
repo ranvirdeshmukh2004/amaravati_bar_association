@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:uuid/uuid.dart';
 import '../tables.dart';
 import '../app_database.dart';
 
@@ -9,15 +10,31 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
   MembersDao(super.db);
 
   Future<int> insertMember(MembersCompanion member) {
-    return into(members).insert(member);
+    // Ensure UUID and Sync Flags
+    final uuid = member.uuid.value ?? const Uuid().v4();
+    return into(members).insert(member.copyWith(
+      uuid: Value(uuid),
+      isSynced: const Value(false),
+      lastUpdatedAt: Value<DateTime?>(DateTime.now()),
+      deleted: const Value(false),
+    ));
   }
 
   Future<void> updateMember(Member member) {
-    return update(members).replace(member);
+    // Force update sync flags
+    return update(members).replace(member.toCompanion(true).copyWith(
+      isSynced: const Value(false),
+      lastUpdatedAt: Value<DateTime?>(DateTime.now()),
+    ));
   }
 
   Future<void> deleteMember(Member member) {
-    return delete(members).delete(member);
+    // Soft Delete: Mark as deleted and unsynced
+    return update(members).replace(member.toCompanion(true).copyWith(
+      deleted: const Value(true),
+      isSynced: const Value(false),
+      lastUpdatedAt: Value<DateTime?>(DateTime.now()),
+    ));
   }
 
   Future<Member?> getMemberByRegNo(String regNo) {
@@ -36,8 +53,9 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
     String searchQuery = '',
     String? filterBloodGroup,
     int? filterYear,
+    bool sortAscending = true,
   }) {
-    final query = select(members);
+    final query = select(members)..where((t) => t.deleted.equals(false));
 
     if (searchQuery.isNotEmpty) {
       query.where(
@@ -62,11 +80,12 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
       );
     }
 
-    // Default Sort: Surname, then Name (Matches Display)
+    // Sort Logic
+    final mode = sortAscending ? OrderingMode.asc : OrderingMode.desc;
     query.orderBy([
-      (t) => OrderingTerm(expression: t.surname),
-      (t) => OrderingTerm(expression: t.firstName),
-      (t) => OrderingTerm(expression: t.middleName),
+      (t) => OrderingTerm(expression: t.surname, mode: mode),
+      (t) => OrderingTerm(expression: t.firstName, mode: mode),
+      (t) => OrderingTerm(expression: t.middleName, mode: mode),
     ]);
 
     return query.watch();
@@ -90,13 +109,13 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
   }
 
   Future<List<Member>> getAllMembers() {
-    return select(members).get();
+    return (select(members)..where((t) => t.deleted.equals(false))).get();
   }
 
   // Aggregations for Developer Dashboard
   Stream<int> watchTotalMemberCount() {
     var count = members.id.count();
-    return (selectOnly(members)..addColumns([count]))
+    return (selectOnly(members)..where(members.deleted.equals(false))..addColumns([count]))
         .map((row) => row.read(count) ?? 0)
         .watchSingle();
   }
@@ -104,7 +123,7 @@ class MembersDao extends DatabaseAccessor<AppDatabase> with _$MembersDaoMixin {
   Stream<int> watchActiveMemberCount() {
     var count = members.id.count();
     return (selectOnly(members)
-          ..where(members.memberStatus.equals('Active'))
+          ..where(members.memberStatus.equals('Active') & members.deleted.equals(false))
           ..addColumns([count]))
         .map((row) => row.read(count) ?? 0)
         .watchSingle();

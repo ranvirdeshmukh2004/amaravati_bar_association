@@ -136,7 +136,13 @@ class _ArrearsClearanceScreenState extends ConsumerState<ArrearsClearanceScreen>
                    final sub = await db.subscriptionsDao.getSubscriptionById(paymentId!);
                    if (sub != null) {
                       final pdfBytes = await receiptService.generateReceipt(sub, title: 'ARREARS RECEIPT');
-                      await Printing.layoutPdf(onLayout: (format) => pdfBytes, name: 'Receipt_$receiptNo');
+                      if (context.mounted) {
+                        await receiptService.saveToDownloads(
+                          context,
+                          pdfBytes,
+                          'ABA_Arrears_Receipt_$receiptNo.pdf',
+                        );
+                      }
                    }
                 }, 
                 icon: const Icon(Icons.download), 

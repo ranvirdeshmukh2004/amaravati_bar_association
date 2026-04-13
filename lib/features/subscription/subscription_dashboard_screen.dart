@@ -10,6 +10,7 @@ import 'subscription_filter_provider.dart';
 import 'widgets/advanced_filter_panel.dart';
 import 'export_service.dart';
 import '../../core/app_gradients.dart';
+import '../../core/auth/app_session.dart';
 
 class SubscriptionDashboardScreen extends ConsumerStatefulWidget {
   const SubscriptionDashboardScreen({super.key});
@@ -29,12 +30,16 @@ class _SubscriptionDashboardScreenState
     super.dispose();
   }
 
+
+
+// ... class definition ...
+
   @override
   Widget build(BuildContext context) {
     // 1. Watch the FILTERED list (State is managed by provider)
     final statuses = ref.watch(filteredSubscriptionStatusProvider);
-
     final allStatusesAsync = ref.watch(subscriptionStatusProvider);
+    final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
 
     return Scaffold(
       appBar: AppBar(
@@ -50,11 +55,13 @@ class _SubscriptionDashboardScreenState
               );
             },
           ),
-          IconButton(
-            icon: const Icon(Icons.calendar_today),
-            tooltip: 'Close Financial Year',
-            onPressed: () async {
-              final confirm = await showDialog<bool>(
+          if (!isViewer) ...[ // Hide restricted actions for Viewers
+            IconButton(
+              icon: const Icon(Icons.calendar_today),
+              tooltip: 'Close Financial Year',
+              onPressed: () async {
+                 // ... (existing logic)
+                 final confirm = await showDialog<bool>(
                 context: context,
                 builder: (ctx) => AlertDialog(
                   title: const Text('Close Financial Year?'),
@@ -92,23 +99,25 @@ class _SubscriptionDashboardScreenState
                   }
                 }
               }
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => SubscriptionConfigScreen(),
-                ),
-              );
-            },
-          ),
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SubscriptionConfigScreen(),
+                  ),
+                );
+              },
+            ),
+          ],
         ],
       ),
       body: allStatusesAsync.when(
         data: (allStatuses) {
+           // ... (calculation logic)
           // Calculate Global Totals
           final totalExpected = allStatuses.fold(
             0.0,
@@ -129,47 +138,76 @@ class _SubscriptionDashboardScreenState
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+               // ... Summary Cards
+                 // Summary Cards (Active Global Stats)
               // Summary Cards (Active Global Stats)
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: _SummaryCard(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    final isSmallScreen = constraints.maxWidth < 900;
+                    
+                    final cards = [
+                      _SummaryCard(
                         title: 'Total Members',
                         value: totalMembers.toString(),
                         icon: Icons.group,
                         color: Colors.blue,
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _SummaryCard(
+                      _SummaryCard(
                         title: 'Collected',
                         value: '₹${totalCollected.toStringAsFixed(0)}',
                         icon: Icons.savings,
                         color: Colors.green[700]!,
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _SummaryCard(
+                      _SummaryCard(
                         title: 'Outstanding',
                         value: '₹${totalDue.toStringAsFixed(0)}',
                         icon: Icons.warning,
                         color: Colors.orange,
                       ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: _SummaryCard(
+                      _SummaryCard(
                         title: 'Defaulters',
                         value: defaulterCount.toString(),
                         icon: Icons.person_off,
                         color: Colors.red,
                       ),
-                    ),
-                  ],
+                    ];
+
+                    if (isSmallScreen) {
+                      return Column(
+                        children: [
+                          Row(
+                            children: [
+                              Expanded(child: cards[0]),
+                              const SizedBox(width: 8),
+                              Expanded(child: cards[1]),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              Expanded(child: cards[2]),
+                              const SizedBox(width: 8),
+                              Expanded(child: cards[3]),
+                            ],
+                          ),
+                        ],
+                      );
+                    } else {
+                      return Row(
+                        children: [
+                          Expanded(child: cards[0]),
+                          const SizedBox(width: 8),
+                          Expanded(child: cards[1]),
+                          const SizedBox(width: 8),
+                          Expanded(child: cards[2]),
+                          const SizedBox(width: 8),
+                          Expanded(child: cards[3]),
+                        ],
+                      );
+                    }
+                  },
                 ),
               ),
 
@@ -241,32 +279,35 @@ class _SubscriptionDashboardScreenState
                             );
                           },
                         ),
-                        const SizedBox(width: 12),
-                        TextButton.icon(
-                          icon: const Icon(Icons.download),
-                          label: const Text('Export Filtered CSV'),
-                          onPressed: () async {
-                            final success = await ref
-                                .read(subscriptionExportProvider)
-                                .exportToCsv(filteredStatuses);
-                            if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                  content: Text(
-                                    success
-                                        ? 'Export Successful'
-                                        : 'Export Failed or Cancelled',
+                        if (!isViewer) ...[ // Hide Export for Viewers
+                          const SizedBox(width: 12),
+                          TextButton.icon(
+                            icon: const Icon(Icons.download),
+                            label: const Text('Export Filtered CSV'),
+                            onPressed: () async {
+                              final success = await ref
+                                  .read(subscriptionExportProvider)
+                                  .exportToCsv(filteredStatuses);
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      success
+                                          ? 'Export Successful'
+                                          : 'Export Failed or Cancelled',
+                                    ),
                                   ),
-                                ),
-                              );
-                            }
-                          },
-                        ),
+                                );
+                              }
+                            },
+                          ),
+                        ],
                       ],
                     ),
                   ],
                 ),
               ),
+
 
               // Data Table Area - Expanded to take remaining space
               Expanded(
@@ -289,14 +330,21 @@ class _SubscriptionDashboardScreenState
                       columns: const [
                         DataColumn2(label: Text('MEMBER'), fixedWidth: 200),
                         DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
-                        DataColumn2(label: Text('MONTHS'), size: ColumnSize.L),
                         DataColumn2(label: Text('EXPECTED'), size: ColumnSize.L),
-                        DataColumn2(label: Text('ARREARS'), size: ColumnSize.L), // New Column
                         DataColumn2(label: Text('PAID'), size: ColumnSize.L),
-                        DataColumn2(label: Text('DUE'), size: ColumnSize.L),
-                        DataColumn2(label: Text('STATUS'), size: ColumnSize.L),
+                        DataColumn2(
+                          label: Text(
+                            'DUE\n(Current FY)',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                          size: ColumnSize.L,
+                        ),
+                        DataColumn2(label: Text('ARREARS'), size: ColumnSize.L),
+                        DataColumn2(label: Text('TOTAL DUE\n(Status)'), fixedWidth: 120),
                       ],
                       rows: filteredStatuses.map((s) {
+                        final currentYearDue = s.totalExpected - s.totalPaid;
                         return DataRow(
                           cells: [
                             DataCell(
@@ -306,16 +354,9 @@ class _SubscriptionDashboardScreenState
                               ),
                             ),
                             DataCell(Text(s.member.registrationNumber)),
-                            DataCell(Text(s.totalMonths.toString())),
                             DataCell(
                               Text(
                                 '₹${s.totalExpected.toStringAsFixed(0)}',
-                              ),
-                            ),
-                            DataCell(
-                              Text(
-                                '₹${s.pastOutstanding.toStringAsFixed(0)}',
-                                style: const TextStyle(color: Colors.orange), // Highlight arrears
                               ),
                             ),
                             DataCell(
@@ -324,17 +365,32 @@ class _SubscriptionDashboardScreenState
                                 style: const TextStyle(color: Colors.green),
                               ),
                             ),
+                            // Due (Current FY) = Expected - Paid
                             DataCell(
                               Text(
-                                '₹${s.balance.toStringAsFixed(0)}',
+                                // Remove negative sign for cleaner look if preferring "Advance" context, or keep it.
+                                // Standard accounting often uses brackets or just color. 
+                                // Here we'll stick to signed number but colored Green.
+                                '₹${currentYearDue.toStringAsFixed(0)}',
                                 style: TextStyle(
-                                  color: s.balance > 0
-                                      ? Colors.red
-                                      : Colors.grey,
+                                  // Red for Due, Green for Advance (Negative), Grey for Zero
+                                  color: currentYearDue > 0 
+                                      ? Colors.red 
+                                      : (currentYearDue < 0 ? Colors.green[700] : Colors.grey),
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
                             ),
+                            DataCell(
+                              Text(
+                                '₹${s.pastOutstanding.toStringAsFixed(0)}',
+                                style: TextStyle(
+                                  color: s.pastOutstanding > 0 ? Colors.amber[700] : Colors.grey, // Lighter readable yellow
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                            // Total Status (Balance)
                             DataCell(
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -347,8 +403,15 @@ class _SubscriptionDashboardScreenState
                                   border: Border.all(color: s.statusColor),
                                 ),
                                 child: Text(
-                                  s.statusText,
-                                  style: TextStyle(color: s.statusColor),
+                                  // Show the TOTAL balance here as requested
+                                  s.balance <= 0 
+                                      ? 'Paid' 
+                                      : '₹${s.balance.toStringAsFixed(0)}',
+                                  style: TextStyle(
+                                    color: s.statusColor,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 12,
+                                  ),
                                 ),
                               ),
                             ),

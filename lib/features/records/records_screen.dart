@@ -125,12 +125,16 @@ class RecordsScreen extends ConsumerWidget {
                               content: Text('Preparing Receipt...'),
                             ),
                           );
-                          final pdfBytes = await ReceiptService()
-                              .generateReceipt(subscription);
-                          await Printing.layoutPdf(
-                            onLayout: (format) async => pdfBytes,
-                            name: 'Receipt_${subscription.receiptNumber}',
-                          );
+                          final receiptService = ref.read(receiptServiceProvider);
+                          final pdfBytes = await receiptService.generateReceipt(subscription);
+                          
+                          if (context.mounted) {
+                             await receiptService.saveToDownloads(
+                               context, 
+                               pdfBytes, 
+                               'ABA_Receipt_${subscription.receiptNumber}.pdf'
+                             );
+                          }
                         },
                       ),
                     ],

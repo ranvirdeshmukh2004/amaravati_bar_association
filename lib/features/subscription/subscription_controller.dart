@@ -49,6 +49,9 @@ class SubscriptionController {
       receiptNumber: drift.Value(receiptNumber),
       receiptType: drift.Value(type),
       dailySequence: drift.Value(seq),
+      isSynced: const drift.Value(false),
+      lastUpdatedAt: drift.Value(now),
+      deleted: const drift.Value(false),
     );
 
     final id = await db.subscriptionsDao.insertSubscription(entry);
@@ -68,6 +71,9 @@ class SubscriptionController {
       receiptNumber: receiptNumber,
       receiptType: type,
       dailySequence: seq,
+      isSynced: false,
+      lastUpdatedAt: now,
+      deleted: false,
     );
   }
 }

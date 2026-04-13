@@ -11,6 +11,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 }
 
 class _LoginScreenState extends ConsumerState<LoginScreen> {
+  final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
@@ -19,6 +20,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   void dispose() {
+    _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
@@ -32,71 +34,28 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
       final success = await ref
           .read(authProvider.notifier)
-          .login(_passwordController.text);
+          .login(_emailController.text.trim(), _passwordController.text);
 
       if (mounted) {
         setState(() {
           _isLoading = false;
           if (!success) {
-            _errorMessage = 'Invalid Password';
+            _errorMessage = 'Invalid Email or Password';
           }
         });
       }
     }
   }
 
-  void _showForgotPasswordDialog() async {
-    final question = await ref
-        .read(authProvider.notifier)
-        .getSecurityQuestion();
-
-    if (!mounted) return;
-
-    if (question == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'No security question set. Contact Administrator/Developer.',
-          ),
-        ),
-      );
-      return;
-    }
-
-    final answerController = TextEditingController();
-    final newPasswordController = TextEditingController();
-    final formKey = GlobalKey<FormState>();
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
+  void _showForgotPasswordDialog() {
+      final emailController = TextEditingController();
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
           title: const Text('Reset Password'),
-          content: Form(
-            key: formKey,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Security Question: $question',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: answerController,
-                  decoration: const InputDecoration(labelText: 'Answer'),
-                  validator: (v) => v?.isNotEmpty == true ? null : 'Required',
-                ),
-                const SizedBox(height: 16),
-                TextFormField(
-                  controller: newPasswordController,
-                  decoration: const InputDecoration(labelText: 'New Password'),
-                  validator: (v) => v?.isNotEmpty == true ? null : 'Required',
-                  obscureText: true,
-                ),
-              ],
-            ),
+          content: TextField(
+            controller: emailController,
+            decoration: const InputDecoration(labelText: 'Enter Email'),
           ),
           actions: [
             TextButton(
@@ -105,42 +64,17 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             ),
             FilledButton(
               onPressed: () async {
-                if (formKey.currentState!.validate()) {
-                  final isValid = await ref
-                      .read(authProvider.notifier)
-                      .validateSecurityAnswer(answerController.text);
-
-                  if (!context.mounted) return;
-
-                  if (isValid) {
-                    await ref
-                        .read(authProvider.notifier)
-                        .resetPassword(newPasswordController.text);
-                    if (context.mounted) {
-                      Navigator.pop(context);
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Password Reset Successfully'),
-                          backgroundColor: Colors.green,
-                        ),
-                      );
-                    }
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Incorrect Answer'),
-                        backgroundColor: Colors.red,
-                      ),
-                    );
-                  }
-                }
+                 await ref.read(authProvider.notifier).sendPasswordResetEmail(emailController.text.trim());
+                 if(context.mounted) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Reset link sent if email exists.')));
+                 }
               },
-              child: const Text('Reset Password'),
-            ),
+              child: const Text('Send Reset Link'),
+            )
           ],
-        );
-      },
-    );
+        ),
+      );
   }
 
   void _showDeveloperLoginDialog() {
@@ -158,17 +92,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           obscureText: true,
           autofocus: true,
           onSubmitted: (_) async {
-              final success = await ref
-                  .read(authProvider.notifier)
-                  .loginAsDeveloper(pinController.text);
-              if (mounted) {
-                Navigator.pop(context);
-                if (!success) {
-                   ScaffoldMessenger.of(context).showSnackBar(
-                     const SnackBar(content: Text('Access Denied'), backgroundColor: Colors.red),
-                   );
-                }
-              }
+             _attemptDevLogin(pinController.text);
           },
         ),
         actions: [
@@ -177,24 +101,26 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
             child: const Text('Cancel'),
           ),
            FilledButton(
-            onPressed: () async {
-              final success = await ref
-                  .read(authProvider.notifier)
-                  .loginAsDeveloper(pinController.text);
-              if (mounted) {
-                Navigator.pop(context);
-                if (!success) {
-                   ScaffoldMessenger.of(context).showSnackBar(
-                     const SnackBar(content: Text('Access Denied'), backgroundColor: Colors.red),
-                   );
-                }
-              }
-            },
+            onPressed: () => _attemptDevLogin(pinController.text),
             child: const Text('Enter'),
           ),
         ],
       ),
     );
+  }
+  
+  Future<void> _attemptDevLogin(String pin) async {
+      final success = await ref
+          .read(authProvider.notifier)
+          .loginAsDeveloper(pin);
+      if (mounted) {
+        Navigator.pop(context);
+        if (!success) {
+           ScaffoldMessenger.of(context).showSnackBar(
+             const SnackBar(content: Text('Access Denied'), backgroundColor: Colors.red),
+           );
+        }
+      }
   }
 
   @override
@@ -217,9 +143,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     GestureDetector(
-                      onLongPress: () => _showDeveloperLoginDialog(),
+                      onLongPress: _showDeveloperLoginDialog,
                       child: const Icon(
-                        Icons.account_balance,
+                        Icons.security,
                         size: 64,
                         color: AppConstants.primaryColor,
                       ),
@@ -235,13 +161,34 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      AppConstants.organizationName,
+                      'Cloud Sync Enabled',
                       style: Theme.of(
                         context,
                       ).textTheme.titleSmall?.copyWith(color: Colors.grey),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 32),
+                    
+                    // Email Field
+                    TextFormField(
+                      controller: _emailController,
+                      decoration: InputDecoration(
+                        labelText: 'Email',
+                        prefixIcon: const Icon(Icons.email_outlined),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter email';
+                        }
+                        if (!value.contains('@')) return 'Invalid email';
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 16),
+                    
                     TextFormField(
                       controller: _passwordController,
                       obscureText: _isObscure,
@@ -297,12 +244,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    const SizedBox(height: 16),
                     TextButton(
                       onPressed: _showForgotPasswordDialog,
                       child: const Text('Forgot Password?'),
                     ),
-
                   ],
                 ),
               ),

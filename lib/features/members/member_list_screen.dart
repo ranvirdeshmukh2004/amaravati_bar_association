@@ -8,6 +8,7 @@ import '../database/database_provider.dart';
 import '../../core/app_gradients.dart';
 import 'member_form_screen.dart';
 import 'member_controller.dart';
+import '../../core/auth/app_session.dart';
 
 final memberSearchQueryProvider = StateProvider.autoDispose<String>(
   (ref) => '',
@@ -20,6 +21,8 @@ final memberFilterTypeProvider = StateProvider.autoDispose<String?>(
   (ref) => null,
 );
 
+final memberSortAscendingProvider = StateProvider.autoDispose<bool>((ref) => true);
+
 final memberListStreamProvider = StreamProvider<List<Member>>((
   ref,
 ) {
@@ -27,11 +30,13 @@ final memberListStreamProvider = StreamProvider<List<Member>>((
   final search = ref.watch(memberSearchQueryProvider);
   final bg = ref.watch(memberBloodGroupFilterProvider);
   final year = ref.watch(memberYearFilterProvider);
+  final sortAsc = ref.watch(memberSortAscendingProvider);
 
   return db.membersDao.watchAllMembers(
     searchQuery: search,
     filterBloodGroup: bg,
     filterYear: year,
+    sortAscending: sortAsc,
   );
 });
 
@@ -54,6 +59,8 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
   @override
   Widget build(BuildContext context) {
     final membersAsync = ref.watch(memberListStreamProvider);
+    final sortAscending = ref.watch(memberSortAscendingProvider);
+    final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Member Records')),
@@ -238,6 +245,41 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                             'Showing ${members.length} Members',
                             style: const TextStyle(fontWeight: FontWeight.bold, color: Colors.grey),
                           ),
+                          const Spacer(),
+                          // External Sort Control
+                          InkWell(
+                            onTap: () {
+                              ref.read(memberSortAscendingProvider.notifier).state = !sortAscending;
+                            },
+                            borderRadius: BorderRadius.circular(8),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Colors.blue.withOpacity(0.3)),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    sortAscending ? "A - Z" : "Z - A",
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.blue,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Icon(
+                                    sortAscending ? Icons.arrow_downward : Icons.arrow_upward,
+                                    size: 16,
+                                    color: Colors.blue,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -259,13 +301,18 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                           horizontalMargin: 12,
                           minWidth: 1000,
                           fixedLeftColumns: 1,
-                          columns: const [
-                            DataColumn2(label: Text('PHOTO'), fixedWidth: 60), // New Column
-                            DataColumn2(label: Text('NAME'), size: ColumnSize.L), // Flexible width for equality
-                            DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
-                            DataColumn2(label: Text('MOBILE'), size: ColumnSize.L),
-                            DataColumn2(label: Text('ENROLLED'), size: ColumnSize.L),
-                            DataColumn2(label: Text('ACTIONS'), fixedWidth: 180),
+                          // sortColumnIndex: 1, // Name Column - Removed to hide arrow
+                          // sortAscending: sortAscending,
+                          columns: [
+                            const DataColumn2(label: Text('PHOTO'), fixedWidth: 60), // New Column
+                            const DataColumn2(
+                              label: Text('NAME'),
+                              size: ColumnSize.L,
+                            ), 
+                            const DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
+                            const DataColumn2(label: Text('MOBILE'), size: ColumnSize.L),
+                            const DataColumn2(label: Text('ENROLLED'), size: ColumnSize.L),
+                            const DataColumn2(label: Text('ACTIONS'), fixedWidth: 180),
                           ],
                           rows: members.map((m) {
                             return DataRow(
@@ -312,6 +359,7 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                                         : '-',
                                   ),
                                 ),
+
                                 DataCell(
                                   Row(
                                     mainAxisSize: MainAxisSize.min,
@@ -319,70 +367,54 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                                       IconButton(
                                         icon: const Icon(Icons.visibility),
                                         onPressed: () {
-                                          // Open Details
                                           showDialog(
                                             context: context,
-                                            builder: (c) =>
-                                                _MemberDetailDialog(member: m),
+                                            builder: (c) => _MemberDetailDialog(member: m),
                                           );
                                         },
                                       ),
-                                      IconButton(
-                                        icon: const Icon(Icons.edit),
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (_) =>
-                                                  MemberFormScreen(member: m),
-                                            ),
-                                          );
-                                        },
-                                      ),
-
-                                      PopupMenuButton<String>(
-                                        icon: Icon(
-                                          Icons.verified_user,
-                                          color: _getStatusColor(m.memberStatus),
-                                        ),
-                                        tooltip: 'Change Status',
-                                        onSelected: (String newStatus) {
-                                          if (newStatus != m.memberStatus) {
-                                            ref
-                                                .read(memberControllerProvider)
-                                                .updateMemberStatus(
-                                                  m,
-                                                  newStatus,
-                                                );
-                                          }
-                                        },
-                                        itemBuilder: (BuildContext context) {
-                                          return MemberController.memberStatuses
-                                              .map((String status) {
-                                            return PopupMenuItem<String>(
-                                              value: status,
-                                              child: Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons.circle,
-                                                    size: 12,
-                                                    color: _getStatusColor(status),
-                                                  ),
-                                                  const SizedBox(width: 8),
-                                                  Text(status),
-                                                  if (m.memberStatus == status) ...[
-                                                    const Spacer(),
-                                                    const Icon(Icons.check, size: 16),
-                                                  ],
-                                                ],
+                                      if (!isViewer) ...[ // HIDE EDIT/STATUS FOR VIEWER
+                                        IconButton(
+                                          icon: const Icon(Icons.edit),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (_) => MemberFormScreen(member: m),
                                               ),
                                             );
-                                          }).toList();
-                                        },
-                                      ),
+                                          },
+                                        ),
+                                        PopupMenuButton<String>(
+                                          icon: Icon(
+                                            Icons.verified_user,
+                                            color: _getStatusColor(m.memberStatus),
+                                          ),
+                                          tooltip: 'Change Status',
+                                          onSelected: (String newStatus) {
+                                            if (newStatus != m.memberStatus) {
+                                              ref.read(memberControllerProvider).updateMemberStatus(m, newStatus);
+                                            }
+                                          },
+                                          itemBuilder: (context) => MemberController.memberStatuses.map((status) {
+                                              return PopupMenuItem(
+                                                value: status, 
+                                                child: Row(
+                                                  children: [
+                                                    Icon(Icons.circle, size: 12, color: _getStatusColor(status)),
+                                                    const SizedBox(width: 8),
+                                                    Text(status),
+                                                  ],
+                                                ),
+                                              );
+                                          }).toList(),
+                                        ),
+                                      ],
                                     ],
                                   ),
                                 ),
+
+
                               ],
                             );
                           }).toList(),
@@ -420,22 +452,21 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
   }
 }
 
-class _MemberDetailDialog extends StatelessWidget {
+class _MemberDetailDialog extends ConsumerWidget {
   final Member member;
   const _MemberDetailDialog({required this.member});
 
+  // ... (Keep helper methods like _row)
+  
   Widget _row(String label, String value) {
-    return Padding(
+     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           SizedBox(
             width: 120,
-            child: Text(
-              label,
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
+            child: Text(label, style: const TextStyle(fontWeight: FontWeight.bold)),
           ),
           Expanded(child: Text(value)),
         ],
@@ -444,31 +475,22 @@ class _MemberDetailDialog extends StatelessWidget {
   }
 
   @override
-  Widget build(BuildContext context) {
-    final fullName = [
-      member.surname,
-      member.firstName,
-      member.middleName ?? '',
-    ].join(' ').trim().replaceAll(RegExp(r'\s+'), ' ');
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
+    final fullName = [member.surname, member.firstName, member.middleName ?? ''].join(' ').trim();
 
     return AlertDialog(
       title: Row(
         children: [
-          ClipRRect(
+           // ... (Avatar same as before)
+           ClipRRect(
             borderRadius: BorderRadius.circular(8),
             child: member.profilePhotoPath != null
                 ? Image.file(
                     File(member.profilePhotoPath!),
-                    width: 48,
-                    height: 48,
-                    fit: BoxFit.cover,
+                    width: 48, height: 48, fit: BoxFit.cover,
                   )
-                : Container(
-                    width: 48,
-                    height: 48,
-                    color: Colors.grey[200],
-                    child: const Icon(Icons.person, color: Colors.grey),
-                  ),
+                : Container(width: 48, height: 48, color: Colors.grey[200], child: const Icon(Icons.person, color: Colors.grey)),
           ),
           const SizedBox(width: 16),
           Expanded(child: Text(fullName)),
@@ -484,25 +506,13 @@ class _MemberDetailDialog extends StatelessWidget {
               const Divider(),
               _row('Full Name:', fullName),
               _row('Age:', '${member.age}'),
-              if (member.dateOfBirth != null)
-                _row(
-                  'Date of Birth:',
-                  DateFormat('dd/MM/yyyy').format(member.dateOfBirth!),
-                ),
+               if (member.dateOfBirth != null)
+                _row('Date of Birth:', DateFormat('dd/MM/yyyy').format(member.dateOfBirth!)),
               _row('Blood Group:', member.bloodGroup ?? '-'),
               const Divider(),
-              _row(
-                'Enrollment (ABA):',
-                member.enrollmentDateAba != null
-                    ? DateFormat('dd/MM/yyyy').format(member.enrollmentDateAba!)
-                    : '-',
-              ),
-              _row(
-                'Enrollment (Bar):',
-                member.enrollmentDateBar != null
-                    ? DateFormat('dd/MM/yyyy').format(member.enrollmentDateBar!)
-                    : '-',
-              ),
+              // ... Enrolment ...
+              _row('Enrollment (ABA):', member.enrollmentDateAba != null ? DateFormat('dd/MM/yyyy').format(member.enrollmentDateAba!) : '-'),
+              _row('Enrollment (Bar):', member.enrollmentDateBar != null ? DateFormat('dd/MM/yyyy').format(member.enrollmentDateBar!) : '-'),
               const Divider(),
               _row('Mobile:', member.mobileNumber),
               _row('Email:', member.email ?? '-'),
@@ -512,16 +522,11 @@ class _MemberDetailDialog extends StatelessWidget {
         ),
       ),
       actions: [
+        if (!isViewer)
         FilledButton.tonalIcon(
           onPressed: () {
-            Navigator.pop(context); // Close dialog
-            // Navigate to edit
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => MemberFormScreen(member: member),
-              ),
-            );
+            Navigator.pop(context); 
+            Navigator.push(context, MaterialPageRoute(builder: (_) => MemberFormScreen(member: member)));
           },
           icon: const Icon(Icons.edit),
           label: const Text('Edit'),

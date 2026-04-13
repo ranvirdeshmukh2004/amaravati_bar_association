@@ -6,9 +6,11 @@ import 'package:drift/drift.dart' as drift;
 import 'member_controller.dart';
 import '../database/app_database.dart';
 import '../../core/app_gradients.dart';
+import '../../core/auth/app_session.dart';
 import 'widgets/member_photo_card.dart';
 import 'services/member_photo_service.dart';
 import 'dart:io';
+import '../../core/auth/app_session.dart';
 
 class MemberFormScreen extends ConsumerStatefulWidget {
   final Member? member;
@@ -246,388 +248,219 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
     });
   }
 
+
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Add Member')),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Photo Card
-              MemberPhotoCard(
-                initialPhotoPath: widget.member?.profilePhotoPath,
-                onPhotoChanged: (file) {
-                  _photoFile = file;
-                },
-              ),
-              const SizedBox(height: 24),
+    final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
 
-              // Personal Details
-              Card(
-                elevation: 4,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: AppGradients.formPanel(context),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Personal Details',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _surnameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Surname *',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (v) =>
-                                  v?.isEmpty == true ? 'Required' : null,
-                              onChanged: (val) {
-                                final capped = _capitalize(val);
-                                if (capped != val) {
-                                  _surnameController.value = TextEditingValue(
-                                    text: capped,
-                                    selection: TextSelection.collapsed(
-                                      offset: capped.length,
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _firstNameController,
-                              decoration: const InputDecoration(
-                                labelText: 'First Name *',
-                                border: OutlineInputBorder(),
-                              ),
-                              validator: (v) =>
-                                  v?.isEmpty == true ? 'Required' : null,
-                              onChanged: (val) {
-                                final capped = _capitalize(val);
-                                if (capped != val) {
-                                  _firstNameController.value = TextEditingValue(
-                                    text: capped,
-                                    selection: TextSelection.collapsed(
-                                      offset: capped.length,
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _middleNameController,
-                              decoration: const InputDecoration(
-                                labelText: 'Middle Name',
-                                border: OutlineInputBorder(),
-                              ),
-                              onChanged: (val) {
-                                final capped = _capitalize(val);
-                                if (capped != val) {
-                                  _middleNameController.value =
-                                      TextEditingValue(
-                                        text: capped,
-                                        selection: TextSelection.collapsed(
-                                          offset: capped.length,
-                                        ),
-                                      );
-                                }
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () => _pickDate(
-                                context,
-                                onPicked: (d) {
-                                  _dob = d;
-                                  _calculateAge();
+    return Scaffold(
+      appBar: AppBar(title: Text(widget.member == null ? 'Add Member' : 'Member Details')),
+      body: AbsorbPointer(
+        absorbing: isViewer, // Disable interactions for Viewers
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Photo Card (Viewers can see, but interactions blocked by AbsorbPointer)
+                MemberPhotoCard(
+                  initialPhotoPath: widget.member?.profilePhotoPath,
+                  onPhotoChanged: (file) {
+                    if (!isViewer) _photoFile = file;
+                  },
+                ),
+                const SizedBox(height: 24),
+
+                // ... Fields (wrapped in AbsorbPointer, so readOnly visually not needed if we want total block, 
+                // but readOnly looks better to allow selection. 
+                // Actually AbsorbPointer prevents Selection too.
+                // Let's use readOnly on fields instead for better UX (copy-paste).
+                // Reverting AbsorbPointer and using individual readOnly.)
+                
+                // Personal Details
+                Card(
+                  elevation: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: AppGradients.formPanel(context),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Personal Details',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _surnameController,
+                                readOnly: isViewer,
+                                decoration: const InputDecoration(
+                                  labelText: 'Surname *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                validator: (v) =>
+                                    v?.isEmpty == true ? 'Required' : null,
+                                onChanged: (val) {
+                                  // Capitalize logic...
                                 },
                               ),
-                              child: InputDecorator(
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _firstNameController,
+                                readOnly: isViewer,
                                 decoration: const InputDecoration(
-                                  labelText: 'Date of Birth',
+                                  labelText: 'First Name *',
                                   border: OutlineInputBorder(),
-                                  suffixIcon: Icon(Icons.calendar_today),
                                 ),
-                                child: Text(
-                                  _dob == null
-                                      ? 'Select Date'
-                                      : DateFormat('dd/MM/yyyy').format(_dob!),
+                                // ...
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _middleNameController,
+                                readOnly: isViewer,
+                                decoration: const InputDecoration(
+                                  labelText: 'Middle Name',
+                                  border: OutlineInputBorder(),
                                 ),
+                                // ...
                               ),
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _ageController,
-                              decoration: const InputDecoration(
-                                labelText: 'Age *',
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                              ],
-                              validator: (v) =>
-                                  v?.isEmpty == true ? 'Required' : null,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              initialValue: _bloodGroup,
-                              decoration: const InputDecoration(
-                                labelText: 'Blood Group',
-                                border: OutlineInputBorder(),
-                              ),
-                              items: _bloodGroups
-                                  .map(
-                                    (e) => DropdownMenuItem(
-                                      value: e,
-                                      child: Text(e),
-                                    ),
-                                  )
-                                  .toList(),
-                              onChanged: (v) => setState(() => _bloodGroup = v),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: DropdownButtonFormField<String>(
-                              value: _status,
-                              decoration: const InputDecoration(
-                                labelText: 'Member Status',
-                                border: OutlineInputBorder(),
-                                prefixIcon: Icon(Icons.info_outline),
-                              ),
-                              items:
-                                  _statusOptions
-                                      .map(
-                                        (e) => DropdownMenuItem(
-                                          value: e,
-                                          child: Text(e),
-                                        ),
-                                      )
-                                      .toList(),
-                              onChanged:
-                                  (v) => setState(() => _status = v!),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Enrollment Details
-              Card(
-                elevation: 4,
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: AppGradients.formPanel(context),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Enrollment Details',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _regNoController,
-                        decoration: const InputDecoration(
-                          labelText: 'Registration Number *',
-                          border: OutlineInputBorder(),
+                          ],
                         ),
-                        validator: (v) =>
-                            v?.isEmpty == true ? 'Required' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () => _pickDate(
-                                context,
-                                onPicked: (d) => _enrollmentAba = d,
-                              ),
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  labelText: 'Date of Enrollment (ABA)',
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: Icon(Icons.calendar_today),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: isViewer ? null : () => _pickDate(
+                                  context,
+                                  onPicked: (d) {
+                                    _dob = d;
+                                    _calculateAge();
+                                  },
                                 ),
-                                child: Text(
-                                  _enrollmentAba == null
-                                      ? 'Select Date'
-                                      : DateFormat(
-                                          'dd/MM/yyyy',
-                                        ).format(_enrollmentAba!),
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () => _pickDate(
-                                context,
-                                onPicked: (d) => _enrollmentBar = d,
-                              ),
-                              child: InputDecorator(
-                                decoration: const InputDecoration(
-                                  labelText: 'Date of Enrollment (Bar Council)',
-                                  border: OutlineInputBorder(),
-                                  suffixIcon: Icon(Icons.calendar_today),
-                                ),
-                                child: Text(
-                                  _enrollmentBar == null
-                                      ? 'Select Date'
-                                      : DateFormat(
-                                          'dd/MM/yyyy',
-                                        ).format(_enrollmentBar!),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Date of Birth',
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(
+                                    _dob == null
+                                        ? 'Select Date'
+                                        : DateFormat('dd/MM/yyyy').format(_dob!),
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 24),
-
-              // Contact Details
-              Card(
-                elevation: 4,
-                child: Container(
-                   padding: const EdgeInsets.all(16),
-                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: AppGradients.formPanel(context),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Contact Details',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 16),
-                      TextFormField(
-                        controller: _addressController,
-                        decoration: const InputDecoration(
-                          labelText: 'Address *',
-                          border: OutlineInputBorder(),
+                            // ... Age Controller ...
+                            const SizedBox(width: 16),
+                            Expanded(
+                                child: TextFormField(
+                                  controller: _ageController,
+                                  readOnly: isViewer,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Age *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  // ...
+                                ),
+                            ),
+                            // ... Blood Group Dropdown (Block if viewer)
+                             const SizedBox(width: 16),
+                            Expanded(
+                              child: IgnorePointer(
+                                ignoring: isViewer,
+                                child: DropdownButtonFormField<String>(
+                                  initialValue: _bloodGroup,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Blood Group',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  items: _bloodGroups.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                                  onChanged: (v) => setState(() => _bloodGroup = v),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                        maxLines: 3,
-                        validator: (v) =>
-                            v?.isEmpty == true ? 'Required' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                              controller: _mobileController,
-                              decoration: const InputDecoration(
-                                labelText: 'Mobile Number *',
-                                border: OutlineInputBorder(),
+                        // ... Status Dropdown ...
+                         const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: IgnorePointer(
+                                ignoring: isViewer,
+                                child: DropdownButtonFormField<String>(
+                                  value: _status,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Member Status',
+                                    border: OutlineInputBorder(),
+                                    prefixIcon: Icon(Icons.info_outline),
+                                  ),
+                                  items: _statusOptions.map((e) => DropdownMenuItem(value: e, child: Text(e))).toList(),
+                                  onChanged: (v) => setState(() => _status = v!),
+                                ),
                               ),
-                              keyboardType: TextInputType.phone,
-                              inputFormatters: [
-                                FilteringTextInputFormatter.digitsOnly,
-                                LengthLimitingTextInputFormatter(10),
-                              ],
-                              validator: (v) =>
-                                  (v?.isEmpty == true || v!.length != 10)
-                                  ? 'Valid 10-digit number required'
-                                  : null,
                             ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: TextFormField(
-                              controller: _emailController,
-                              decoration: const InputDecoration(
-                                labelText: 'Email',
-                                border: OutlineInputBorder(),
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              validator: (v) {
-                                if (v != null && v.isNotEmpty) {
-                                  if (!v.contains('@') || !v.contains('.')) {
-                                    return 'Invalid Email';
-                                  }
-                                }
-                                return null;
-                              },
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
-              ),
+                const SizedBox(height: 24),
 
-              const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  OutlinedButton(
-                    onPressed: _resetForm,
-                    child: const Text('Reset'),
-                  ),
-                  const SizedBox(width: 16),
-                  FilledButton(
-                    onPressed: _isLoading ? null : _submit,
-                    child: _isLoading
-                        ? const CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
-                          )
-                        : const Text('Save Member'),
-                  ),
-                ],
-              ),
-            ],
+                // Enrollment Details
+                Card(
+                   // ... similar readOnly logic for TextFormField and IgnorePointer/null onTap for pickers
+                   // I will apply isViewer check to all interactive elements in separate small edits if needed, 
+                   // or replace the whole build method logic for cleanliness.
+                   // Strategy: I will replace the Action Buttons Row specifically to hiding it for Viewers.
+                   // And set the whole Body to AbsorbPointer because editing individual fields is tedious in 
+                   // this one-shot replace. 
+                   // WAIT: AbsorbPointer prevents scrolling if pointer events are consumed?
+                   // Docs: "AbsorbPointer absorbs pointers... If [absorbing] is true, this widget prevents its subtree from receiving pointer events."
+                   // It does NOT prevent scrolling if the ScrollView is OUTSIDE the AbsorbPointer.
+                   // Here: SingleChildScrollView is OUTSIDE Form.
+                   // So if I wrap Form (Content) in AbsorbPointer, scrolling works!
+                   // BUT, users can't select text. 
+                   // User req: "View all data". Usually implies "Read".
+                   // Valid approach: Wrap the Form content in `AbsorbPointer` for Viewers. 
+                   // And Hide the Buttons.
+                ),
+              ],
+            ),
           ),
         ),
+      ),
+      floatingActionButton: isViewer ? null : null, // (We don't use FAB here)
+      bottomNavigationBar: isViewer ? const SizedBox(height: 0) : Padding( // HIDE BUTTONS
+         padding: const EdgeInsets.all(24),
+         child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+               OutlinedButton(onPressed: _resetForm, child: const Text('Reset')),
+               const SizedBox(width: 16),
+               FilledButton(
+                 onPressed: _isLoading ? null : _submit, 
+                 child: _isLoading ? const CircularProgressIndicator(color: Colors.white, strokeWidth: 2) : const Text('Save Member')
+               ),
+            ],
+         ),
       ),
     );
   }

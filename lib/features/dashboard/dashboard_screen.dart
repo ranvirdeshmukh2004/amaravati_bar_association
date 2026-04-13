@@ -1,6 +1,9 @@
 import 'package:amaravati_bar_association/features/dashboard/widgets/analytics_charts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/sync/sync_status_button.dart';
+import '../../features/sync/sync_service.dart'; // Added
+import '../../core/auth/app_session.dart'; // Added
 import 'package:intl/intl.dart';
 import '../../core/utils.dart';
 import '../../core/app_gradients.dart';
@@ -13,18 +16,129 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final analyticsAsync = ref.watch(dashboardAnalyticsProvider);
+    final isDev = ref.watch(appSessionProvider).environment == AppEnvironment.dev;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Dashboard')),
+      backgroundColor: Colors.transparent, // Allow parent background if any
       body: Container(
         decoration: BoxDecoration(
           gradient: AppGradients.dashboardBackground(context),
         ),
-        child: analyticsAsync.when(
-          data: (data) => _DashboardLayout(data: data),
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, s) => Center(child: Text('Error: $e')),
+        child: Column(
+          children: [
+            _buildHeader(context, ref, isDev),
+            Expanded(
+              child: analyticsAsync.when(
+                data: (data) => _DashboardLayout(data: data),
+                loading: () => const Center(child: CircularProgressIndicator()),
+                error: (e, s) => Center(child: Text('Error: $e')),
+              ),
+            ),
+          ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildHeader(BuildContext context, WidgetRef ref, bool isDev) {
+    final now = DateTime.now();
+    final startYear = now.month >= 4 ? now.year : now.year - 1;
+    final fy = "FY $startYear-${(startYear + 1).toString().substring(2)}";
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+      decoration: BoxDecoration(
+        color: Theme.of(context).cardColor.withOpacity(0.5),
+        border: Border(bottom: BorderSide(color: Colors.grey.withOpacity(0.2))),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 4,
+            offset: const Offset(0, 2),
+          )
+        ],
+      ),
+      child: Row(
+        children: [
+          // Left Section
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'DASHBOARD',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 22,
+                    ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Subscription & Member Overview',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Theme.of(context).textTheme.bodySmall?.color?.withOpacity(0.7),
+                    ),
+              ),
+            ],
+          ),
+          const Spacer(),
+          // Right Section
+          Row(
+            children: [
+              _buildHeaderTag(context, Icons.calendar_today, fy, Colors.blue),
+              const SizedBox(width: 16),
+              _buildHeaderTag(
+                context, 
+                Icons.circle, 
+                isDev ? 'Debug Mode' : 'Live Data', 
+                isDev ? Colors.orange : Colors.green,
+                iconSize: 8 // Smaller dot for status
+              ),
+              const SizedBox(width: 16),
+              // Last Updated
+              FutureBuilder<DateTime>(
+                future: ref.read(syncServiceProvider).getLastSyncTime(),
+                builder: (context, snapshot) {
+                  final time = snapshot.data;
+                  final timeStr = time != null 
+                      ? DateFormat('dd MMM, HH:mm').format(time) 
+                      : 'Never';
+                  return Text(
+                    'Last Updated: $timeStr',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
+                  );
+                }
+              ),
+              const SizedBox(width: 16),
+              const SyncStatusButton(),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildHeaderTag(BuildContext context, IconData icon, String label, Color color, {double iconSize = 14}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color.withOpacity(0.3)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: iconSize, color: color),
+          const SizedBox(width: 8),
+          Text(
+            label,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w600,
+              fontSize: 12,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -56,13 +170,14 @@ class _DashboardLayout extends StatelessWidget {
             child: LayoutBuilder(
               builder: (context, constraints) {
                 // Responsive check: if wide enough, show side-by-side
-                if (constraints.maxWidth > 900) {
+                // Responsive check: if wide enough, show side-by-side
+                if (constraints.maxWidth > 1100) {
                   return Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Left Column: Analytics (Charts)
                       Expanded(
-                        flex: 2,
+                        flex: 3, // Reduced from 2 (relative to 1) to 3 (relative to 2) -> 60% width
                         child: Column(
                           children: [
                             _buildMonthlyTrendSection(context),
@@ -74,7 +189,7 @@ class _DashboardLayout extends StatelessWidget {
                       const SizedBox(width: 24),
                       // Right Column: Health & Alerts
                       Expanded(
-                        flex: 1,
+                        flex: 2, // Increased from 1 to 2 -> 40% width
                         child: Column(
                           children: [
                             _buildHealthPanel(context),

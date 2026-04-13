@@ -1,4 +1,5 @@
 import 'package:drift/drift.dart';
+import 'package:uuid/uuid.dart';
 import '../tables.dart';
 import '../app_database.dart';
 
@@ -9,11 +10,21 @@ class DonationsDao extends DatabaseAccessor<AppDatabase> with _$DonationsDaoMixi
   DonationsDao(super.db);
 
   Future<int> insertDonation(DonationsCompanion donation) {
-    return into(donations).insert(donation);
+    // Ensure UUID and Sync Flags are set
+    final uuid = donation.uuid.value ?? const Uuid().v4();
+    return into(donations).insert(donation.copyWith(
+      uuid: Value(uuid),
+      isSynced: const Value(false),
+      lastUpdatedAt: Value(DateTime.now()),
+      deleted: const Value(false),
+    ));
   }
 
   Future<void> updateDonation(Donation donation) {
-    return update(donations).replace(donation);
+    return update(donations).replace(donation.toCompanion(true).copyWith(
+      isSynced: const Value(false),
+      lastUpdatedAt: Value(DateTime.now()),
+    ));
   }
 
   Future<void> deleteDonation(Donation donation) {
@@ -22,12 +33,14 @@ class DonationsDao extends DatabaseAccessor<AppDatabase> with _$DonationsDaoMixi
 
   Stream<List<Donation>> watchAllDonations() {
     return (select(donations)
+          ..where((t) => t.deleted.equals(false))
           ..orderBy([(t) => OrderingTerm(expression: t.donationDate, mode: OrderingMode.desc)]))
         .watch();
   }
   
   Future<List<Donation>> getAllDonations() {
      return (select(donations)
+          ..where((t) => t.deleted.equals(false))
           ..orderBy([(t) => OrderingTerm(expression: t.donationDate, mode: OrderingMode.desc)]))
         .get();
   }
