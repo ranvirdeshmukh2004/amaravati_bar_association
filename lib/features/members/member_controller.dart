@@ -21,7 +21,9 @@ class MemberController {
 
   MemberController(this._ref);
 
-  Future<void> addMember({
+  /// Adds a new member and returns the created [Member] object.
+  /// Throws if a member with the same registration number already exists.
+  Future<Member> addMember({
     required String surname,
     required String firstName,
     String? middleName,
@@ -67,6 +69,13 @@ class MemberController {
     );
 
     await db.membersDao.insertMember(entry);
+
+    // Fetch and return the newly created member from DB
+    final newMember = await db.membersDao.getMemberByRegNo(registrationNumber);
+    if (newMember == null) {
+      throw Exception('Failed to retrieve newly created member.');
+    }
+    return newMember;
   }
 
   Future<void> updateMember(Member member) async {

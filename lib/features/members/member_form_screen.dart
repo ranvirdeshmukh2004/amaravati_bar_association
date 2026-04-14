@@ -10,7 +10,8 @@ import '../../core/auth/app_session.dart';
 import 'widgets/member_photo_card.dart';
 import 'services/member_photo_service.dart';
 import 'dart:io';
-import '../../core/auth/app_session.dart';
+import '../subscription/subscription_controller.dart';
+import '../receipt/receipt_service.dart';
 
 class MemberFormScreen extends ConsumerStatefulWidget {
   final Member? member;
@@ -41,6 +42,14 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
   bool _isLoading = false;
   File? _photoFile;
 
+  // --- Subscription Step State ---
+  bool _showSubscriptionStep = false;
+  Member? _savedMember;
+  final _subscriptionFormKey = GlobalKey<FormState>();
+  final _amountController = TextEditingController();
+  final _transactionInfoController = TextEditingController();
+  String _paymentMode = 'Cash';
+  bool _isSubscriptionLoading = false;
 
   final List<String> _bloodGroups = [
     'A+',
@@ -92,6 +101,8 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
     _addressController.dispose();
     _mobileController.dispose();
     _emailController.dispose();
+    _amountController.dispose();
+    _transactionInfoController.dispose();
     super.dispose();
   }
 
@@ -151,7 +162,8 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
         }
 
         if (widget.member == null) {
-          await ref
+          // --- New Member: save and transition to subscription step ---
+          final newMember = await ref
               .read(memberControllerProvider)
               .addMember(
                 surname: _surnameController.text,
@@ -173,6 +185,20 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                 memberStatus: _status,
                 profilePhotoPath: savedPhotoPath,
               );
+
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Member Added Successfully'),
+                backgroundColor: Colors.green,
+              ),
+            );
+            // Transition to subscription step
+            setState(() {
+              _savedMember = newMember;
+              _showSubscriptionStep = true;
+            });
+          }
         } else {
           // Update existing member
           final updatedMember = widget.member!.copyWith(
@@ -198,22 +224,14 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
             profilePhotoPath: drift.Value(savedPhotoPath),
           );
           await ref.read(memberControllerProvider).updateMember(updatedMember);
-        }
 
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                widget.member == null
-                    ? 'Member Added Successfully'
-                    : 'Member Updated Successfully',
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Member Updated Successfully'),
+                backgroundColor: Colors.green,
               ),
-              backgroundColor: Colors.green,
-            ),
-          );
-          if (widget.member == null) {
-            _resetForm();
-          } else {
+            );
             Navigator.pop(context); // Close edit screen if pushed
           }
         }
@@ -248,11 +266,130 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
     });
   }
 
+  /// Resets the subscription step and goes back to blank add-member form.
+  void _skipSubscription() {
+    _amountController.clear();
+    _transactionInfoController.clear();
+    setState(() {
+      _showSubscriptionStep = false;
+      _savedMember = null;
+      _paymentMode = 'Cash';
+      _isSubscriptionLoading = false;
+    });
+    _resetForm();
+  }
+
+  /// Saves the subscription for the just-added member using the same
+  /// SubscriptionController that the standalone screen uses. This ensures
+  /// identical receipt numbering, UUID generation, and sync flags.
+  Future<void> _submitSubscription() async {
+    if (!_subscriptionFormKey.currentState!.validate()) return;
+    if (_savedMember == null) return;
+
+    setState(() => _isSubscriptionLoading = true);
+
+    try {
+      final amount = double.parse(_amountController.text);
+
+      final subscription = await ref
+          .read(subscriptionControllerProvider)
+          .saveSubscription(
+            firstName: _savedMember!.firstName,
+            lastName: _savedMember!.surname,
+            address: _savedMember!.address,
+            mobileNumber: _savedMember!.mobileNumber,
+            email: _savedMember!.email,
+            enrollmentNumber: _savedMember!.registrationNumber,
+            amount: amount,
+            paymentMode: _paymentMode,
+            transactionInfo: _transactionInfoController.text.isNotEmpty
+                ? _transactionInfoController.text
+                : null,
+          );
+
+      if (mounted) {
+        _showSubscriptionSuccessDialog(subscription);
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: Colors.red),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSubscriptionLoading = false);
+      }
+    }
+  }
+
+  void _showSubscriptionSuccessDialog(Subscription subscription) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.check_circle, color: Colors.green),
+            SizedBox(width: 8),
+            Text('Subscription Saved'),
+          ],
+        ),
+        content: const Text(
+          'Subscription has been recorded successfully. You can now download the receipt.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              _skipSubscription(); // Reset to blank add-member form
+            },
+            child: const Text('Close'),
+          ),
+          FilledButton.icon(
+            onPressed: () async {
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Generating Receipt...')),
+              );
+
+              try {
+                final receiptService = ref.read(receiptServiceProvider);
+                final pdfBytes = await receiptService.generateReceipt(
+                  subscription,
+                );
+
+                if (context.mounted) {
+                  await receiptService.saveToDownloads(
+                    context,
+                    pdfBytes,
+                    'ABA_Subscription_Receipt_${subscription.receiptNumber}.pdf',
+                  );
+                }
+              } catch (e) {
+                // Error handled in helper
+              }
+
+              // Reset to blank add-member form after download
+              _skipSubscription();
+            },
+            icon: const Icon(Icons.download),
+            label: const Text('Download Receipt'),
+          ),
+        ],
+      ),
+    );
+  }
 
 
   @override
   Widget build(BuildContext context) {
     final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
+
+    // --- Show subscription step if member was just saved ---
+    if (_showSubscriptionStep && _savedMember != null && widget.member == null) {
+      return _buildSubscriptionStep(isViewer);
+    }
 
     return Scaffold(
       appBar: AppBar(title: Text(widget.member == null ? 'Add Member' : 'Member Details')),
@@ -424,23 +561,164 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                 ),
                 const SizedBox(height: 24),
 
-                // Enrollment Details
+                // Enrollment & Registration Details
                 Card(
-                   // ... similar readOnly logic for TextFormField and IgnorePointer/null onTap for pickers
-                   // I will apply isViewer check to all interactive elements in separate small edits if needed, 
-                   // or replace the whole build method logic for cleanliness.
-                   // Strategy: I will replace the Action Buttons Row specifically to hiding it for Viewers.
-                   // And set the whole Body to AbsorbPointer because editing individual fields is tedious in 
-                   // this one-shot replace. 
-                   // WAIT: AbsorbPointer prevents scrolling if pointer events are consumed?
-                   // Docs: "AbsorbPointer absorbs pointers... If [absorbing] is true, this widget prevents its subtree from receiving pointer events."
-                   // It does NOT prevent scrolling if the ScrollView is OUTSIDE the AbsorbPointer.
-                   // Here: SingleChildScrollView is OUTSIDE Form.
-                   // So if I wrap Form (Content) in AbsorbPointer, scrolling works!
-                   // BUT, users can't select text. 
-                   // User req: "View all data". Usually implies "Read".
-                   // Valid approach: Wrap the Form content in `AbsorbPointer` for Viewers. 
-                   // And Hide the Buttons.
+                  elevation: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: AppGradients.formPanel(context),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Enrollment & Registration',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _regNoController,
+                                readOnly: isViewer,
+                                decoration: const InputDecoration(
+                                  labelText: 'Registration Number *',
+                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(Icons.badge),
+                                ),
+                                validator: (v) =>
+                                    v?.isEmpty == true ? 'Required' : null,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: InkWell(
+                                onTap: isViewer ? null : () => _pickDate(
+                                  context,
+                                  onPicked: (d) {
+                                    _enrollmentAba = d;
+                                  },
+                                ),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Enrollment Date (ABA)',
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(
+                                    _enrollmentAba == null
+                                        ? 'Select Date'
+                                        : DateFormat('dd/MM/yyyy').format(_enrollmentAba!),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: InkWell(
+                                onTap: isViewer ? null : () => _pickDate(
+                                  context,
+                                  onPicked: (d) {
+                                    _enrollmentBar = d;
+                                  },
+                                ),
+                                child: InputDecorator(
+                                  decoration: const InputDecoration(
+                                    labelText: 'Enrollment Date (Bar Council)',
+                                    border: OutlineInputBorder(),
+                                    suffixIcon: Icon(Icons.calendar_today),
+                                  ),
+                                  child: Text(
+                                    _enrollmentBar == null
+                                        ? 'Select Date'
+                                        : DateFormat('dd/MM/yyyy').format(_enrollmentBar!),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Contact Details
+                Card(
+                  elevation: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: AppGradients.formPanel(context),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Contact Details',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 16),
+                        TextFormField(
+                          controller: _addressController,
+                          readOnly: isViewer,
+                          decoration: const InputDecoration(
+                            labelText: 'Address *',
+                            border: OutlineInputBorder(),
+                            prefixIcon: Icon(Icons.location_on),
+                          ),
+                          maxLines: 2,
+                          validator: (v) =>
+                              v?.isEmpty == true ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _mobileController,
+                                readOnly: isViewer,
+                                decoration: const InputDecoration(
+                                  labelText: 'Mobile Number *',
+                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(Icons.phone),
+                                ),
+                                keyboardType: TextInputType.phone,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.digitsOnly,
+                                  LengthLimitingTextInputFormatter(10),
+                                ],
+                                validator: (v) =>
+                                    v?.isEmpty == true ? 'Required' : null,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: TextFormField(
+                                controller: _emailController,
+                                readOnly: isViewer,
+                                decoration: const InputDecoration(
+                                  labelText: 'Email',
+                                  border: OutlineInputBorder(),
+                                  prefixIcon: Icon(Icons.email),
+                                ),
+                                keyboardType: TextInputType.emailAddress,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
@@ -461,6 +739,303 @@ class _MemberFormScreenState extends ConsumerState<MemberFormScreen> {
                ),
             ],
          ),
+      ),
+    );
+  }
+
+  // =====================================================================
+  // SUBSCRIPTION STEP — shown after a new member is successfully saved
+  // =====================================================================
+
+  Widget _buildSubscriptionStep(bool isViewer) {
+    final member = _savedMember!;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Add Subscription'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          tooltip: 'Skip & Add Another Member',
+          onPressed: _skipSubscription,
+        ),
+      ),
+      body: AbsorbPointer(
+        absorbing: isViewer,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: Form(
+            key: _subscriptionFormKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Success Banner
+                Card(
+                  color: Colors.green.shade50,
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide(color: Colors.green.shade300),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Row(
+                      children: [
+                        Icon(Icons.check_circle, color: Colors.green.shade700, size: 28),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Member Added Successfully!',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15,
+                                  color: Colors.green.shade800,
+                                ),
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                'You can now add a subscription entry for this member, or skip to add another member.',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  color: Colors.green.shade700,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Member Info Card (read-only display)
+                Card(
+                  elevation: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: AppGradients.formPanel(context),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Member Details',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Theme.of(context)
+                                .colorScheme
+                                .primaryContainer
+                                .withOpacity(0.2),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .primary
+                                  .withOpacity(0.5),
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                '${member.firstName} ${member.surname}',
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleLarge
+                                    ?.copyWith(
+                                      color: Theme.of(context).colorScheme.primary,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                              ),
+                              const Divider(),
+                              const SizedBox(height: 8),
+                              _buildDetailRow('Reg. Number', member.registrationNumber),
+                              _buildDetailRow('Mobile', member.mobileNumber),
+                              _buildDetailRow('Address', member.address),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+
+                // Subscription Payment Card
+                Card(
+                  elevation: 4,
+                  child: Container(
+                    padding: const EdgeInsets.all(24),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: AppGradients.formPanel(context),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Subscription Payment',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                controller: _amountController,
+                                readOnly: isViewer,
+                                decoration: const InputDecoration(
+                                  labelText: 'Subscription Amount (₹) *',
+                                  border: OutlineInputBorder(),
+                                  prefixText: '₹ ',
+                                ),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: [
+                                  FilteringTextInputFormatter.allow(
+                                    RegExp(r'^\d+\.?\d{0,2}'),
+                                  ),
+                                ],
+                                validator: (v) =>
+                                    v?.isEmpty == true ? 'Required' : null,
+                              ),
+                            ),
+                            const SizedBox(width: 16),
+                            Expanded(
+                              child: IgnorePointer(
+                                ignoring: isViewer,
+                                child: DropdownButtonFormField<String>(
+                                  value: _paymentMode,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Payment Mode',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  items: [
+                                    'Cash',
+                                    'UPI',
+                                    'Cheque',
+                                    'Bank Transfer',
+                                    'DD',
+                                  ]
+                                      .map(
+                                        (e) => DropdownMenuItem(
+                                          value: e,
+                                          child: Text(e),
+                                        ),
+                                      )
+                                      .toList(),
+                                  onChanged: (v) =>
+                                      setState(() => _paymentMode = v!),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        if (_paymentMode != 'Cash') ...[
+                          TextFormField(
+                            controller: _transactionInfoController,
+                            readOnly: isViewer,
+                            decoration: const InputDecoration(
+                              labelText: 'Transaction / Cheque Reference ID',
+                              border: OutlineInputBorder(),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+                        TextFormField(
+                          initialValue: DateFormat(
+                            'dd MMM yyyy',
+                          ).format(DateTime.now()),
+                          decoration: const InputDecoration(
+                            labelText: 'Subscription Date',
+                            border: OutlineInputBorder(),
+                            helperText: 'Date is locked to Today',
+                            filled: true,
+                          ),
+                          readOnly: true,
+                          enabled: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 32),
+              ],
+            ),
+          ),
+        ),
+      ),
+      bottomNavigationBar: isViewer
+          ? const SizedBox(height: 0)
+          : Padding(
+              padding: const EdgeInsets.all(24),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: _skipSubscription,
+                    icon: const Icon(Icons.skip_next),
+                    label: const Text('Skip'),
+                  ),
+                  const SizedBox(width: 16),
+                  FilledButton.icon(
+                    onPressed: _isSubscriptionLoading ? null : _submitSubscription,
+                    icon: _isSubscriptionLoading
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Icon(Icons.save),
+                    label: const Text('Save Subscription'),
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 4.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SizedBox(
+            width: 100,
+            child: Text(
+              '$label:',
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.grey,
+              ),
+            ),
+          ),
+          Expanded(
+            child: Text(
+              value,
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+          ),
+        ],
       ),
     );
   }
