@@ -8,7 +8,7 @@ import 'subscription_service.dart';
 import 'year_history_screen.dart';
 import 'subscription_filter_provider.dart';
 import 'widgets/advanced_filter_panel.dart';
-import 'export_service.dart';
+import 'widgets/download_list_dialog.dart';
 import '../../core/app_gradients.dart';
 import '../../core/auth/app_session.dart';
 
@@ -279,26 +279,22 @@ class _SubscriptionDashboardScreenState
                             );
                           },
                         ),
-                        if (!isViewer) ...[ // Hide Export for Viewers
+                        if (!isViewer) ...[ // Hide Download for Viewers
                           const SizedBox(width: 12),
                           TextButton.icon(
-                            icon: const Icon(Icons.download),
-                            label: const Text('Export Filtered CSV'),
-                            onPressed: () async {
-                              final success = await ref
-                                  .read(subscriptionExportProvider)
-                                  .exportToCsv(filteredStatuses);
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      success
-                                          ? 'Export Successful'
-                                          : 'Export Failed or Cancelled',
-                                    ),
+                            icon: const Icon(Icons.download_rounded),
+                            label: const Text('Download List'),
+                            onPressed: () {
+                              showDialog(
+                                context: context,
+                                builder: (_) => DownloadListDialog(
+                                  allStatuses: allStatusesAsync.when(
+                                    data: (list) => list,
+                                    loading: () => <SubscriptionStatus>[],
+                                    error: (_, __) => <SubscriptionStatus>[],
                                   ),
-                                );
-                              }
+                                ),
+                              );
                             },
                           ),
                         ],

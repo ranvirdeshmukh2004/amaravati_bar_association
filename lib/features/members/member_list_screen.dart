@@ -8,6 +8,7 @@ import '../database/database_provider.dart';
 import '../../core/app_gradients.dart';
 import 'member_form_screen.dart';
 import 'member_controller.dart';
+import 'services/experience_certificate_service.dart';
 import '../../core/auth/app_session.dart';
 
 final memberSearchQueryProvider = StateProvider.autoDispose<String>(
@@ -312,7 +313,7 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                             const DataColumn2(label: Text('REG NO'), size: ColumnSize.L),
                             const DataColumn2(label: Text('MOBILE'), size: ColumnSize.L),
                             const DataColumn2(label: Text('ENROLLED'), size: ColumnSize.L),
-                            const DataColumn2(label: Text('ACTIONS'), fixedWidth: 180),
+                            const DataColumn2(label: Text('ACTIONS'), fixedWidth: 220),
                           ],
                           rows: members.map((m) {
                             return DataRow(
@@ -410,6 +411,30 @@ class _MemberListScreenState extends ConsumerState<MemberListScreen> {
                                           }).toList(),
                                         ),
                                       ],
+                                      // Certificate download - available to all roles
+                                      IconButton(
+                                        icon: const Icon(Icons.card_membership, color: Colors.deepPurple),
+                                        tooltip: 'Download Experience Certificate',
+                                        onPressed: () async {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(content: Text('Generating certificate...')),
+                                          );
+                                          final path = await ExperienceCertificateService.generateAndOpen(m);
+                                          if (context.mounted) {
+                                            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                                            ScaffoldMessenger.of(context).showSnackBar(
+                                              SnackBar(
+                                                content: Text(
+                                                  path != null
+                                                      ? 'Certificate saved & opened!'
+                                                      : 'Failed to generate certificate.',
+                                                ),
+                                                backgroundColor: path != null ? Colors.green[700] : Colors.red[400],
+                                              ),
+                                            );
+                                          }
+                                        },
+                                      ),
                                     ],
                                   ),
                                 ),
@@ -522,6 +547,28 @@ class _MemberDetailDialog extends ConsumerWidget {
         ),
       ),
       actions: [
+        // Experience Certificate button - available to all
+        FilledButton.tonalIcon(
+          onPressed: () async {
+            Navigator.pop(context);
+            final ctx = context;
+            final path = await ExperienceCertificateService.generateAndOpen(member);
+            if (ctx.mounted) {
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    path != null
+                        ? 'Certificate saved & opened!'
+                        : 'Failed to generate certificate.',
+                  ),
+                  backgroundColor: path != null ? Colors.green[700] : Colors.red[400],
+                ),
+              );
+            }
+          },
+          icon: const Icon(Icons.card_membership),
+          label: const Text('Certificate'),
+        ),
         if (!isViewer)
         FilledButton.tonalIcon(
           onPressed: () {
