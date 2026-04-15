@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 
 class Subscriptions extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get uuid => text().nullable()(); // Global ID (Firebase)
+  TextColumn get uuid => text().nullable()(); // Stable unique ID
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
   DateTimeColumn get lastUpdatedAt => dateTime().nullable()();
   BoolColumn get deleted => boolean().withDefault(const Constant(false))();
@@ -33,7 +33,7 @@ class AdminSettings extends Table {
 
 class Members extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get uuid => text().nullable()(); // Global ID (Firebase)
+  TextColumn get uuid => text().nullable()(); // Stable unique ID
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
   DateTimeColumn get lastUpdatedAt => dateTime().nullable()();
   BoolColumn get deleted => boolean().withDefault(const Constant(false))();
@@ -68,7 +68,7 @@ class YearlySummaries extends Table {
 
 class PastOutstandingDues extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get uuid => text().nullable()(); // Global ID (Firebase)
+  TextColumn get uuid => text().nullable()(); // Stable unique ID
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
   DateTimeColumn get lastUpdatedAt => dateTime().nullable()();
   BoolColumn get deleted => boolean().withDefault(const Constant(false))();
@@ -87,7 +87,7 @@ class PastOutstandingDues extends Table {
 
 class Donations extends Table {
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get uuid => text().nullable()(); // Global ID (Firebase)
+  TextColumn get uuid => text().nullable()(); // Stable unique ID
   BoolColumn get isSynced => boolean().withDefault(const Constant(false))();
   DateTimeColumn get lastUpdatedAt => dateTime().nullable()();
   BoolColumn get deleted => boolean().withDefault(const Constant(false))();

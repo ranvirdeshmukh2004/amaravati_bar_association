@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/constants.dart';
 import '../../../core/app_gradients.dart';
 import '../../auth/auth_controller.dart';
-import '../../../core/auth/app_session.dart';
 
 class AppSidebar extends ConsumerStatefulWidget {
   final int selectedIndex;
@@ -380,21 +379,21 @@ class _SidebarFooter extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final authState = ref.watch(authProvider);
-    final session = ref.watch(appSessionProvider);
     
-    // Determine Display Name/Email
+    // Determine display name based on role
     final String displayName;
-    final String subText = authState.firebaseUser?.email ?? 'Unknown';
+    final String subText;
     
-    if (session.role == UserRole.viewer) {
-      displayName = 'Viewer User';
-    } else {
-      // Admin Role (Default)
-      if (subText == 'admin@adba.com') {
+    switch (authState.role) {
+      case AuthRole.developer:
+        displayName = 'Developer';
+        subText = 'Full Access';
+      case AuthRole.admin:
         displayName = 'Admin User';
-      } else {
+        subText = 'Local Mode';
+      default:
         displayName = 'User';
-      }
+        subText = 'Not logged in';
     }
 
     return Container(

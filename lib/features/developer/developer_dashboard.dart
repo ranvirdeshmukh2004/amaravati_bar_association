@@ -184,7 +184,7 @@ class _DeveloperDashboardState extends ConsumerState<DeveloperDashboard> {
                style: FilledButton.styleFrom(backgroundColor: Colors.red),
                onPressed: () async {
                   if (controller.text.isNotEmpty) {
-                     await ref.read(authProvider.notifier).resetPassword(email: controller.text);
+                      await ref.read(authProvider.notifier).resetPassword(controller.text);
                      if (context.mounted) {
                        Navigator.pop(context);
                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password Reset Successfully')));

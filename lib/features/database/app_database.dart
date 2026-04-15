@@ -113,8 +113,8 @@ class AppDatabase extends _$AppDatabase {
               await safeAddColumn(donations, donations.organization);
            }
         }
-        if (from < 14) {
-           // V14: Add Sync Columns (uuid, isSynced, lastUpdatedAt, deleted)
+         if (from < 14) {
+            // V14: Add tracking columns (uuid, isSynced, lastUpdatedAt, deleted)
            // Members
            await safeAddColumn(members, members.uuid);
            await safeAddColumn(members, members.isSynced);
@@ -148,7 +148,7 @@ class AppDatabase extends _$AppDatabase {
            await safeAddColumn(subscriptionConfig, subscriptionConfig.isSynced);
            await safeAddColumn(subscriptionConfig, subscriptionConfig.deleted);
            
-           // Enable sync for config
+            // Keep sync columns for backward compatibility
 
         }
       },
@@ -252,9 +252,8 @@ class AppDatabase extends _$AppDatabase {
     await deleteSubscriptionConfig();
   }
 
-  /// Hard Delete All Local Data context.
-  /// Used when switching environments (Dev <-> Prod) to prevent data mixing.
-  /// This does NOT propagate to Cloud (as rows are gone).
+  /// Hard Delete All Local Data.
+  /// This permanently removes all rows from the database.
   Future<void> wipeLocalDatabase() async {
     await delete(subscriptions).go();
     await delete(members).go();

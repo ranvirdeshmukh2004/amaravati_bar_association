@@ -9,23 +9,19 @@ import '../settings/settings_screen.dart';
 import '../members/member_form_screen.dart';
 import '../members/member_list_screen.dart';
 import '../subscription/arrears_clearance_screen.dart';
-import '../donation/donation_entry_screen.dart'; // Added this import
+import '../donation/donation_entry_screen.dart';
 
 import '../subscription/subscription_dashboard_screen.dart';
 import '../subscription/past_outstanding_screen.dart';
 import '../sms/sms_dashboard.dart';
 import 'widgets/app_sidebar.dart';
-import '../../core/auth/app_session.dart';
-import '../auth/environment_selection_dialog.dart';
 
 import 'package:flutter/services.dart';
 
-// Update items count and switch logic
+// Navigation state
 final navigationProvider = StateProvider<int>((ref) => 0);
 
-// ... existing imports ...
-
-// Intents
+// Keyboard shortcut intents
 class OpenAddMemberIntent extends Intent {
   const OpenAddMemberIntent();
 }
@@ -33,10 +29,6 @@ class OpenAddMemberIntent extends Intent {
 class OpenSubscriptionEntryIntent extends Intent {
   const OpenSubscriptionEntryIntent();
 }
-
-
-
-// ... other imports ...
 
 class MainLayout extends ConsumerStatefulWidget {
   const MainLayout({super.key});
@@ -46,28 +38,9 @@ class MainLayout extends ConsumerStatefulWidget {
 }
 
 class _MainLayoutState extends ConsumerState<MainLayout> {
-
-  @override
-  void initState() {
-    super.initState();
-    // Check if Viewer needs to select environment
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final session = ref.read(appSessionProvider);
-      if (session.role == UserRole.viewer) {
-        showDialog(
-          context: context,
-          barrierDismissible: false, // Force selection
-          builder: (_) => const EnvironmentSelectionDialog(),
-        );
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
     final curIndex = ref.watch(navigationProvider);
-    final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
-    final isDevEnv = ref.watch(appSessionProvider).environment == AppEnvironment.dev;
 
     return Shortcuts(
       shortcuts: <ShortcutActivator, Intent>{
@@ -80,7 +53,6 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
         actions: <Type, Action<Intent>>{
           OpenAddMemberIntent: CallbackAction<OpenAddMemberIntent>(
             onInvoke: (OpenAddMemberIntent intent) {
-              if (isViewer) return null; // Disable shortcut for Viewer
               ref.read(navigationProvider.notifier).state = 4;
               return null;
             },
@@ -88,50 +60,25 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
           OpenSubscriptionEntryIntent:
               CallbackAction<OpenSubscriptionEntryIntent>(
                 onInvoke: (OpenSubscriptionEntryIntent intent) {
-                   if (isViewer) return null; // Disable shortcut for Viewer
-                   ref.read(navigationProvider.notifier).state = 2;
-                   return null;
+                  ref.read(navigationProvider.notifier).state = 2;
+                  return null;
                 },
               ),
         },
         child: Focus(
           autofocus: true,
           child: Scaffold(
-            body: Column(
+            body: Row(
               children: [
-                // Viewer / Environment Banner
-                if (isViewer)
-                  Container(
-                    width: double.infinity,
-                    color: isDevEnv ? Colors.orange : Colors.blueGrey,
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Text(
-                      isDevEnv 
-                        ? "⚠️ VIEWER MODE (DEBUG DATA) - READ ONLY" 
-                        : "👁️ VIEWER MODE (RELEASE DATA) - READ ONLY",
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12),
-                    ),
-                  ),
-                  
+                AppSidebar(
+                  selectedIndex: curIndex,
+                  onDestinationSelected: (value) {
+                    ref.read(navigationProvider.notifier).state = value;
+                  },
+                ),
+                const VerticalDivider(thickness: 1, width: 1),
                 Expanded(
-                  child: Row(
-                    children: [
-                      AppSidebar(
-                        selectedIndex: curIndex,
-                        onDestinationSelected: (value) {
-                          ref.read(navigationProvider.notifier).state = value;
-                        },
-                      ),
-                      const VerticalDivider(thickness: 1, width: 1),
-                      Expanded(
-                        // Wrap body in permissions check or just let sidebar handle navigation
-                        // and inner screens handle read-only state.
-                        // We will start by letting them navigate inside.
-                        child: _buildBody(curIndex), 
-                      ),
-                    ],
-                  ),
+                  child: _buildBody(curIndex),
                 ),
               ],
             ),
@@ -164,7 +111,7 @@ class _MainLayoutState extends ConsumerState<MainLayout> {
       case 9:
         return const DonationEntryScreen();
       case 10:
-        return const SmsDashboardScreen(); 
+        return const SmsDashboardScreen();
       default:
         return const DashboardScreen();
     }

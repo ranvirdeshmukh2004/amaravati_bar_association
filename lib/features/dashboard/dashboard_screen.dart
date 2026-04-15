@@ -1,9 +1,6 @@
 import 'package:amaravati_bar_association/features/dashboard/widgets/analytics_charts.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../features/sync/sync_status_button.dart';
-import '../../features/sync/sync_service.dart'; // Added
-import '../../core/auth/app_session.dart'; // Added
 import 'package:intl/intl.dart';
 import '../../core/utils.dart';
 import '../../core/app_gradients.dart';
@@ -16,7 +13,6 @@ class DashboardScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final analyticsAsync = ref.watch(dashboardAnalyticsProvider);
-    final isDev = ref.watch(appSessionProvider).environment == AppEnvironment.dev;
 
     return Scaffold(
       backgroundColor: Colors.transparent, // Allow parent background if any
@@ -26,7 +22,7 @@ class DashboardScreen extends ConsumerWidget {
         ),
         child: Column(
           children: [
-            _buildHeader(context, ref, isDev),
+            _buildHeader(context, ref),
             Expanded(
               child: analyticsAsync.when(
                 data: (data) => _DashboardLayout(data: data),
@@ -40,7 +36,7 @@ class DashboardScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildHeader(BuildContext context, WidgetRef ref, bool isDev) {
+  Widget _buildHeader(BuildContext context, WidgetRef ref) {
     final now = DateTime.now();
     final startYear = now.month >= 4 ? now.year : now.year - 1;
     final fy = "FY $startYear-${(startYear + 1).toString().substring(2)}";
@@ -89,27 +85,15 @@ class DashboardScreen extends ConsumerWidget {
               _buildHeaderTag(
                 context, 
                 Icons.circle, 
-                isDev ? 'Debug Mode' : 'Live Data', 
-                isDev ? Colors.orange : Colors.green,
-                iconSize: 8 // Smaller dot for status
+                'Active', 
+                Colors.green,
+                iconSize: 8,
               ),
               const SizedBox(width: 16),
-              // Last Updated
-              FutureBuilder<DateTime>(
-                future: ref.read(syncServiceProvider).getLastSyncTime(),
-                builder: (context, snapshot) {
-                  final time = snapshot.data;
-                  final timeStr = time != null 
-                      ? DateFormat('dd MMM, HH:mm').format(time) 
-                      : 'Never';
-                  return Text(
-                    'Last Updated: $timeStr',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
-                  );
-                }
+              Text(
+                DateFormat('dd MMM yyyy').format(now),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w500),
               ),
-              const SizedBox(width: 16),
-              const SyncStatusButton(),
             ],
           ),
         ],

@@ -27,6 +27,7 @@
 .pub-cache/
 .pub/
 /build/
+pubspec.lock
 
 # Web related
 lib/generated_plugin_registrant.dart
@@ -81,6 +82,11 @@ app.*.map.json
 # Exceptions to above rules.
 !**/ios/**/*.xcworkspace
 
-# Custom exclusions based on repo history
+# Build artifacts
 gradle_cache/
 build_log.txt
+*.sqlite
+
+# IDE / editor
+.antigravityignore
+devtools_options.yaml

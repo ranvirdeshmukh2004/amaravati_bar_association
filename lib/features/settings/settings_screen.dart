@@ -1,4 +1,4 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -14,7 +14,7 @@ import 'data_export_service.dart';
 import '../../core/theme_provider.dart';
 import '../../core/app_gradients.dart';
 import '../../features/voter_list/voter_list_service.dart';
-import '../../core/auth/app_session.dart';
+
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -118,25 +118,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                // Logout and likely trigger redirect from AuthWrapper
                                await ref.read(authProvider.notifier).logout();
                             }
-                          } on FirebaseAuthException catch (e) {
-                             if (context.mounted) {
-                               String msg = 'Update Failed';
-                               if (e.code == 'wrong-password') msg = 'Incorrect Current Password';
-                               if (e.code == 'weak-password') msg = 'Password is too weak';
-                               if (e.code == 'requires-recent-login') msg = 'Please re-login and try again';
-                               if (e.code == 'network-request-failed') msg = 'Network Error: Check internet connection';
-                               
-                               showDialog(
-                                 context: context,
-                                 builder: (ctx) => AlertDialog(
-                                   title: const Text('Error'),
-                                   content: Text(msg),
-                                   actions: [
-                                     TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('OK'))
-                                   ],
-                                 ),
-                               );
-                             }
+
                           } catch (e) {
                              if (context.mounted) {
                                showDialog(
@@ -213,17 +195,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   void _showResetConfirmationDialog() {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user?.email != 'admin@adba.com') {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Restricted: Only Super Admin (admin@adba.com) can clear data.'),
-          backgroundColor: Colors.red,
-        ),
-      );
-      return;
-    }
-
     showDialog(
       context: context,
       builder: (context) => const _ResetDataDialog(),
@@ -670,32 +641,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
 // ... class ...
   @override
   Widget build(BuildContext context) {
-    // Check Viewer Role
-    final isViewer = ref.watch(appSessionProvider).role == UserRole.viewer;
 
-    if (isViewer) {
-       return Scaffold(
-        appBar: AppBar(title: const Text('Settings')),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(Icons.lock, size: 64, color: Colors.grey[400]),
-              const SizedBox(height: 16),
-              const Text(
-                'Settings Disabled',
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                'Viewer account cannot modify application settings.',
-                style: TextStyle(color: Colors.grey),
-              ),
-            ],
-          ),
-        ),
-      );
-    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
