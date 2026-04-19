@@ -199,48 +199,23 @@ class AppDatabase extends _$AppDatabase {
   }
 
   Future<void> deleteSubscriptions() {
-    return (update(subscriptions)
-      ..where((t) => t.deleted.equals(false))
-    ).write(const SubscriptionsCompanion(
-      deleted: Value(true),
-      isSynced: Value(false),
-    ));
+    return delete(subscriptions).go();
   }
 
   Future<void> deleteMembers() {
-    return (update(members)
-      ..where((t) => t.deleted.equals(false))
-    ).write(const MembersCompanion(
-      deleted: Value(true),
-      isSynced: Value(false),
-    ));
+    return delete(members).go();
   }
 
   Future<void> deleteDonations() {
-    return (update(donations)
-      ..where((t) => t.deleted.equals(false))
-    ).write(const DonationsCompanion(
-      deleted: Value(true),
-      isSynced: Value(false),
-    ));
+    return delete(donations).go();
   }
 
   Future<void> deletePastOutstanding() {
-    return (update(pastOutstandingDues)
-      ..where((t) => t.deleted.equals(false))
-    ).write(const PastOutstandingDuesCompanion(
-      deleted: Value(true),
-      isSynced: Value(false),
-    ));
+    return delete(pastOutstandingDues).go();
   }
 
   Future<void> deleteSubscriptionConfig() {
-    return (update(subscriptionConfig)
-      ..where((t) => t.deleted.equals(false))
-    ).write(const SubscriptionConfigCompanion(
-      deleted: Value(true),
-      isSynced: Value(false),
-    ));
+    return delete(subscriptionConfig).go();
   }
 
   Future<void> deleteAllData() async {

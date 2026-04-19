@@ -24,7 +24,7 @@ final memberFilterTypeProvider = StateProvider.autoDispose<String?>(
 
 final memberSortAscendingProvider = StateProvider.autoDispose<bool>((ref) => true);
 
-final memberListStreamProvider = StreamProvider<List<Member>>((
+final memberListStreamProvider = StreamProvider.autoDispose<List<Member>>((
   ref,
 ) {
   final db = ref.watch(databaseProvider);

@@ -166,6 +166,8 @@ class _AppSidebarState extends ConsumerState<AppSidebar> {
                       selectedIndex: widget.selectedIndex,
                       isCollapsed: _isCollapsed,
                       onTap: () => widget.onDestinationSelected(10),
+                      disabled: true,
+                      disabledTooltip: 'Reach out @RanvirLabs to activate this feature.',
                      ),
                   ],
                 ),
@@ -278,6 +280,8 @@ class _SidebarItem extends StatelessWidget {
   final int selectedIndex;
   final bool isCollapsed;
   final VoidCallback onTap;
+  final bool disabled;
+  final String? disabledTooltip;
 
   const _SidebarItem({
     required this.icon,
@@ -287,22 +291,34 @@ class _SidebarItem extends StatelessWidget {
     required this.selectedIndex,
     required this.isCollapsed,
     required this.onTap,
+    this.disabled = false,
+    this.disabledTooltip,
   });
 
   @override
   Widget build(BuildContext context) {
-    final isSelected = index == selectedIndex;
+    final isSelected = !disabled && index == selectedIndex;
     final theme = Theme.of(context);
     final primaryColor = AppConstants.primaryColor;
+
+    // Determine the tooltip message
+    final String tooltipMessage;
+    if (disabled && disabledTooltip != null) {
+      tooltipMessage = disabledTooltip!;
+    } else if (isCollapsed) {
+      tooltipMessage = label;
+    } else {
+      tooltipMessage = '';
+    }
     
     // Always use the same container structure to prevent tree rebuilds
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       child: Tooltip(
-        message: isCollapsed ? label : '', // Only show tooltip when collapsed
+        message: tooltipMessage,
         waitDuration: const Duration(milliseconds: 500),
         child: InkWell(
-          onTap: onTap,
+          onTap: disabled ? null : onTap,
           borderRadius: BorderRadius.circular(4),
           child: AnimatedContainer(
             duration: const Duration(milliseconds: 200),
@@ -311,52 +327,55 @@ class _SidebarItem extends StatelessWidget {
               color: isSelected ? primaryColor.withValues(alpha: 0.1) : Colors.transparent,
               borderRadius: BorderRadius.circular(4),
             ),
-            child: Row(
-              children: [
-                // Active Indicator
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 200),
-                  width: 4,
-                  height: 24,
-                  decoration: BoxDecoration(
-                    color: isSelected ? primaryColor : Colors.transparent,
-                    borderRadius: const BorderRadius.only(
-                      topRight: Radius.circular(4),
-                      bottomRight: Radius.circular(4),
+            child: Opacity(
+              opacity: disabled ? 0.4 : 1.0,
+              child: Row(
+                children: [
+                  // Active Indicator
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 200),
+                    width: 4,
+                    height: 24,
+                    decoration: BoxDecoration(
+                      color: isSelected ? primaryColor : Colors.transparent,
+                      borderRadius: const BorderRadius.only(
+                        topRight: Radius.circular(4),
+                        bottomRight: Radius.circular(4),
+                      ),
                     ),
                   ),
-                ),
-                // Icon Area
-                const SizedBox(width: 12),
-                Icon(
-                  isSelected ? activeIcon : icon,
-                  size: 24,
-                  color: isSelected ? primaryColor : theme.iconTheme.color,
-                ),
-                
-                // Animate Text Visibility
-                Expanded(
-                  child: AnimatedOpacity(
-                    opacity: isCollapsed ? 0.0 : 1.0,
-                    duration: const Duration(milliseconds: 200),
-                    curve: Curves.easeInOut,
-                    child: isCollapsed 
-                      ? const SizedBox() 
-                      : Padding(
-                          padding: const EdgeInsets.only(left: 12),
-                          child: Text(
-                            label,
-                            maxLines: 1,
-                            overflow: TextOverflow.clip,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: isSelected ? primaryColor : theme.textTheme.bodyMedium?.color,
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                  // Icon Area
+                  const SizedBox(width: 12),
+                  Icon(
+                    isSelected ? activeIcon : icon,
+                    size: 24,
+                    color: isSelected ? primaryColor : theme.iconTheme.color,
+                  ),
+                  
+                  // Animate Text Visibility
+                  Expanded(
+                    child: AnimatedOpacity(
+                      opacity: isCollapsed ? 0.0 : 1.0,
+                      duration: const Duration(milliseconds: 200),
+                      curve: Curves.easeInOut,
+                      child: isCollapsed 
+                        ? const SizedBox() 
+                        : Padding(
+                            padding: const EdgeInsets.only(left: 12),
+                            child: Text(
+                              label,
+                              maxLines: 1,
+                              overflow: TextOverflow.clip,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                color: isSelected ? primaryColor : theme.textTheme.bodyMedium?.color,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                              ),
                             ),
                           ),
-                        ),
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),

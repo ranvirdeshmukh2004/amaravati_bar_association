@@ -460,6 +460,105 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     );
   }
 
+  void _showVoterListProgressDialog(BuildContext context, WidgetRef ref) {
+    String statusMessage = 'Preparing...';
+    double progressValue = 0.0;
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (dialogContext, setDialogState) {
+            // Launch the generation after the dialog is shown
+            // Use a flag to prevent re-triggering on rebuilds
+            if (statusMessage == 'Preparing...') {
+              statusMessage = 'Starting...';
+
+              Future(() async {
+                try {
+                  await ref.read(voterListServiceProvider).saveVoterListToDownloads(
+                    onProgress: (message, progress) {
+                      if (dialogContext.mounted) {
+                        setDialogState(() {
+                          statusMessage = message;
+                          progressValue = progress;
+                        });
+                      }
+                    },
+                  );
+
+                  // Success — close dialog and show snackbar
+                  if (dialogContext.mounted) Navigator.pop(dialogContext);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('✅ Voter List saved to Downloads!'),
+                        backgroundColor: Colors.green,
+                        duration: Duration(seconds: 4),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  // Error — close dialog and show error snackbar
+                  if (dialogContext.mounted) Navigator.pop(dialogContext);
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Error: $e'),
+                        backgroundColor: Colors.red,
+                        duration: const Duration(seconds: 6),
+                      ),
+                    );
+                  }
+                }
+              });
+            }
+
+            return AlertDialog(
+              title: const Row(
+                children: [
+                  Icon(Icons.picture_as_pdf, color: Colors.deepOrange),
+                  SizedBox(width: 12),
+                  Text('Generating Voter List'),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 8),
+                  LinearProgressIndicator(value: progressValue > 0 ? progressValue : null),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      if (progressValue < 1.0)
+                        const SizedBox(
+                          width: 16, height: 16,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          statusMessage,
+                          style: const TextStyle(fontSize: 14),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Please do not close the app.',
+                    style: TextStyle(fontSize: 12, color: Colors.grey[600]),
+                  ),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
   Future<void> _seedMembers() async {
     try {
       final db = ref.read(databaseProvider);
@@ -750,35 +849,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             leading: const Icon(Icons.picture_as_pdf),
             title: const Text('Generate Final Voter List'),
             subtitle: const Text('Eligible members (Paid + Active)'),
-            onTap: () async {
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Generating Voter List... Please wait.')),
-                );
-              }
-              
-              try {
-                await ref.read(voterListServiceProvider).saveVoterListToDownloads();
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Voter List saved to Downloads!'),
-                      backgroundColor: Colors.green,
-                      duration: Duration(seconds: 4),
-                    ),
-                  );
-                }
-              } catch (e) {
-                if (context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Error: $e'),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
-                }
-              }
-            },
+            onTap: () => _showVoterListProgressDialog(context, ref),
           ),
           const Divider(),
           const _SectionHeader(title: 'Backup & Restore'),

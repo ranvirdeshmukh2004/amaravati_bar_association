@@ -22,6 +22,7 @@ class CustomSmsPanel extends ConsumerStatefulWidget {
 class _CustomSmsPanelState extends ConsumerState<CustomSmsPanel> {
   final Set<String> _selectedPhones = {};
   final TextEditingController _messageController = TextEditingController();
+  String _searchQuery = '';
   bool _selectAll = false;
   bool _isSending = false;
 
@@ -61,6 +62,17 @@ class _CustomSmsPanelState extends ConsumerState<CustomSmsPanel> {
     return msg
       .replaceAll('{{Name}}', 'John Doe')
       .replaceAll('{{RegistrationNumber}}', 'ABA/123/2023');
+  }
+
+  List<Member> _filterMembers(List<Member> members) {
+    if (_searchQuery.isEmpty) return members;
+    final q = _searchQuery.toLowerCase();
+    return members.where((m) =>
+      m.firstName.toLowerCase().contains(q) ||
+      m.surname.toLowerCase().contains(q) ||
+      m.registrationNumber.toLowerCase().contains(q) ||
+      m.mobileNumber.contains(q)
+    ).toList();
   }
 
   Future<void> _sendSms() async {
@@ -193,20 +205,22 @@ class _CustomSmsPanelState extends ConsumerState<CustomSmsPanel> {
                   border: OutlineInputBorder(),
                 ),
                 onChanged: (val) {
-                  // Implement local search
-                  setState(() {});
+                  setState(() {
+                    _searchQuery = val;
+                  });
                 },
               ),
             ),
             Expanded(
                 child: membersAsync.when(
-              data: (members) {
+              data: (allMembers) {
+                final members = _filterMembers(allMembers);
                 return Column(
                   children: [
                      CheckboxListTile(
-                        title: const Text('Select All'),
+                        title: Text('Select All (${members.length})'),
                         value: _selectAll,
-                        onChanged: isViewer ? null : (val) => _handleSelectAll(members), // Disable select all for clarity? Or keep it? keeping it is harmless if send is disabled.
+                        onChanged: isViewer ? null : (val) => _handleSelectAll(members),
                         controlAffinity: ListTileControlAffinity.leading,
                      ),
                      const Divider(height: 1),
@@ -216,15 +230,13 @@ class _CustomSmsPanelState extends ConsumerState<CustomSmsPanel> {
                          itemBuilder: (context, index) {
                            final m = members[index];
                            final isSelected = _selectedPhones.contains(m.mobileNumber);
-                           if (m.mobileNumber.isEmpty) return const SizedBox.shrink(); // Skip no mobile
+                           if (m.mobileNumber.isEmpty) return const SizedBox.shrink();
                            
                            return CheckboxListTile(
                              value: isSelected,
                              title: Text('${m.firstName} ${m.surname}'),
                              subtitle: Text('${m.registrationNumber} • ${m.mobileNumber}'),
-                             onChanged: isViewer ? null : (val) => _toggleSelection(m.mobileNumber), // Disable selection for Viewer? Maybe allowed for preview. Let's allow selection but disable SEND.
-                             // Actually disabling selection makes it clearer it's read only.
-                             // Let's Disable Selection.
+                             onChanged: isViewer ? null : (val) => _toggleSelection(m.mobileNumber),
                              secondary: CircleAvatar(child: Text(m.firstName[0])),
                            );
                          },
