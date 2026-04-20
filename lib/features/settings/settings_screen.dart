@@ -914,7 +914,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text('Amravati District Bar Association'),
-            subtitle: Text('Subscription Pavati System v1.0.0'),
+            subtitle: Text('Subscription Pavati System v2.0.0'),
           ),
         ],
         ),

@@ -310,8 +310,33 @@ Future<Uint8List> _generatePdfInIsolate(_PdfPayload payload) async {
           marginTop: 10 * PdfPageFormat.mm,
           marginBottom: 10 * PdfPageFormat.mm,
         ),
-        header: (context) => _buildHeader(
-          financialYear, generatedShort, fontSerifBold, fontSerif,
+        header: (context) => pw.Column(
+          children: [
+            _buildHeader(
+              financialYear, generatedShort, fontSerifBold, fontSerif,
+            ),
+            // Table column header — repeats on every page
+            pw.Table(
+              border: pw.TableBorder.all(width: 1, color: PdfColors.black),
+              columnWidths: {
+                0: const pw.FixedColumnWidth(30),
+                1: const pw.FixedColumnWidth(80),
+                2: const pw.FlexColumnWidth(1),
+                3: const pw.FixedColumnWidth(100),
+              },
+              children: [
+                pw.TableRow(
+                  decoration: const pw.BoxDecoration(color: PdfColors.grey200),
+                  children: [
+                    _buildHeaderCell('Sl.\nNo', fontSerifBold),
+                    _buildHeaderCell('Photo', fontSerifBold),
+                    _buildHeaderCell('Member Details', fontSerifBold),
+                    _buildHeaderCell('Signature', fontSerifBold),
+                  ],
+                ),
+              ],
+            ),
+          ],
         ),
         footer: (context) => _buildFooter(context, fontSerif),
         build: (context) {
@@ -325,17 +350,7 @@ Future<Uint8List> _generatePdfInIsolate(_PdfPayload payload) async {
                 3: const pw.FixedColumnWidth(100), // Signature
               },
               children: [
-                // Table Header Row (repeats at each chunk for print clarity)
-                pw.TableRow(
-                  decoration: const pw.BoxDecoration(color: PdfColors.grey200),
-                  children: [
-                    _buildHeaderCell('Sl.\nNo', fontSerifBold),
-                    _buildHeaderCell('Photo', fontSerifBold),
-                    _buildHeaderCell('Member Details', fontSerifBold),
-                    _buildHeaderCell('Signature', fontSerifBold),
-                  ],
-                ),
-                // Data Rows
+                // Data Rows only (header is in the page header above)
                 ...List.generate(chunk.length, (index) {
                   final globalIndex = start + index;
                   final voter = chunk[index];
