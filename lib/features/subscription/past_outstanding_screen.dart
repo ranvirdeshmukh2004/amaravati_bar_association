@@ -437,7 +437,8 @@ class _PastOutstandingScreenState extends ConsumerState<PastOutstandingScreen> {
                                            await ref.read(receiptServiceProvider).saveToDownloads(
                                              context, 
                                              pdfBytes, 
-                                             'ABA_Arrears_Receipt_${sub.receiptNumber}.pdf'
+                                             'ABA_Arrears_Receipt_${sub.receiptNumber}.pdf',
+                                             subFolder: 'arrearsReceipts',
                                            );
                                         } else if (context.mounted) {
                                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Linked receipt not found!')));

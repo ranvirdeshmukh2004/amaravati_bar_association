@@ -81,13 +81,12 @@ class ExperienceCertificateService {
       final dateStr = DateFormat('dd_MM_yyyy').format(DateTime.now());
       final fileName = '${sanitizedName}_Experience_Certificate_$dateStr.docx';
 
-      // 7. Save to user's Documents folder using USERPROFILE env variable
-      //    (avoids non-ASCII path issues from getApplicationDocumentsDirectory)
+      // 7. Save to user's Documents/experienceCertificate folder
       final userProfile = Platform.environment['USERPROFILE'] ?? '';
       final docsPath = userProfile.isNotEmpty
           ? '$userProfile\\Documents'
           : '.'; // fallback to current directory
-      final certDir = Directory('$docsPath\\Certificates');
+      final certDir = Directory('$docsPath\\experienceCertificate');
       if (!await certDir.exists()) {
         await certDir.create(recursive: true);
       }
@@ -100,6 +99,13 @@ class ExperienceCertificateService {
 
       debugPrint('Certificate saved and opened: $filePath');
       return filePath;
+    } on FileSystemException catch (e) {
+      final isDiskFull = e.osError?.errorCode == 112 ||
+          e.message.toLowerCase().contains('no space');
+      debugPrint(isDiskFull
+          ? 'Storage full! Cannot save certificate.'
+          : 'Error saving certificate: ${e.message}');
+      return null;
     } catch (e, stack) {
       debugPrint('Error generating certificate: $e\n$stack');
       return null;

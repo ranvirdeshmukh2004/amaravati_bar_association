@@ -103,22 +103,39 @@ class VoterListService {
 
     final pdfBytes = await compute(_generatePdfInIsolate, payload);
 
-    // ---- Step 5: Save to Downloads --------------------------------------
+    // ---- Step 5: Save to Documents/FinalVoterList/ -----------------------
     onProgress?.call('Saving file...', 0.95);
 
     if (Platform.isWindows) {
       try {
-        final downloadsPath =
-            (await getDownloadsDirectory())?.path ??
-            'C:\\Users\\Public\\Downloads';
+        final userProfile = Platform.environment['USERPROFILE'] ?? '';
+        final docsPath = userProfile.isNotEmpty
+            ? '$userProfile\\Documents'
+            : (await getDownloadsDirectory())?.path ??
+                'C:\\Users\\Public\\Downloads';
+
+        final targetDir = Directory('$docsPath\\FinalVoterList');
+        if (!await targetDir.exists()) {
+          await targetDir.create(recursive: true);
+        }
+
         final fileName =
             'ABA_Voter_List_Final_${DateFormat('yyyyMMdd_HHmm').format(now)}.pdf';
-        final file = File('$downloadsPath\\$fileName');
+        final file = File('${targetDir.path}\\$fileName');
 
         await file.writeAsBytes(pdfBytes);
         debugPrint('✅ Voter list saved to: ${file.path}');
-        onProgress?.call('Done! Saved to Downloads.', 1.0);
+        onProgress?.call('Done! Saved to Documents\\FinalVoterList.', 1.0);
         return;
+      } on FileSystemException catch (e) {
+        final isDiskFull = e.osError?.errorCode == 112 ||
+            e.message.toLowerCase().contains('no space');
+        if (isDiskFull) {
+          throw Exception(
+              'Storage full! Please free up disk space and try again.');
+        }
+        debugPrint('⚠️ Direct save failed, falling back to share: $e');
+        await Printing.sharePdf(bytes: pdfBytes, filename: 'voter_list.pdf');
       } catch (e) {
         debugPrint('⚠️ Direct save failed, falling back to share: $e');
         await Printing.sharePdf(bytes: pdfBytes, filename: 'voter_list.pdf');

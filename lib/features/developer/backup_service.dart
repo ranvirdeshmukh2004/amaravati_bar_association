@@ -1,16 +1,14 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../database/database_path_provider.dart';
 
 final backupServiceProvider = Provider((ref) => BackupService());
 
 class BackupService {
   Future<String> get _dbPath async {
-    final dbFolder = await getApplicationDocumentsDirectory();
-    return p.join(dbFolder.path, 'aba_donation.sqlite');
+    return DatabasePathProvider.getDatabasePath();
   }
 
   Future<String?> createBackup() async {

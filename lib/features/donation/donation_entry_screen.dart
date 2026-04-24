@@ -209,7 +209,8 @@ class _DonationEntryScreenState extends ConsumerState<DonationEntryScreen> {
                    await receiptService.saveToDownloads(
                      context, 
                      pdfBytes, 
-                     'ABA_Donation_Receipt_${donation.receiptNumber}.pdf'
+                     'ABA_Donation_Receipt_${donation.receiptNumber}.pdf',
+                     subFolder: 'donationReceipts',
                    );
                 }
               },
@@ -583,7 +584,7 @@ class _DonationEntryScreenState extends ConsumerState<DonationEntryScreen> {
                                                  final pdfBytes = await receiptService.generateDonationReceipt(d);
                                                  
                                                  if (context.mounted) {
-                                                    await receiptService.saveToDownloads(context, pdfBytes, 'ABA_Donation_Receipt_${d.receiptNumber}.pdf');
+                                                    await receiptService.saveToDownloads(context, pdfBytes, 'ABA_Donation_Receipt_${d.receiptNumber}.pdf', subFolder: 'donationReceipts');
                                                  }
                                                },
                                              ),
@@ -593,7 +594,7 @@ class _DonationEntryScreenState extends ConsumerState<DonationEntryScreen> {
                                            final receiptService = ref.read(receiptServiceProvider);
                                            final pdfBytes = await receiptService.generateDonationReceipt(d);
                                            if (context.mounted) {
-                                              await receiptService.saveToDownloads(context, pdfBytes, 'ABA_Donation_Receipt_${d.receiptNumber}.pdf');
+                                              await receiptService.saveToDownloads(context, pdfBytes, 'ABA_Donation_Receipt_${d.receiptNumber}.pdf', subFolder: 'donationReceipts');
                                            }
                                         },
                                       ),

@@ -51,8 +51,8 @@ class _DownloadListDialogState extends ConsumerState<DownloadListDialog> {
         SnackBar(
           content: Text(
             success
-                ? 'Voter List downloaded successfully!'
-                : 'Download cancelled or failed.',
+                ? 'Voter List saved to Documents\\provisionalVoterList!'
+                : 'Export failed. Check disk space and try again.',
           ),
           backgroundColor: success ? Colors.green[700] : Colors.red[400],
         ),
@@ -72,8 +72,8 @@ class _DownloadListDialogState extends ConsumerState<DownloadListDialog> {
         SnackBar(
           content: Text(
             success
-                ? 'Pending list downloaded successfully!'
-                : 'Download cancelled or failed.',
+                ? 'Pending list saved to Documents\\pendingVoterList!'
+                : 'Export failed. Check disk space and try again.',
           ),
           backgroundColor: success ? Colors.green[700] : Colors.red[400],
         ),

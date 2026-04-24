@@ -149,7 +149,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   void _showRestoreConfirmationDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
         title: const Text('Restore Data'),
         content: const Column(
           mainAxisSize: MainAxisSize.min,
@@ -164,13 +164,13 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context),
+            onPressed: () => Navigator.pop(dialogContext),
             child: const Text('Cancel'),
           ),
           FilledButton(
             style: FilledButton.styleFrom(backgroundColor: Colors.red),
             onPressed: () async {
-              Navigator.pop(context);
+              Navigator.pop(dialogContext);
               final success = await ref
                   .read(dataExportServiceProvider)
                   .restoreFullDataJson();
@@ -493,7 +493,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('✅ Voter List saved to Downloads!'),
+                        content: Text('✅ Voter List saved to Documents\\FinalVoterList!'),
                         backgroundColor: Colors.green,
                         duration: Duration(seconds: 4),
                       ),
@@ -915,6 +915,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             leading: Icon(Icons.info_outline),
             title: Text('Amravati District Bar Association'),
             subtitle: Text('Subscription Pavati System v2.0.0'),
+          ),
+          Tooltip(
+            message: 'Reach out the developers at @works.ranvirdeshmukh.com',
+            waitDuration: const Duration(milliseconds: 500),
+            child: const ListTile(
+              leading: Icon(Icons.code),
+              title: Text('Developed by GajSysAI Labs'),
+            ),
           ),
         ],
         ),

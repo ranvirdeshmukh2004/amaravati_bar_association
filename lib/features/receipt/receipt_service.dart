@@ -25,38 +25,73 @@ class ReceiptService {
 
   ReceiptService(this._membersDao);
 
-  /// Saves a PDF file to the Downloads directory.
-  Future<void> saveToDownloads(BuildContext context, Uint8List pdfBytes, String fileName) async {
+  /// Saves a PDF file to a dedicated subfolder in Documents.
+  ///
+  /// [subFolder] specifies which folder under Documents to use
+  /// (e.g., `subscriptionReceipts`, `donationReceipts`, `arrearsReceipts`).
+  /// The folder is created if it doesn't exist.
+  ///
+  /// If the disk is full, a clear "storage full" message is shown.
+  Future<void> saveToDownloads(
+    BuildContext context,
+    Uint8List pdfBytes,
+    String fileName, {
+    String subFolder = 'subscriptionReceipts',
+  }) async {
     try {
-      final directory = await getDownloadsDirectory();
-      if (directory != null) {
-        final filePath = '${directory.path}\\$fileName';
-        final file = File(filePath);
-        
-        await file.writeAsBytes(pdfBytes);
+      // Resolve Documents path (avoids non-ASCII issues with path_provider)
+      final userProfile = Platform.environment['USERPROFILE'] ?? '';
+      final docsPath = userProfile.isNotEmpty
+          ? '$userProfile\\Documents'
+          : (await getDownloadsDirectory())?.path ?? '.';
 
-        if (context.mounted) {
-           ScaffoldMessenger.of(context).clearSnackBars();
-           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('✅ Saved to: $filePath'),
-              backgroundColor: Colors.green,
-              duration: const Duration(seconds: 4),
-              behavior: SnackBarBehavior.floating,
-              showCloseIcon: true,
-              margin: const EdgeInsets.all(16),
-              action: SnackBarAction(
-                label: 'OPEN FOLDER',
-                textColor: Colors.white,
-                onPressed: () {
-                   Process.run('explorer.exe', ['/select,', filePath]);
-                },
-              ),
+      final targetDir = Directory('$docsPath\\$subFolder');
+      if (!await targetDir.exists()) {
+        await targetDir.create(recursive: true);
+      }
+
+      final filePath = '${targetDir.path}\\$fileName';
+      final file = File(filePath);
+      await file.writeAsBytes(pdfBytes);
+
+      if (context.mounted) {
+         ScaffoldMessenger.of(context).clearSnackBars();
+         ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ Saved to: Documents\\$subFolder\\$fileName'),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 4),
+            behavior: SnackBarBehavior.floating,
+            showCloseIcon: true,
+            margin: const EdgeInsets.all(16),
+            action: SnackBarAction(
+              label: 'OPEN FOLDER',
+              textColor: Colors.white,
+              onPressed: () {
+                 Process.run('explorer.exe', ['/select,', filePath]);
+              },
             ),
-          );
-        }
-      } else {
-        throw Exception('Could not access Downloads folder');
+          ),
+        );
+      }
+    } on FileSystemException catch (e) {
+      // Catches disk-full errors (errno 112 on Windows = no space left)
+      if (context.mounted) {
+        final isDiskFull = e.osError?.errorCode == 112 ||
+            e.message.toLowerCase().contains('no space') ||
+            e.message.toLowerCase().contains('disk full');
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isDiskFull
+                  ? '⚠️ Storage full! Please free up disk space and try again.'
+                  : 'Error saving file: ${e.message}',
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 6),
+          ),
+        );
       }
     } catch (e) {
       if (context.mounted) {

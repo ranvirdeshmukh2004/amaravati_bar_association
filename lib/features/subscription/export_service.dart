@@ -1,6 +1,5 @@
 import 'dart:io';
 import 'package:excel/excel.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -127,6 +126,7 @@ class SubscriptionExportService {
       return await _saveExcelFile(
         excel,
         'provisional_voter_list_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}',
+        subFolder: 'provisionalVoterList',
       );
     } catch (e) {
       debugPrint('Error exporting voter list: $e');
@@ -224,6 +224,7 @@ class SubscriptionExportService {
       return await _saveExcelFile(
         excel,
         'pending_people_details_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}',
+        subFolder: 'pendingVoterList',
       );
     } catch (e) {
       debugPrint('Error exporting pending list: $e');
@@ -269,27 +270,48 @@ class SubscriptionExportService {
     }
   }
 
-  /// Saves an Excel object to disk via a file picker dialog.
-  Future<bool> _saveExcelFile(Excel excel, String defaultName) async {
-    String? outputFile = await FilePicker.platform.saveFile(
-      dialogTitle: 'Save Download List',
-      fileName: '$defaultName.xlsx',
-      allowedExtensions: ['xlsx'],
-      type: FileType.custom,
-    );
+  /// Saves an Excel object to a dedicated Documents subfolder.
+  ///
+  /// Auto-creates the subfolder if it doesn't exist.
+  /// Returns `true` on success, `false` on failure.
+  Future<bool> _saveExcelFile(
+    Excel excel,
+    String defaultName, {
+    String subFolder = 'exports',
+  }) async {
+    try {
+      final userProfile = Platform.environment['USERPROFILE'] ?? '';
+      final docsPath = userProfile.isNotEmpty
+          ? '$userProfile\\Documents'
+          : '.';
 
-    if (outputFile != null) {
-      if (!outputFile.toLowerCase().endsWith('.xlsx')) {
-        outputFile = '$outputFile.xlsx';
+      final targetDir = Directory('$docsPath\\$subFolder');
+      if (!await targetDir.exists()) {
+        await targetDir.create(recursive: true);
       }
+
+      final outputFile = '${targetDir.path}\\$defaultName.xlsx';
       final fileBytes = excel.save();
       if (fileBytes != null) {
         final file = File(outputFile);
         await file.writeAsBytes(fileBytes);
+        debugPrint('✅ Saved to: $outputFile');
         return true;
       }
+      return false;
+    } on FileSystemException catch (e) {
+      final isDiskFull = e.osError?.errorCode == 112 ||
+          e.message.toLowerCase().contains('no space');
+      if (isDiskFull) {
+        debugPrint('⚠️ Storage full! Cannot save file.');
+      } else {
+        debugPrint('⚠️ File save error: ${e.message}');
+      }
+      return false;
+    } catch (e) {
+      debugPrint('Error saving file: $e');
+      return false;
     }
-    return false;
   }
 }
 

@@ -141,6 +141,7 @@ class _ArrearsClearanceScreenState extends ConsumerState<ArrearsClearanceScreen>
                           context,
                           pdfBytes,
                           'ABA_Arrears_Receipt_$receiptNo.pdf',
+                          subFolder: 'arrearsReceipts',
                         );
                       }
                    }

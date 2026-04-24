@@ -256,4 +256,4 @@ This project is proprietary software developed for the Amravati District Bar Ass
 
 ## 📞 Support
 
-For issues or feature requests, please open a GitHub Issue or contact the development team.
+For issues or feature requests, please open a GitHub Issue or contact the development team at **GajSysAI Labs** — @works.ranvirdeshmukh.com

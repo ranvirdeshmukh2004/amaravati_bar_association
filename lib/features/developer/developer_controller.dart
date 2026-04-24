@@ -1,6 +1,8 @@
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../database/database_provider.dart';
+import '../database/database_path_provider.dart';
 
 class DeveloperStats {
   final int totalMembers;
@@ -9,6 +11,7 @@ class DeveloperStats {
   final double totalCollected; // From Yearly Summaries (Paid)
   final double totalPending;   // From Yearly Summaries (Balance)
   final double dbSizeInMB;
+  final String dbPath;
   final DateTime? lastBackupTime;
 
   const DeveloperStats({
@@ -18,6 +21,7 @@ class DeveloperStats {
     this.totalCollected = 0.0,
     this.totalPending = 0.0,
     this.dbSizeInMB = 0.0,
+    this.dbPath = '',
     this.lastBackupTime,
   });
 
@@ -28,6 +32,7 @@ class DeveloperStats {
     double? totalCollected,
     double? totalPending,
     double? dbSizeInMB,
+    String? dbPath,
     DateTime? lastBackupTime,
   }) {
     return DeveloperStats(
@@ -37,6 +42,7 @@ class DeveloperStats {
       totalCollected: totalCollected ?? this.totalCollected,
       totalPending: totalPending ?? this.totalPending,
       dbSizeInMB: dbSizeInMB ?? this.dbSizeInMB,
+      dbPath: dbPath ?? this.dbPath,
       lastBackupTime: lastBackupTime ?? this.lastBackupTime,
     );
   }
@@ -44,14 +50,6 @@ class DeveloperStats {
 
 final developerStatsProvider = StreamProvider.autoDispose<DeveloperStats>((ref) {
   final db = ref.watch(databaseProvider);
-  
-  // Combine streams using RxDart would be ideal, but for now we can yield simplified updates 
-  // or just stream one struct if we compose them. 
-  // Since StreamProvider doesn't easily support combineLatest without RxDart, 
-  // Let's use a specialized Stream that merges these manually or listens to all.
-  
-  // A simpler approach for Riverpod:
-  // Return a Stream that emits a new Stats object whenever any underlying stream emits.
   
   return Stream.multi((controller) {
       DeveloperStats currentStats = const DeveloperStats();
@@ -61,17 +59,29 @@ final developerStatsProvider = StreamProvider.autoDispose<DeveloperStats>((ref) 
         controller.add(currentStats);
       }
 
-      // Check DB Size (One off)
-      try {
-         // Assuming default drift storage location or mock for now
-         // In a real scenario, we'd get the file path from the database connection logic
-         // For now, we mock it or check a known path if available.
-         // Let's set it to a static value or query it periodically.
-         currentStats = currentStats.copyWith(dbSizeInMB: 5.2); // Placeholder
-         emit();
-      } catch (e) {
-          // ignore
-      }
+      // Check DB Size (actual file size)
+      () async {
+        try {
+          final path = await DatabasePathProvider.getDatabasePath();
+          final file = File(path);
+          if (await file.exists()) {
+            final bytes = await file.length();
+            final mb = bytes / (1024 * 1024);
+            currentStats = currentStats.copyWith(
+              dbSizeInMB: mb,
+              dbPath: path,
+            );
+          } else {
+            currentStats = currentStats.copyWith(
+              dbSizeInMB: 0.0,
+              dbPath: path,
+            );
+          }
+          emit();
+        } catch (e) {
+          debugPrint('Error reading DB size: $e');
+        }
+      }();
 
       // 1. Members
       final s1 = db.membersDao.watchTotalMemberCount().listen((count) {
@@ -126,3 +136,4 @@ final rawTableDataProvider = FutureProvider.family.autoDispose<List<Map<String, 
   final result = await db.customSelect('SELECT * FROM $tableName').get();
   return result.map((row) => row.data).toList();
 });
+

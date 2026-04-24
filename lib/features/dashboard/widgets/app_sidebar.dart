@@ -167,7 +167,7 @@ class _AppSidebarState extends ConsumerState<AppSidebar> {
                       isCollapsed: _isCollapsed,
                       onTap: () => widget.onDestinationSelected(10),
                       disabled: true,
-                      disabledTooltip: 'Reach out @RanvirLabs to activate this feature.',
+                      disabledTooltip: 'Reach out @works.ranvirdeshmukh.com to activate this feature.',
                      ),
                   ],
                 ),

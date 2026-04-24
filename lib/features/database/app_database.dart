@@ -4,8 +4,7 @@ import 'package:uuid/uuid.dart';
 
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
+import 'database_path_provider.dart';
 import 'tables.dart';
 import 'daos/subscriptions_dao.dart';
 
@@ -27,6 +26,11 @@ part 'app_database.g.dart';
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
+  /// Notifier for migration errors — UI can listen to this to show alerts.
+  /// If non-null, a migration failure occurred and the value contains
+  /// a human-readable error message.
+  static final ValueNotifier<String?> migrationError = ValueNotifier(null);
+
   @override
   int get schemaVersion => 15;
 
@@ -37,19 +41,22 @@ class AppDatabase extends _$AppDatabase {
         await m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        
+        debugPrint('📦 Database migration: v$from → v$to');
+
         Future<void> safeAddColumn(TableInfo table, GeneratedColumn column) async {
           try {
             await m.addColumn(table, column);
           } catch (e) {
             // Ignore duplicate column errors (SqliteException code 1)
             if (e.toString().contains('duplicate column name')) {
-              print('Column ${column.name} already exists, skipping.');
+              debugPrint('Column ${column.name} already exists, skipping.');
             } else {
               rethrow;
             }
           }
         }
+
+        try {
 
         if (from < 2) {
           await safeAddColumn(members, members.memberStatus);
@@ -143,27 +150,134 @@ class AppDatabase extends _$AppDatabase {
            // Note: We cannot run raw UPDATE queries easily inside onUpgrade with type safety,
            // but we can execute custom SQL.
         }
-        if (from < 15) {
-           await safeAddColumn(subscriptionConfig, subscriptionConfig.uuid);
-           await safeAddColumn(subscriptionConfig, subscriptionConfig.isSynced);
-           await safeAddColumn(subscriptionConfig, subscriptionConfig.deleted);
-           
-            // Keep sync columns for backward compatibility
+         if (from < 15) {
+            await safeAddColumn(subscriptionConfig, subscriptionConfig.uuid);
+            await safeAddColumn(subscriptionConfig, subscriptionConfig.isSynced);
+            await safeAddColumn(subscriptionConfig, subscriptionConfig.deleted);
+            
+             // Keep sync columns for backward compatibility
 
+         }
+
+         debugPrint('✅ Database migration v$from → v$to completed successfully.');
+        } catch (e, stack) {
+          debugPrint('⚠️ MIGRATION FAILED from v$from to v$to: $e');
+          debugPrint(stack.toString());
+          migrationError.value =
+              'Database migration failed (v$from → v$to). '
+              'Your existing data is safe and untouched. '
+              'Please contact support.\n\nError: $e';
+           rethrow; // Drift rolls back the transaction automatically
         }
-      },
+       },
       beforeOpen: (details) async {
-        // Run UUID Backfill if needed (Safe to run every time, low cost)
-        // If we are on v14 or higher, ensure UUIDs exist.
+        // 1. Self-heal: ensure all expected columns exist in every table.
+        //    This catches gaps from migration bugs, restored backups from
+        //    older versions, or databases copied between machines.
+        await _ensureSchemaIntegrity();
+
+        // 2. Run UUID Backfill if needed (Safe to run every time, low cost)
         if (details.versionNow >= 14) {
              await _backfillUuids(details);
         }
-        if (details.versionNow >= 15) {
-             // specific check for config if needed, but _backfillUuids covers generic tables if added.
-             await _backfillUuids(details); 
-        }
       },
     );
+  }
+
+  /// Self-healing schema check.
+  ///
+  /// Runs on every database open. Uses `PRAGMA table_info` to detect
+  /// which columns actually exist, then adds any missing ones via
+  /// `ALTER TABLE`. This is idempotent and safe to call repeatedly.
+  ///
+  /// **Why this is needed:** The migration `onUpgrade` only runs when
+  /// the schema version changes. If a database file is restored from
+  /// a backup, or was created by an older app version that had a
+  /// migration bug, columns can be permanently missing. This method
+  /// acts as a safety net that guarantees schema completeness.
+  Future<void> _ensureSchemaIntegrity() async {
+    // --- subscriptions ---
+    await _ensureColumnsExist('subscriptions', {
+      'notes': 'TEXT',
+      'receipt_type': 'TEXT',
+      'daily_sequence': 'INTEGER NOT NULL DEFAULT 0',
+      'uuid': 'TEXT',
+      'is_synced': 'INTEGER NOT NULL DEFAULT 0',
+      'last_updated_at': 'INTEGER',
+      'deleted': 'INTEGER NOT NULL DEFAULT 0',
+    });
+
+    // --- members ---
+    await _ensureColumnsExist('members', {
+      'member_status': "TEXT NOT NULL DEFAULT 'Active'",
+      'profile_photo_path': 'TEXT',
+      'remarks': 'TEXT',
+      'uuid': 'TEXT',
+      'is_synced': 'INTEGER NOT NULL DEFAULT 0',
+      'last_updated_at': 'INTEGER',
+      'deleted': 'INTEGER NOT NULL DEFAULT 0',
+    });
+
+    // --- past_outstanding_dues ---
+    await _ensureColumnsExist('past_outstanding_dues', {
+      'is_cleared': 'INTEGER NOT NULL DEFAULT 0',
+      'cleared_at': 'INTEGER',
+      'linked_payment_id': 'INTEGER',
+      'uuid': 'TEXT',
+      'is_synced': 'INTEGER NOT NULL DEFAULT 0',
+      'last_updated_at': 'INTEGER',
+      'deleted': 'INTEGER NOT NULL DEFAULT 0',
+    });
+
+    // --- donations ---
+    await _ensureColumnsExist('donations', {
+      'daily_sequence': 'INTEGER NOT NULL DEFAULT 0',
+      'donor_mobile': 'TEXT',
+      'donor_email': 'TEXT',
+      'donor_address': 'TEXT',
+      'organization': 'TEXT',
+      'uuid': 'TEXT',
+      'is_synced': 'INTEGER NOT NULL DEFAULT 0',
+      'last_updated_at': 'INTEGER',
+      'deleted': 'INTEGER NOT NULL DEFAULT 0',
+    });
+
+    // --- subscription_config ---
+    await _ensureColumnsExist('subscription_config', {
+      'uuid': 'TEXT',
+      'is_synced': 'INTEGER NOT NULL DEFAULT 0',
+      'deleted': 'INTEGER NOT NULL DEFAULT 0',
+    });
+  }
+
+  /// Checks if all [requiredColumns] exist in [tableName] and adds any
+  /// that are missing. Uses raw SQL so it works regardless of Drift state.
+  Future<void> _ensureColumnsExist(
+      String tableName, Map<String, String> requiredColumns) async {
+    try {
+      final result =
+          await customSelect('PRAGMA table_info($tableName)').get();
+      final existingColumns =
+          result.map((row) => row.read<String>('name')).toSet();
+
+      for (final entry in requiredColumns.entries) {
+        if (!existingColumns.contains(entry.key)) {
+          try {
+            await customStatement(
+                'ALTER TABLE $tableName ADD COLUMN ${entry.key} ${entry.value}');
+            debugPrint(
+                '🔧 Schema repair: added missing column $tableName.${entry.key}');
+          } catch (e) {
+            debugPrint(
+                '⚠️ Failed to add column $tableName.${entry.key}: $e');
+          }
+        }
+      }
+    } catch (e) {
+      // Table might not exist yet (e.g., fresh database before onCreate).
+      // That's fine — onCreate will create it with all columns.
+      debugPrint('ℹ️ Table $tableName not found for schema check: $e');
+    }
   }
 
 
@@ -241,37 +355,8 @@ class AppDatabase extends _$AppDatabase {
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
-      File file;
-    if (kReleaseMode) {
-      // Release: Try [DriveRoot]:\.aba_data (Hidden)
-      // Fallback: Documents Folder
-      try {
-        final exePath = Platform.resolvedExecutable;
-        final driveRoot = p.rootPrefix(exePath); 
-        final dataDir = Directory(p.join(driveRoot, '.aba_data'));
-
-        if (!await dataDir.exists()) {
-          await dataDir.create();
-          if (Platform.isWindows) {
-            try {
-               await Process.run('attrib', ['+h', dataDir.path]);
-            } catch (_) {} 
-          }
-        }
-        file = File(p.join(dataDir.path, 'aba_donation.sqlite'));
-        // Test write permission
-        await file.parent.create(recursive: true); // Ensure exists
-      } catch (e) {
-        // Fallback to Documents if permission denied
-        debugPrint("⚠️ Failed to use Database Root. Falling back to Documents. Error: $e");
-        final dbFolder = await getApplicationDocumentsDirectory();
-        file = File(p.join(dbFolder.path, 'aba_donation.sqlite'));
-      }
-    } else {
-      // Debug
-      final dbFolder = await getApplicationDocumentsDirectory();
-      file = File(p.join(dbFolder.path, 'aba_donation.sqlite'));
-    }
+    final dbPath = await DatabasePathProvider.getDatabasePath();
+    final file = File(dbPath);
     return NativeDatabase.createInBackground(file);
   });
 }

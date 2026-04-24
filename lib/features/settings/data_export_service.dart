@@ -14,17 +14,61 @@ final dataExportServiceProvider = Provider<DataExportService>((ref) {
   return DataExportService(ref.read(databaseProvider));
 });
 
+/// Custom serializer that writes DateTime as ISO 8601 strings
+/// instead of Drift's default Unix millisecond timestamps.
+class _IsoDateSerializer extends ValueSerializer {
+  const _IsoDateSerializer();
+
+  static const _fallback = ValueSerializer.defaults();
+
+  @override
+  T fromJson<T>(dynamic json) {
+    if (json is int && T == DateTime) {
+      return DateTime.fromMillisecondsSinceEpoch(json) as T;
+    }
+    if (json is int && null is T && T != int && T != double && T != num && T != bool) {
+      // T is likely DateTime? — a nullable DateTime
+      return DateTime.fromMillisecondsSinceEpoch(json) as T;
+    }
+    return _fallback.fromJson<T>(json);
+  }
+
+  @override
+  dynamic toJson<T>(T value) {
+    if (value is DateTime) return value.toIso8601String();
+    return _fallback.toJson<T>(value);
+  }
+}
+
 class DataExportService {
   final AppDatabase _db;
+  static const _isoSerializer = _IsoDateSerializer();
 
   DataExportService(this._db);
 
-  /// Helper to pick a save location (for Desktop) or return a temp path (for sharing logic if adding later)
-  /// For Windows, we use FilePicker.platform.saveFile
-  Future<String?> _pickSavePath({required String fileName}) async {
+  /// Safely parses DateTime from JSON — handles both int (Unix ms) and String (ISO 8601).
+  static DateTime? _parseDate(dynamic value) {
+    if (value == null) return null;
+    if (value is int) return DateTime.fromMillisecondsSinceEpoch(value);
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  static DateTime _parseDateRequired(dynamic value) {
+    return _parseDate(value) ?? DateTime.now();
+  }
+
+  /// Helper to pick a save location (for Desktop).
+  /// [allowedExtensions] ensures Windows enforces the file extension.
+  Future<String?> _pickSavePath({
+    required String fileName,
+    List<String>? allowedExtensions,
+  }) async {
     return await FilePicker.platform.saveFile(
       dialogTitle: 'Save Export',
       fileName: fileName,
+      type: allowedExtensions != null ? FileType.custom : FileType.any,
+      allowedExtensions: allowedExtensions,
     );
   }
 
@@ -208,19 +252,27 @@ class DataExportService {
         'timestamp': DateTime.now().toIso8601String(),
         'app_version': 12, // Schema version
       },
-      'members': members.map((m) => m.toJson()).toList(),
-      'subscriptions': subs.map((s) => s.toJson()).toList(),
-      'donations': donations.map((d) => d.toJson()).toList(),
-      'arrears': arrears.map((a) => a.toJson()).toList(),
-      'history': history.map((h) => h.toJson()).toList(),
-      'settings': settings.map((s) => s.toJson()).toList(),
-      'config': config?.toJson(),
+      'members': members.map((m) => m.toJson(serializer: _isoSerializer)).toList(),
+      'subscriptions': subs.map((s) => s.toJson(serializer: _isoSerializer)).toList(),
+      'donations': donations.map((d) => d.toJson(serializer: _isoSerializer)).toList(),
+      'arrears': arrears.map((a) => a.toJson(serializer: _isoSerializer)).toList(),
+      'history': history.map((h) => h.toJson(serializer: _isoSerializer)).toList(),
+      'settings': settings.map((s) => s.toJson(serializer: _isoSerializer)).toList(),
+      'config': config?.toJson(serializer: _isoSerializer),
     };
 
     final jsonString = jsonEncode(data);
     final fileName =
         'full_backup_${DateFormat('yyyyMMdd_HHmm').format(DateTime.now())}.json';
-    final path = await _pickSavePath(fileName: fileName);
+    var path = await _pickSavePath(
+      fileName: fileName,
+      allowedExtensions: ['json'],
+    );
+
+    // Safety net: ensure the file ends with .json even if user stripped it
+    if (path != null && !path.toLowerCase().endsWith('.json')) {
+      path = '$path.json';
+    }
 
     if (path != null) {
       final file = File(path);
@@ -278,27 +330,15 @@ class DataExportService {
               firstName: Value(m['firstName']),
               middleName: Value(m['middleName']),
               age: Value(m['age']),
-              dateOfBirth: Value(
-                m['dateOfBirth'] != null
-                    ? DateTime.parse(m['dateOfBirth'])
-                    : null,
-              ),
+              dateOfBirth: Value(_parseDate(m['dateOfBirth'])),
               bloodGroup: Value(m['bloodGroup']),
-              enrollmentDateAba: Value(
-                m['enrollmentDateAba'] != null
-                    ? DateTime.parse(m['enrollmentDateAba'])
-                    : null,
-              ),
-              enrollmentDateBar: Value(
-                m['enrollmentDateBar'] != null
-                    ? DateTime.parse(m['enrollmentDateBar'])
-                    : null,
-              ),
+              enrollmentDateAba: Value(_parseDate(m['enrollmentDateAba'])),
+              enrollmentDateBar: Value(_parseDate(m['enrollmentDateBar'])),
               registrationNumber: Value(m['registrationNumber']),
               address: Value(m['address']),
               mobileNumber: Value(m['mobileNumber']),
               email: Value(m['email']),
-              createdAt: Value(DateTime.parse(m['createdAt'])),
+              createdAt: Value(_parseDateRequired(m['createdAt'])),
               memberStatus: Value(m['memberStatus'] ?? 'Active'),
               profilePhotoPath: Value(m['profilePhotoPath']),
               remarks: Value(m['remarks']),
@@ -322,7 +362,7 @@ class DataExportService {
               amount: Value(amount),
               paymentMode: Value(s['paymentMode']),
               transactionInfo: Value(s['transactionInfo']),
-              subscriptionDate: Value(DateTime.parse(s['subscriptionDate'])),
+              subscriptionDate: Value(_parseDateRequired(s['subscriptionDate'])),
               receiptNumber: Value(s['receiptNumber']),
               receiptType: Value(s['receiptType']),
               dailySequence: Value(s['dailySequence'] != null ? (s['dailySequence'] as num).toInt() : 0),
@@ -335,7 +375,7 @@ class DataExportService {
         if (configJson != null) {
           await _db.subscriptionConfigDao.updateConfig(
             (configJson['monthlyAmount'] as num).toDouble(),
-            DateTime.parse(configJson['subscriptionStartDate']),
+            _parseDateRequired(configJson['subscriptionStartDate']),
           );
         }
 
@@ -347,7 +387,7 @@ class DataExportService {
                donorType: Value(d['donorType']),
                memberId: Value(d['memberId']),
                amount: Value((d['amount'] as num).toDouble()),
-               donationDate: Value(DateTime.parse(d['donationDate'])),
+               donationDate: Value(_parseDateRequired(d['donationDate'])),
                paymentMode: Value(d['paymentMode']),
                transactionRef: Value(d['transactionRef']),
                purpose: Value(d['purpose']),
@@ -372,7 +412,7 @@ class DataExportService {
                type: Value(a['type'] ?? 'Arrears'),
                notes: Value(a['notes']),
                isCleared: Value(a['isCleared'] ?? false),
-               clearedAt: Value(a['clearedAt'] != null ? DateTime.parse(a['clearedAt']) : null),
+               clearedAt: Value(_parseDate(a['clearedAt'])),
                linkedPaymentId: Value(a['linkedPaymentId']),
              )
            );
@@ -388,7 +428,7 @@ class DataExportService {
                totalPaid: Value((h['totalPaid'] as num).toDouble()),
                balance: Value((h['balance'] as num).toDouble()),
                status: Value(h['status']),
-               closedAt: Value(h['closedAt'] != null ? DateTime.parse(h['closedAt']) : DateTime.now()),
+               closedAt: Value(_parseDate(h['closedAt']) ?? DateTime.now()),
              )
            );
         }
